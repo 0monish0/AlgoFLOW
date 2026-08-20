@@ -144,3 +144,19 @@ pre[class*="language-"] {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
+
+/* Global Selection styling */
+::selection {
+  background-color: rgba(56, 112, 147, 0.35);
+}
+
+/* Code Block Selection styling - guaranteed high visibility */
+pre ::selection,
+code ::selection,
+pre[class*="language-"] ::selection,
+code[class*="language-"] ::selection,
+.token::selection {
+  background-color: #266B94 !important;
+  color: #FFFFFF !important;
+}
+

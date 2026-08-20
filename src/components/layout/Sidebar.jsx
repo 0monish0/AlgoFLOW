@@ -25,7 +25,7 @@ export const Sidebar = ({ isMobile = false }) => {
             <span className="truncate">{item.title}</span>
           </div>
           {/* Nested Level 3 Items */}
-          <div className="border-l border-border ml-3 pl-2 space-y-0.5 mt-0.5">
+          <div className="ml-2.5 space-y-0.5 mt-0.5">
             {item.children.map((child) => renderItem(child, true))}
           </div>
         </div>
@@ -94,16 +94,13 @@ export const Sidebar = ({ isMobile = false }) => {
           )}
         </div>
 
-        {/* Quick Search Button in Sidebar */}
+        {/* Refined Quick Search Button in Sidebar */}
         <button
           onClick={openSearch}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md border border-border bg-base/30 hover:bg-base/70 text-text-muted text-xs transition-colors shadow-2xs group"
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-border/80 bg-base/30 hover:bg-base/60 hover:border-accent/50 text-text-muted text-xs transition-all shadow-2xs group"
         >
-          <div className="flex items-center gap-2">
-            <Search size={13} className="group-hover:text-primary transition-colors" />
-            <span>Search topics...</span>
-          </div>
-          <kbd className="px-1.5 py-0.5 rounded border border-border bg-surface text-3xs font-semibold">⌘K</kbd>
+          <Search size={13} className="group-hover:text-primary transition-colors opacity-70 group-hover:opacity-100" />
+          <span>Search topics...</span>
         </button>
       </div>
 

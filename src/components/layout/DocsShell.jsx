@@ -42,9 +42,6 @@ export const DocsShell = () => {
           </div>
         </main>
       </div>
-
-      {/* Global Command Search Palette */}
-      <SearchPalette />
     </div>
   );
 };

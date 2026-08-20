@@ -4,6 +4,7 @@ import { Home } from './pages/Home';
 import { DocsShell } from './components/layout/DocsShell';
 import { DocsPage } from './pages/DocsPage';
 import { NotFound } from './pages/NotFound';
+import { SearchPalette } from './components/search/SearchPalette';
 import { useThemeStore } from './store/themeStore';
 
 export const App = () => {
@@ -19,15 +20,18 @@ export const App = () => {
   }, [theme]);
 
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/docs" element={<DocsShell />}>
-        <Route index element={<Navigate to="/docs/intro-to-adts" replace />} />
-        <Route path=":slug" element={<DocsPage />} />
-      </Route>
-      <Route path="/404" element={<NotFound />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/docs" element={<DocsShell />}>
+          <Route index element={<Navigate to="/docs/intro-to-adts" replace />} />
+          <Route path=":slug" element={<DocsPage />} />
+        </Route>
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <SearchPalette />
+    </>
   );
 };
 
