@@ -1,0 +1,146 @@
+@import "@fontsource/jetbrains-mono/300.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/600.css";
+@import "@fontsource/jetbrains-mono/700.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light mode - Merino & Venice Blue */
+  --color-bg-base: #F5EEDD;
+  --color-bg-surface: #FFFFFF;
+  --color-accent: #84B3CE;
+  --color-primary: #16587B;
+  --color-text: #16587B;
+  --color-text-muted: rgba(22, 88, 123, 0.65);
+  --color-border: rgba(22, 88, 123, 0.12);
+}
+
+.dark {
+  /* Dark mode - Desaturated Venice Blue & Merino */
+  --color-bg-base: #0E2E3F;
+  --color-bg-surface: #123A4F;
+  --color-accent: #84B3CE;
+  --color-primary: #F5EEDD;
+  --color-text: rgba(245, 238, 221, 0.92);
+  --color-text-muted: rgba(245, 238, 221, 0.55);
+  --color-border: rgba(245, 238, 221, 0.12);
+}
+
+/* Base resets & typography */
+html {
+  scroll-behavior: smooth;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  line-height: 1.65;
+  background-color: var(--color-bg-base);
+  color: var(--color-text);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* Prism Custom Venice Blue Dark Theme */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #E2F1F8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  tab-size: 4;
+  hyphens: none;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6C96AC;
+  font-style: italic;
+}
+
+.token.punctuation {
+  color: #A5C8DB;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #E5A96D;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #A3D9A5;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #84B3CE;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #89CFF0;
+  font-weight: 500;
+}
+
+.token.function,
+.token.class-name {
+  color: #F8D176;
+  font-weight: 500;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #F39C82;
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
