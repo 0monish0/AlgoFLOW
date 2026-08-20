@@ -17,6 +17,10 @@
   --color-text: #2C353D;
   --color-text-muted: #5C6770;
   --color-border: rgba(11, 37, 58, 0.14);
+  /* 3rd — Amber / Ochre (warm accent, for emphasis & highlights) */
+  --color-amber-accent: #C97B2E;
+  /* 4th — Sage / Teal-Green (cool accent, for success & secondary states) */
+  --color-sage-accent: #4C7A6B;
 }
 
 .dark {
@@ -28,6 +32,10 @@
   --color-text: #E5ECF0;
   --color-text-muted: #94A6B3;
   --color-border: rgba(229, 236, 240, 0.12);
+  /* 3rd — Amber / Ochre (lifted, slightly desaturated) */
+  --color-amber-accent: #E0A458;
+  /* 4th — Sage / Teal-Green (brightened, desaturated) */
+  --color-sage-accent: #7FAE9B;
 }
 
 /* Base resets & typography */

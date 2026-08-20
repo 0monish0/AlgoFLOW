@@ -112,7 +112,7 @@ export const SllInsertionVisualizer = () => {
     <div className="border border-border rounded bg-surface/50 p-4 my-6 select-none">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3 mb-4">
         <div className="flex items-center gap-2">
-          <span className="text-2xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-accent/20 text-primary">
+          <span className="text-2xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-sage-accent/20 text-sage-accent border border-sage-accent/30">
             Interactive Visualizer
           </span>
           <span className="text-xs text-text-muted">Pointer State Machine</span>
@@ -127,7 +127,7 @@ export const SllInsertionVisualizer = () => {
               }}
               className={`text-2xs px-2.5 py-1 rounded transition-colors ${
                 mode === m.id
-                  ? 'bg-primary text-base font-semibold'
+                  ? 'bg-primary text-base font-semibold border border-primary'
                   : 'bg-surface hover:bg-accent/15 text-text-muted border border-border'
               }`}
             >
@@ -140,7 +140,7 @@ export const SllInsertionVisualizer = () => {
       {/* Visual Canvas */}
       <div className="min-h-[140px] flex flex-col justify-center items-center py-6 bg-code-bg/5 dark:bg-black/20 rounded border border-border/60 overflow-x-auto">
         <div className="flex items-center gap-2 px-4">
-          <div className="flex items-center gap-1 text-2xs font-bold text-accent">
+          <div className="flex items-center gap-1 text-2xs font-bold text-sage-accent">
             <span>HEAD</span>
             <span>→</span>
           </div>
@@ -149,33 +149,33 @@ export const SllInsertionVisualizer = () => {
             <React.Fragment key={node.id}>
               <motion.div
                 layout
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.2 }}
-                className={`flex items-stretch border rounded font-mono text-xs shadow-sm overflow-hidden ${
+                className={`flex items-stretch border rounded shadow-xs bg-surface transition-colors ${
                   node.val === 99
-                    ? 'border-accent bg-accent/20 text-primary font-bold ring-1 ring-accent'
-                    : 'border-border bg-surface text-text'
+                    ? 'border-amber-accent ring-2 ring-amber-accent/30'
+                    : 'border-border'
                 }`}
               >
-                <div className="px-3 py-2 border-r border-border/60 flex items-center justify-center font-bold min-w-[36px]">
+                <div
+                  className={`px-3 py-2 text-xs font-bold ${
+                    node.val === 99
+                      ? 'text-amber-accent bg-amber-accent/10'
+                      : 'text-primary'
+                  }`}
+                >
                   {node.val}
                 </div>
-                <div className="px-2 py-2 bg-black/5 dark:bg-white/5 text-2xs text-text-muted flex items-center justify-center">
+                <div className="px-2.5 py-2 border-l border-border bg-base/50 text-2xs text-text-muted flex items-center justify-center">
                   •
                 </div>
               </motion.div>
 
-              {i < current.nodes.length - 1 ? (
-                <div className="text-text-muted text-xs font-bold">→</div>
-              ) : (
-                <div className="flex items-center text-text-muted text-xs font-bold gap-1">
-                  <span>→</span>
-                  <span className="text-2xs opacity-70">NULL</span>
-                </div>
-              )}
+              <div className="text-text-muted text-xs font-mono">→</div>
             </React.Fragment>
           ))}
+
+          <div className="px-2 py-1 rounded text-2xs font-bold text-text-muted bg-base/80 border border-border">
+            NULL
+          </div>
         </div>
 
         {/* Floating Newly Allocated Node */}
@@ -183,12 +183,12 @@ export const SllInsertionVisualizer = () => {
           <motion.div
             initial={{ y: -20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="mt-4 flex items-center gap-2 px-3 py-1.5 rounded border border-dashed border-accent bg-accent/10"
+            className="mt-4 flex items-center gap-2 px-3 py-1.5 rounded border border-dashed border-amber-accent bg-amber-accent/10"
           >
-            <span className="text-2xs text-text-muted font-bold">Allocated node:</span>
-            <div className="flex items-stretch border border-accent rounded bg-surface text-xs font-bold text-primary">
-              <div className="px-2.5 py-1 border-r border-accent/40">{current.newNode.val}</div>
-              <div className="px-2 py-1 text-2xs text-accent">next → {current.newNode.nextTarget ? `[${current.newNode.nextTarget}]` : 'null'}</div>
+            <span className="text-2xs text-amber-accent font-bold">Allocated node:</span>
+            <div className="flex items-stretch border border-amber-accent rounded bg-surface text-xs font-bold text-primary">
+              <div className="px-2.5 py-1 border-r border-amber-accent/40 text-amber-accent font-mono">{current.newNode.val}</div>
+              <div className="px-2 py-1 text-2xs text-amber-accent">next → {current.newNode.nextTarget ? `[${current.newNode.nextTarget}]` : 'null'}</div>
             </div>
           </motion.div>
         )}
@@ -200,7 +200,7 @@ export const SllInsertionVisualizer = () => {
           <div className="text-xs font-semibold text-text">
             Step {step + 1} of {steps.length}: <span className="font-normal text-text-muted">{current.desc}</span>
           </div>
-          <div className="text-2xs font-mono text-primary bg-accent/10 px-2 py-0.5 rounded inline-block border border-accent/20">
+          <div className="text-2xs font-mono text-amber-accent bg-amber-accent/10 px-2 py-0.5 rounded inline-block border border-amber-accent/30 font-semibold">
             {current.highlight}
           </div>
         </div>

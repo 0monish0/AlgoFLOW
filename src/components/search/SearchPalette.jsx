@@ -78,16 +78,19 @@ export const SearchPalette = () => {
                 >
                   <div className="flex items-center gap-2.5 min-w-0 pr-2">
                     {item.type === 'Topic' ? (
-                      <FileText size={14} className="text-accent shrink-0" />
+                      <FileText size={14} className="text-sage-accent shrink-0" />
                     ) : (
-                      <Hash size={14} className="text-text-muted shrink-0" />
+                      <Hash size={14} className="text-amber-accent shrink-0" />
                     )}
                     <div className="truncate">
                       <div className="font-medium truncate text-text group-data-[selected=true]:text-primary">{item.title}</div>
-                      <div className="text-3xs text-text-muted truncate">{item.category}</div>
+                      <div className="text-3xs text-text-muted flex items-center gap-1.5 truncate">
+                        <span className={`w-1 h-1 rounded-full ${item.type === 'Topic' ? 'bg-sage-accent' : 'bg-amber-accent'}`} />
+                        <span>{item.category}</span>
+                      </div>
                     </div>
                   </div>
-                  <ArrowRight size={12} className="opacity-0 group-data-[selected=true]:opacity-100 text-accent shrink-0 transition-opacity" />
+                  <ArrowRight size={12} className="opacity-0 group-data-[selected=true]:opacity-100 text-primary shrink-0 transition-opacity" />
                 </Command.Item>
               ))}
             </Command.Group>

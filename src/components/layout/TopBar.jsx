@@ -36,8 +36,7 @@ export const TopBar = () => {
           {isCollapsed ? <PanelLeft size={19} /> : <PanelLeftClose size={19} />}
         </button>
 
-        <Link to="/" className="flex items-center gap-2.5 text-base font-bold tracking-tight text-primary">
-          <span className="w-3.5 h-3.5 rounded-xs bg-accent inline-block" />
+        <Link to="/" className="flex items-center gap-2.5 text-base font-extrabold tracking-tight text-primary">
           <span>AgroFlow</span>
           <span className="hidden sm:inline text-xs font-normal text-text-muted border-l border-border pl-2.5">
             DSA Topics
@@ -58,34 +57,31 @@ export const TopBar = () => {
 
       {/* Right section: Global Language Switcher & Theme Toggle */}
       <div className="flex items-center gap-3 shrink-0">
-        {/* Preferred Language Switcher */}
-        <div className="hidden lg:flex items-center p-1 bg-base/40 rounded-xl text-xs mr-1">
-          <span className="px-2.5 text-text-muted text-xs font-semibold select-none">Lang:</span>
-          <div className="flex items-center gap-1">
-            {LANGUAGES.map((l) => (
-              <button
-                key={l.id}
-                onClick={() => setPreferredLanguage(l.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  preferredLanguage === l.id
-                    ? 'bg-primary text-[#F5EEDD] dark:text-[#081722] font-semibold shadow-xs'
-                    : 'text-text-muted hover:text-text hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-              >
-                {l.label}
-              </button>
-            ))}
-          </div>
+        {/* Language Pill Selector */}
+        <div className="hidden sm:flex items-center p-1 rounded-xl bg-base/60 border border-border/80">
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.id}
+              onClick={() => setPreferredLanguage(lang.id)}
+              className={`px-2.5 py-1 text-2xs rounded-lg transition-all ${
+                preferredLanguage === lang.id
+                  ? 'bg-primary text-[#F5EEDD] dark:text-[#081722] font-bold shadow-2xs'
+                  : 'text-text-muted hover:text-text'
+              }`}
+            >
+              {lang.label}
+            </button>
+          ))}
         </div>
 
-        {/* Theme Toggle */}
+        {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
           className="p-2.5 rounded-xl border border-border bg-surface hover:bg-accent/15 text-text transition-colors flex items-center justify-center shadow-2xs"
-          title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode (click to toggle)`}
+          title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode`}
           aria-label="Toggle theme"
         >
-          {theme === 'dark' ? <Moon size={16} className="text-accent" /> : <Sun size={16} className="text-amber-700 dark:text-amber-500" />}
+          {theme === 'dark' ? <Moon size={16} className="text-accent" /> : <Sun size={16} className="text-amber-accent" />}
         </button>
       </div>
     </header>

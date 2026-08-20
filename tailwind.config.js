@@ -14,6 +14,16 @@ export default {
         base: 'var(--color-bg-base)',
         surface: 'var(--color-bg-surface)',
         accent: 'var(--color-accent)',
+        'amber-accent': 'var(--color-amber-accent)',
+        'sage-accent': 'var(--color-sage-accent)',
+        amber: {
+          DEFAULT: 'var(--color-amber-accent)',
+          accent: 'var(--color-amber-accent)',
+        },
+        sage: {
+          DEFAULT: 'var(--color-sage-accent)',
+          accent: 'var(--color-sage-accent)',
+        },
         primary: 'var(--color-primary)',
         text: 'var(--color-text)',
         'text-muted': 'var(--color-text-muted)',
