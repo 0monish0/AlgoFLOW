@@ -5,7 +5,6 @@ import { Breadcrumb } from '../components/docs/Breadcrumb';
 import { CodeTabs } from '../components/docs/CodeTabs';
 import { ComplexityTable } from '../components/docs/ComplexityTable';
 import { DiagramNode } from '../components/docs/DiagramNode';
-import { RelatedLinks } from '../components/docs/RelatedLinks';
 import { TocRail } from '../components/layout/TocRail';
 import { SllInsertionVisualizer } from '../components/visualizers/SllInsertionVisualizer';
 import { SllDeletionVisualizer } from '../components/visualizers/SllDeletionVisualizer';
@@ -106,9 +105,6 @@ export const DocsPage = () => {
         {topic.complexity && topic.complexity.length > 0 && (
           <ComplexityTable rows={topic.complexity} />
         )}
-
-        {/* Related Topics & Next Steps */}
-        <RelatedLinks relatedSlugs={topic.relatedSlugs} />
       </article>
 
       {/* Right Table-Of-Contents Rail */}

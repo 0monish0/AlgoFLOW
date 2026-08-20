@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { navigationSections } from '../../content/navigation';
 import { useSidebarStore } from '../../store/sidebarStore';
 import { useSearchStore } from '../../store/searchStore';
-import { ChevronDown, ChevronRight, Search, X, BookOpen } from 'lucide-react';
+import { ChevronDown, ChevronRight, Search, X, FolderTree } from 'lucide-react';
 
 export const Sidebar = ({ isMobile = false }) => {
   const { expandedSections, toggleSection, isCollapsed, setMobileOpen } = useSidebarStore();
@@ -18,12 +18,14 @@ export const Sidebar = ({ isMobile = false }) => {
   const renderItem = (item, isNested = false) => {
     if (item.isSubGroup) {
       return (
-        <div key={item.id} className="mt-3 mb-1">
-          <div className="text-3xs font-bold uppercase tracking-widest text-text-muted/80 px-2 py-1 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent/60 inline-block" />
-            <span>{item.title}</span>
+        <div key={item.id} className="mt-3 mb-1.5">
+          {/* Level 2 Sub-Group Header */}
+          <div className="text-3xs font-semibold uppercase tracking-widest text-text-muted/65 px-2.5 py-1 flex items-center gap-1.5">
+            <span className="w-1 h-1 rounded-full bg-accent/50 inline-block shrink-0" />
+            <span className="truncate">{item.title}</span>
           </div>
-          <div className="border-l-2 border-border/80 ml-2.5 pl-2 space-y-1 mt-1">
+          {/* Nested Level 3 Items */}
+          <div className="border-l border-border ml-3 pl-2 space-y-0.5 mt-0.5">
             {item.children.map((child) => renderItem(child, true))}
           </div>
         </div>
@@ -43,40 +45,34 @@ export const Sidebar = ({ isMobile = false }) => {
         className={({ isActive }) =>
           `group relative flex items-center px-3 py-2 rounded-md text-xs font-mono transition-colors select-none ${
             isActive
-              ? 'text-primary font-bold shadow-xs'
-              : 'text-text hover:text-primary hover:bg-accent/10'
+              ? 'text-[#F5EEDD] dark:text-[#081722] font-bold z-10'
+              : 'text-text-muted hover:text-text hover:bg-accent/10'
           }`
         }
       >
+        {/* Animated full-box background fill */}
         {isActive && (
           <motion.div
             layoutId="active-sidebar-pill"
             transition={{
               type: 'spring',
-              stiffness: 380,
-              damping: 32,
+              stiffness: 400,
+              damping: 30,
             }}
-            className="absolute inset-0 rounded-md bg-accent/20 dark:bg-accent/25 border border-accent/40"
+            className="absolute inset-0 rounded-md bg-[#0B253A] dark:bg-[#F5EEDD] shadow-xs"
           />
         )}
 
         <span className="relative z-10 leading-snug break-words pr-1">
           {item.title}
         </span>
-
-        {isActive && (
-          <motion.span
-            layoutId="active-sidebar-bar"
-            className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-accent rounded-r-full"
-          />
-        )}
       </NavLink>
     );
   };
 
   return (
     <aside
-      className={`h-full flex flex-col font-mono select-none bg-surface/50 border-r border-border ${
+      className={`h-full flex flex-col font-mono select-none bg-surface/40 border-r border-border ${
         isMobile ? 'w-full' : 'w-72 shrink-0'
       }`}
     >
@@ -84,7 +80,7 @@ export const Sidebar = ({ isMobile = false }) => {
       <div className="p-3.5 border-b border-border">
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-1.5 text-2xs font-bold uppercase tracking-wider text-text-muted">
-            <BookOpen size={13} className="text-accent" />
+            <FolderTree size={13} className="text-accent" />
             <span>Topics Tree</span>
           </div>
           {isMobile && (
@@ -118,10 +114,10 @@ export const Sidebar = ({ isMobile = false }) => {
 
           return (
             <div key={section.id} className="space-y-1">
-              {/* Section Header */}
+              {/* Level 1 Section Header */}
               <button
                 onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-2xs font-bold uppercase tracking-wider text-text-muted hover:text-primary hover:bg-accent/10 transition-colors"
+                className="w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-bold uppercase tracking-wider text-text hover:text-primary hover:bg-accent/10 transition-colors"
               >
                 <span className="truncate">{section.title}</span>
                 <span className="text-text-muted/70">
