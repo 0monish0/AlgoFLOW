@@ -105,7 +105,7 @@ export const SearchPalette = () => {
               <span>Select:</span>
               <kbd className="px-1 py-0.5 rounded bg-surface border border-border">↵</kbd>
             </div>
-            <span>DSA Technical Reference</span>
+            <span>AgroFlow Reference</span>
           </div>
         </Command>
       </div>

@@ -43,7 +43,7 @@ export const Home = () => {
       <header className="w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between border-b border-border">
         <div className="flex items-center gap-2 text-sm font-bold tracking-tight text-primary">
           <span className="w-3 h-3 rounded-xs bg-accent inline-block" />
-          <span>DSA REFERENCE</span>
+          <span>AgroFlow</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -60,10 +60,10 @@ export const Home = () => {
 
           <button
             onClick={toggleTheme}
-            className="p-1.5 rounded border border-border bg-surface hover:bg-accent/15 text-text transition-colors"
-            title="Toggle theme"
+            className="p-1.5 rounded border border-border bg-surface hover:bg-accent/15 text-text transition-colors flex items-center justify-center"
+            title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode`}
           >
-            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+            {theme === 'dark' ? <Moon size={15} className="text-accent" /> : <Sun size={15} className="text-amber-700 dark:text-amber-500" />}
           </button>
         </div>
       </header>
@@ -233,7 +233,7 @@ export const Home = () => {
 
       {/* Plain Footer */}
       <footer className="w-full max-w-6xl mx-auto px-6 py-8 border-t border-border mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-2xs text-text-muted">
-        <div>DSA Technical Reference — ADT List & Linked List</div>
+        <div>AgroFlow — DSA Technical Reference</div>
         <div>Engineered for C, C++, Python, and Java</div>
       </footer>
     </div>

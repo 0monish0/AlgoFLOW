@@ -38,9 +38,9 @@ export const TopBar = () => {
 
         <Link to="/" className="flex items-center gap-2 text-xs font-bold tracking-tight text-primary">
           <span className="w-2.5 h-2.5 rounded-sm bg-accent inline-block" />
-          <span>DSA REFERENCE</span>
+          <span>AgroFlow</span>
           <span className="hidden sm:inline text-2xs font-normal text-text-muted border-l border-border pl-2">
-            ADT List & Linked List
+            DSA Topics
           </span>
         </Link>
       </div>
@@ -84,11 +84,11 @@ export const TopBar = () => {
         {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className="p-2 rounded border border-border bg-surface hover:bg-accent/15 text-text transition-colors"
-          title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+          className="p-2 rounded border border-border bg-surface hover:bg-accent/15 text-text transition-colors flex items-center justify-center"
+          title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode (click to toggle)`}
           aria-label="Toggle theme"
         >
-          {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          {theme === 'dark' ? <Moon size={15} className="text-accent" /> : <Sun size={15} className="text-amber-700 dark:text-amber-500" />}
         </button>
       </div>
     </header>

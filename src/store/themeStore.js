@@ -4,10 +4,16 @@ import { persist } from 'zustand/middleware';
 const getInitialTheme = () => {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('dsa-theme');
-    if (saved) return JSON.parse(saved).state.theme;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    if (saved) {
+      try {
+        return JSON.parse(saved).state.theme;
+      } catch {
+        return 'dark';
+      }
+    }
+    return 'dark';
   }
-  return 'light';
+  return 'dark';
 };
 
 export const useThemeStore = create(

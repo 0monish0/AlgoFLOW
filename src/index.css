@@ -9,25 +9,25 @@
 @tailwind utilities;
 
 :root {
-  /* Light mode - Merino & Venice Blue */
+  /* Light mode - Merino base (#F5EEDD), deep dark-blue (#0B253A), dark-grey text (#2C353D) */
   --color-bg-base: #F5EEDD;
   --color-bg-surface: #FFFFFF;
-  --color-accent: #84B3CE;
-  --color-primary: #16587B;
-  --color-text: #16587B;
-  --color-text-muted: rgba(22, 88, 123, 0.65);
-  --color-border: rgba(22, 88, 123, 0.12);
+  --color-accent: #387093;
+  --color-primary: #0B253A;
+  --color-text: #2C353D;
+  --color-text-muted: #5C6770;
+  --color-border: rgba(11, 37, 58, 0.14);
 }
 
 .dark {
-  /* Dark mode - Desaturated Venice Blue & Merino */
-  --color-bg-base: #0E2E3F;
-  --color-bg-surface: #123A4F;
-  --color-accent: #84B3CE;
+  /* Dark mode - Deep dark-blue base (#081722) & clean light grey text (#E5ECF0) */
+  --color-bg-base: #081722;
+  --color-bg-surface: #0E2230;
+  --color-accent: #6FA8CC;
   --color-primary: #F5EEDD;
-  --color-text: rgba(245, 238, 221, 0.92);
-  --color-text-muted: rgba(245, 238, 221, 0.55);
-  --color-border: rgba(245, 238, 221, 0.12);
+  --color-text: #E5ECF0;
+  --color-text-muted: #94A6B3;
+  --color-border: rgba(229, 236, 240, 0.12);
 }
 
 /* Base resets & typography */

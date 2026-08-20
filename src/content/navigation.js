@@ -16,17 +16,6 @@ export const navigationSections = [
       { slug: 'array-list-impl', title: 'Array-Based List Implementation' },
       { slug: 'array-list-operations', title: 'Operations (Insert, Delete, Access, Search)' },
       { slug: 'complexity-array-list', title: 'Complexity Analysis — Array List' },
-      {
-        id: 'adt-list-langs',
-        title: 'Language Implementations',
-        isSubGroup: true,
-        children: [
-          { slug: 'array-list-c', title: 'C Implementation' },
-          { slug: 'array-list-cpp', title: 'C++ Implementation' },
-          { slug: 'array-list-python', title: 'Python Implementation' },
-          { slug: 'array-list-java', title: 'Java Implementation' },
-        ],
-      },
     ],
   },
   {
@@ -69,25 +58,6 @@ export const navigationSections = [
       { slug: 'comparison-linked-vs-array', title: 'Linked List vs. Array List — Comparison' },
       { slug: 'complexity-linked-list', title: 'Complexity Analysis — Linked List' },
       { slug: 'applications-use-cases', title: 'Applications & Use Cases' },
-      {
-        id: 'linked-list-langs',
-        title: 'Complete Implementations',
-        isSubGroup: true,
-        children: [
-          { slug: 'linked-list-c', title: 'C Full Implementation' },
-          { slug: 'linked-list-cpp', title: 'C++ Full Implementation' },
-          { slug: 'linked-list-python', title: 'Python Full Implementation' },
-          { slug: 'linked-list-java', title: 'Java Full Implementation' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'reference',
-    title: 'Reference',
-    items: [
-      { slug: 'complexity-cheat-sheet', title: 'Complexity Cheat Sheet — All Structures' },
-      { slug: 'glossary', title: 'Glossary' },
     ],
   },
 ];
