@@ -5,10 +5,11 @@ export const useSidebarStore = create(
   persist(
     (set) => ({
       expandedSections: {
-        'getting-started': true,
-        'adt-list': true,
-        'linked-list': true,
-        'reference': true,
+        '00-why-data-structures': true,
+        '01-getting-started': true,
+        '02-list-adt': true,
+        '03-linked-list': true,
+        'problems': true,
       },
       isCollapsed: false,
       mobileOpen: false,

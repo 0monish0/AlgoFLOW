@@ -1,21 +1,13 @@
+import { whyDataStructuresTopics } from './topics/whyDataStructures';
 import { gettingStartedTopics } from './topics/gettingStarted';
-import { adtListTopics } from './topics/adtList';
-import { singlyLinkedListTopics } from './topics/singlyLinkedList';
-import { doublyLinkedListTopics } from './topics/doublyLinkedList';
-import { circularLinkedListTopics } from './topics/circularLinkedList';
-import { comparisonAndComplexityTopics } from './topics/comparisonAndComplexity';
-import { languageImplementationTopics } from './topics/languageImplementations';
-import { referenceTopics } from './topics/reference';
+import { listAdtTopics } from './topics/listAdt';
+import { linkedListTopics } from './topics/linkedList';
 
 export const allTopics = {
+  ...whyDataStructuresTopics,
   ...gettingStartedTopics,
-  ...adtListTopics,
-  ...singlyLinkedListTopics,
-  ...doublyLinkedListTopics,
-  ...circularLinkedListTopics,
-  ...comparisonAndComplexityTopics,
-  ...languageImplementationTopics,
-  ...referenceTopics,
+  ...listAdtTopics,
+  ...linkedListTopics,
 };
 
 export const getTopicBySlug = (slug) => {
@@ -48,7 +40,7 @@ export const searchIndex = Object.values(allTopics).flatMap((topic) => {
         title: sec.title,
         category: topic.title,
         type: 'Section',
-        description: sec.content.slice(0, 100) + '...',
+        description: sec.content ? sec.content.slice(0, 100) + '...' : '',
       });
     });
   }

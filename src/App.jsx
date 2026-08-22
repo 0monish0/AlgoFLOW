@@ -24,7 +24,7 @@ export const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/docs" element={<DocsShell />}>
-          <Route index element={<Navigate to="/docs/intro-to-adts" replace />} />
+          <Route index element={<Navigate to="/docs/is-there-even-a-need" replace />} />
           <Route path=":slug" element={<DocsPage />} />
         </Route>
         <Route path="/404" element={<NotFound />} />

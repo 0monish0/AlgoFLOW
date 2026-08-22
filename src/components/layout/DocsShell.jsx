@@ -2,7 +2,6 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
-import { SearchPalette } from '../search/SearchPalette';
 import { useSidebarStore } from '../../store/sidebarStore';
 
 export const DocsShell = () => {

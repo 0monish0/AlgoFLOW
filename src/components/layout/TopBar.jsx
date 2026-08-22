@@ -12,8 +12,6 @@ export const TopBar = () => {
   const { isCollapsed, toggleCollapse, toggleMobileOpen } = useSidebarStore();
   const { openSearch } = useSearchStore();
 
-  const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-
   return (
     <header className="sticky top-0 z-30 w-full h-16 bg-surface/90 backdrop-blur-md border-b border-border font-mono select-none px-4 sm:px-6 flex items-center justify-between gap-4">
       {/* Left section: Collapse Toggle & Site Wordmark */}
@@ -48,7 +46,7 @@ export const TopBar = () => {
       <div className="flex-1 max-w-xl mx-2 sm:mx-6">
         <button
           onClick={openSearch}
-          className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-border/80 bg-base/35 hover:bg-base/60 hover:border-accent/50 text-text-muted text-xs transition-all shadow-2xs group"
+          className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-border/80 dark:border-transparent bg-base/35 hover:bg-base/60 hover:border-accent/50 dark:hover:border-transparent text-text-muted text-xs transition-all shadow-2xs group"
         >
           <Search size={14} className="text-accent group-hover:text-primary transition-colors shrink-0 opacity-80 group-hover:opacity-100" />
           <span className="truncate">Search reference or jump to topic...</span>
@@ -58,7 +56,7 @@ export const TopBar = () => {
       {/* Right section: Global Language Switcher & Theme Toggle */}
       <div className="flex items-center gap-3 shrink-0">
         {/* Language Pill Selector */}
-        <div className="hidden sm:flex items-center p-1 rounded-xl bg-base/60 border border-border/80">
+        <div className="hidden sm:flex items-center p-1 rounded-xl bg-base/60 border border-border/80 dark:border-transparent">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.id}
@@ -77,7 +75,7 @@ export const TopBar = () => {
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="p-2.5 rounded-xl border border-border bg-surface hover:bg-accent/15 text-text transition-colors flex items-center justify-center shadow-2xs"
+          className="p-2.5 rounded-xl border border-border dark:border-transparent bg-surface hover:bg-accent/15 text-text transition-colors flex items-center justify-center shadow-2xs"
           title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode`}
           aria-label="Toggle theme"
         >

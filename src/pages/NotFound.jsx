@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Home, BookOpen, ArrowLeft } from 'lucide-react';
+import { Home, BookOpen } from 'lucide-react';
 
 export const NotFound = () => {
   return (
@@ -15,8 +15,8 @@ export const NotFound = () => {
         </p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <Link
-            to="/docs/intro-to-adts"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-primary text-base font-semibold text-xs hover:opacity-90 transition-opacity"
+            to="/docs/is-there-even-a-need"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-primary text-[#F5EEDD] dark:text-[#081722] font-semibold text-xs hover:opacity-90 transition-opacity"
           >
             <BookOpen size={14} />
             <span>Open Documentation</span>

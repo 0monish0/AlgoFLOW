@@ -30,11 +30,11 @@ export default {
         border: 'var(--color-border)',
         // Dedicated Venice Blue tinted dark code theme tokens (consistent in both light & dark modes)
         code: {
-          bg: '#0A202D',
-          header: '#0E2A3A',
-          border: 'rgba(132, 179, 206, 0.18)',
+          bg: '#071826',
+          header: '#0B2234',
+          border: 'rgba(111, 168, 204, 0.22)',
           text: '#F5EEDD',
-          muted: 'rgba(245, 238, 221, 0.65)',
+          muted: 'rgba(245, 238, 221, 0.7)',
         }
       },
       fontSize: {

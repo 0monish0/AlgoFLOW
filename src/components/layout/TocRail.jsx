@@ -35,7 +35,7 @@ export const TocRail = ({ sections = [] }) => {
   return (
     <aside className="hidden xl:block w-56 shrink-0 font-mono select-none pl-6">
       <div className="sticky top-20">
-        <div className="text-2xs font-bold uppercase tracking-wider text-text-muted mb-3">
+        <div className="text-2xs font-extrabold uppercase tracking-wider text-primary mb-3">
           On This Page
         </div>
         <nav className="space-y-1.5 border-l border-border/80 pl-3">
@@ -48,8 +48,8 @@ export const TocRail = ({ sections = [] }) => {
                 href={`#${section.id}`}
                 className={`block text-2xs transition-colors truncate ${
                   isActive
-                    ? 'text-primary font-semibold translate-x-0.5'
-                    : 'text-text-muted hover:text-text'
+                    ? 'text-primary font-bold translate-x-0.5'
+                    : 'text-text-muted hover:text-primary font-medium'
                 }`}
               >
                 {section.title}

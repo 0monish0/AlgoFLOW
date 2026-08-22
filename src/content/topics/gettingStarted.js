@@ -1,320 +1,493 @@
 export const gettingStartedTopics = {
-  'intro-to-adts': {
-    slug: 'intro-to-adts',
-    title: 'Introduction to Abstract Data Types (ADTs)',
-    category: 'Getting Started',
-    summary: 'An Abstract Data Type (ADT) is a mathematical specification of a data structure that defines the data values and the operations that can be performed on them, without specifying the underlying implementation or memory layout.',
-    lead: 'In software engineering and computer science, abstraction enforces a strict boundary between what an interface promises (the contract) and how an underlying system delivers it (the implementation). Understanding ADTs is the prerequisite for evaluating time/space trade-offs across data structures.',
+  'stack-heap-and-where-data-lives': {
+    slug: 'stack-heap-and-where-data-lives',
+    title: 'Stack, Heap, and Where Data Lives',
+    folder: '01-getting-started',
+    category: '01-getting-started',
+    summary: 'The physical division of program memory: automatic call stack frames vs dynamically allocated heap regions.',
+    lead: 'Every variable, node, and pointer in your program resides in memory. Understanding the runtime difference between the Call Stack and the Heap is the foundation of data structure implementation, lifetime management, and cache performance.',
     sections: [
       {
-        id: 'specification-vs-implementation',
-        title: 'Specification vs. Implementation',
-        content: `An ADT defines the *behavioral contract* of a data type from the perspective of a consumer. It specifies:
-1. **Domain**: The set of valid values the type can represent.
-2. **Operations**: The complete set of functions, procedures, or methods that operate on the domain.
-3. **Axioms / Invariants**: Semantic rules and pre/post-conditions that every operation must preserve (e.g., calling \`pop()\` immediately after \`push(x)\` yields \`x\`).
-
-Critically, an ADT makes no assertions about pointer layouts, cache lines, heap allocations, or algorithmic mechanics. Multiple radically distinct data structures can satisfy the exact same ADT contract with differing algorithmic asymptotic bounds.`
+        id: 'the-stack-automatic-deterministic',
+        title: 'The Stack: Automatic, Fast, and Contiguous',
+        content: `The **Stack** is an architectural memory region managed directly by the CPU via the Stack Pointer register (\`SP\`).
+- **Allocation Mechanism**: Pushing a stack frame is a single subtract/add instruction on \`SP\`.
+- **Lifetime**: Strictly bounded by scope. When a function returns, its entire frame is popped instantly.
+- **Locality**: Extremely high L1/L2 cache hit rate due to tight sequential memory reuse.
+- **Constraints**: Fixed size (typically 1MB to 8MB). Exceeding this limit causes a catastrophic \`StackOverflowException\`.`
       },
       {
-        id: 'the-list-adt-concept',
-        title: 'The List ADT Concept',
-        content: `The **List ADT** represents an ordered sequence of homogeneous elements $(a_0, a_1, \\dots, a_{n-1})$ where the position of each element is significant. Common implementations include:
-- **Array-based List (Dynamic Array)**: Contiguous block of memory with $O(1)$ random access and $O(n)$ worst-case insertion.
-- **Linked List**: Dispersed heap nodes linked by pointers with $O(1)$ head insertion and $O(n)$ linear access.
-
-Both structures fulfill the identical abstract List interface, but their physical memory architectures produce fundamentally divergent performance profiles.`
+        id: 'the-heap-dynamic-flexible-fragmented',
+        title: 'The Heap: Dynamic, Persistent, and Fragmented',
+        content: `The **Heap** is a large, unorganized pool of memory used for objects whose size or lifetime cannot be determined at compile time.
+- **Allocation Mechanism**: Dynamic allocator (\`malloc\`, \`new\`, GC runtime) scans free-lists or bins to find contiguous bytes.
+- **Lifetime**: Controlled manually (\`free\`, \`delete\`) or by a Garbage Collector tracing reachable roots.
+- **Locality**: Poor compared to the stack. Nodes allocated separately in time end up scattered across physical RAM, causing CPU cache misses (cache line thrashing).
+- **Cost**: Dynamic allocation involves system calls, lock contention, and metadata tracking overhead.`
+      },
+      {
+        id: 'stack-vs-heap-comparison',
+        title: 'Stack vs Heap Architectural Comparison',
+        content: `| Property | Call Stack | Dynamic Heap |
+| :--- | :--- | :--- |
+| **Allocation Speed** | ~1 CPU cycle (adjust pointer) | 20–200+ CPU cycles (allocator lookup) |
+| **Access Latency** | Near zero (hot in L1 cache) | Variable (potential RAM latency) |
+| **Size Limit** | Small (1–8 MB typical) | Large (bounded only by virtual RAM) |
+| **Lifetime** | Scope-bound (automatic unwind) | Manual or GC-driven |
+| **Fragmentation** | Impossible (strictly contiguous LIFO) | High (heap holes over runtime) |`
       }
     ],
     code: {
-      c: `/* ADT List Interface Contract in C (list_adt.h) */
-#ifndef LIST_ADT_H
-#define LIST_ADT_H
+      c: `/* Stack vs Heap memory allocation in C */
+#include <stdlib.h>
 
-#include <stddef.h>
-#include <stdbool.h>
+void memory_demo(void) {
+    /* Stack allocation: local variable, destroyed automatically at function exit */
+    int stack_val = 42;
+    int stack_array[100]; // 400 bytes on stack frame
 
-/* Opaque pointer to the concrete implementation */
-typedef struct List List;
+    /* Heap allocation: persists beyond this function until free() is explicitly invoked */
+    int* heap_val = (int*)malloc(sizeof(int));
+    *heap_val = 99;
 
-/* Constructor / Destructor */
-List* list_create(void);
-void list_destroy(List* list);
+    int* heap_array = (int*)malloc(1000 * sizeof(int)); // 4000 bytes on heap
 
-/* Contract operations */
-size_t list_size(const List* list);
-bool list_is_empty(const List* list);
-bool list_insert(List* list, size_t index, int value);
-bool list_delete(List* list, size_t index, int* out_value);
-bool list_get(const List* list, size_t index, int* out_value);
-bool list_set(List* list, size_t index, int value);
+    /* Clean up heap allocations to prevent memory leaks */
+    free(heap_val);
+    free(heap_array);
+}`,
+      cpp: `// Stack vs Heap in C++ with RAII
+#include <iostream>
+#include <memory>
+#include <vector>
 
-#endif /* LIST_ADT_H */`,
-      cpp: `// ADT List Interface Contract in C++ (Pure Virtual Interface)
-#ifndef LIST_ADT_HPP
-#define LIST_ADT_HPP
+void cpp_memory_demo() {
+    // Stack allocation
+    int stack_val = 42;
 
-#include <cstddef>
+    // Heap allocation via smart pointer (automatic cleanup)
+    auto heap_node = std::make_unique<int>(99);
 
-template <typename T>
-class IList {
-public:
-    virtual ~IList() = default;
-
-    virtual std::size_t size() const = 0;
-    virtual bool isEmpty() const = 0;
-    virtual void insert(std::size_t index, const T& element) = 0;
-    virtual T remove(std::size_t index) = 0;
-    virtual const T& get(std::size_t index) const = 0;
-    virtual void set(std::size_t index, const T& element) = 0;
-    virtual void clear() = 0;
-};
-
-#endif // LIST_ADT_HPP`,
-      python: `"""
-ADT List Interface Contract in Python (Abstract Base Class)
-"""
-from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
-
-T = TypeVar('T')
-
-class ListADT(ABC, Generic[T]):
-    """Abstract interface defining the sequential List contract."""
-    
-    @abstractmethod
-    def size(self) -> int:
-        """Return the number of elements in the list."""
-        pass
-
-    @abstractmethod
-    def is_empty(self) -> bool:
-        """Return True if the list contains no elements."""
-        pass
-
-    @abstractmethod
-    def insert(self, index: int, element: T) -> None:
-        """Insert element at specified index (0 <= index <= size)."""
-        pass
-
-    @abstractmethod
-    def remove(self, index: int) -> T:
-        """Remove and return element at specified index."""
-        pass
-
-    @abstractmethod
-    def get(self, index: int) -> T:
-        """Retrieve element at specified index without removing it."""
-        pass`,
-      java: `/**
- * ADT List Interface Contract in Java
- */
-package dsa.reference.adt;
-
-public interface ListADT<E> {
-    /** Returns the number of elements in this list. */
-    int size();
-
-    /** Returns true if this list contains no elements. */
-    boolean isEmpty();
-
-    /** Inserts the specified element at the specified position. */
-    void insert(int index, E element);
-
-    /** Removes the element at the specified position in this list. */
-    E remove(int index);
-
-    /** Returns the element at the specified position in this list. */
-    E get(int index);
-
-    /** Replaces the element at the specified position. */
-    E set(int index, E element);
-
-    /** Removes all of the elements from this list. */
-    void clear();
+    // Vector header lives on stack; underlying buffer lives on heap
+    std::vector<int> dynamic_buffer = {1, 2, 3, 4, 5};
+}`,
+      python: `# In Python, all user-defined objects live on the Heap.
+# Local variable references/names exist in the local frame (Stack).
+def python_memory():
+    x = 42                 # 'x' reference in frame, int object on heap / intern pool
+    nodes = [1, 2, 3, 4]   # list object on heap
+    # GC collects objects when reference count reaches 0`,
+      java: `// Java: primitives on stack (if local); all objects/arrays on Heap
+public class MemoryModel {
+    public void demo() {
+        int stackPrimitive = 42; // on Thread Stack
+        int[] heapArray = new int[100]; // array header & elements on Heap
+        String heapObj = new String("AgroFlow"); // Heap object
+    }
 }`
-    },
-    complexity: [
-      { operation: 'Random Access (get/set)', best: 'O(1)', avg: 'O(1) [Array] / O(n) [Linked]', worst: 'O(1) [Array] / O(n) [Linked]', space: 'O(1)' },
-      { operation: 'Insert at Head', best: 'O(1)', avg: 'O(n) [Array] / O(1) [Linked]', worst: 'O(n) [Array] / O(1) [Linked]', space: 'O(1)' },
-      { operation: 'Insert at Tail', best: 'O(1)', avg: 'O(1) amortized', worst: 'O(n) [Array resize]', space: 'O(1)' },
-      { operation: 'Delete at Head', best: 'O(1)', avg: 'O(n) [Array] / O(1) [Linked]', worst: 'O(n) [Array] / O(1) [Linked]', space: 'O(1)' },
-    ],
-    relatedSlugs: ['how-to-use', 'big-o-primer', 'adt-list-contract']
+    }
   },
 
-  'how-to-use': {
-    slug: 'how-to-use',
-    title: 'How to Use This Reference',
-    category: 'Getting Started',
-    summary: 'A guide to navigating the DSA reference: multi-language side-by-side code blocks, interactive memory visualizers, complexity tables, and keyboard command shortcuts.',
-    lead: 'This documentation system is designed as an authoritative, concise engineering handbook. Every topic provides mathematical complexity specifications, interactive visual step-throughs, and verbatim compilable code across C, C++, Python, and Java.',
+  'manual-vs-managed-memory': {
+    slug: 'manual-vs-managed-memory',
+    title: 'Manual vs. Managed Memory',
+    folder: '01-getting-started',
+    category: '01-getting-started',
+    summary: 'Direct pointer ownership in C/C++ versus automated Garbage Collection (GC) in Java/Python/Go.',
+    lead: 'How memory is released when data structures change shapes defines software reliability. We contrast deterministic explicit deallocation with non-deterministic runtime garbage collection.',
     sections: [
       {
-        id: 'multilingual-design',
-        title: 'Unified Multilingual Code Blocks',
-        content: `All code blocks maintain consistent structural conventions:
-- **Variable and member naming parity**: Data nodes use \`Node\`, pointers to next element use \`next\`, head references use \`head\`.
-- **Memory safety invariants**: C and C++ examples demonstrate explicit allocation (\`malloc\`, \`new\`) and complete leak-free deallocation (\`free\`, \`delete\`). Python and Java examples leverage standard garbage collector semantics and idiomatic error handling (e.g. \`IndexOutOfBoundsException\`).
-- **Global Preferred Language**: Use the top bar switcher to set your default language across all pages, or click the local tabs to inspect and compare syntax.`
+        id: 'manual-memory-management',
+        title: 'Manual Memory (C / C++ / Rust)',
+        content: `In systems languages, the programmer holds absolute control and responsibility over memory lifecycle:
+- **Pros**: Zero GC pause jitter, deterministic destructors (RAII), lowest memory overhead.
+- **Cons & Hazards**:
+  - **Memory Leaks**: Losing the last pointer to allocated heap memory.
+  - **Dangling Pointers / Use-After-Free**: Reading or writing to an address after calling \`free()\`.
+  - **Double Free**: Calling \`free()\` twice on the same pointer, corrupting the heap allocator's internal metadata.`
       },
       {
-        id: 'keyboard-and-search',
-        title: 'Keyboard Shortcuts & Command Palette',
-        content: `The entire site is accessible via keyboard:
-- \`⌘K\` or \`Ctrl+K\`: Open the global search palette to jump to any topic, operation, or code implementation.
-- \`/\`: Focus quick search.
-- \`Esc\`: Close modals and drawers.`
+        id: 'managed-memory-management',
+        title: 'Managed Memory & Garbage Collection (Java / Python / Go)',
+        content: `Managed runtimes track object references continuously using tracing algorithms (e.g., Mark-and-Sweep, Generational GC, Reference Counting).
+- **Pros**: Eliminates use-after-free and double-free vulnerabilities; simplifies complex graph deletion.
+- **Cons**:
+  - **Stop-The-World (STW) Pauses**: Real-time jitter during major GC cycles.
+  - **Memory Footprint Multiplier**: GC heaps typically require 2x to 3x active payload size to avoid frequent collection cycles.
+  - **Cache Overhead**: Pointer-heavy structures keep GC scanners busy traversing heap graphs.`
       }
     ],
     code: {
-      c: `/* Idiomatic C Conventions used throughout this reference */
+      c: `/* Manual Node Allocation and Deallocation in C */
+#include <stdlib.h>
+
 typedef struct Node {
     int data;
     struct Node* next;
 } Node;
 
-Node* create_node(int data) {
-    Node* new_node = (Node*)malloc(sizeof(Node));
-    if (!new_node) return NULL; /* Safe allocation check */
-    new_node->data = data;
-    new_node->next = NULL;
-    return new_node;
+Node* create_node(int val) {
+    Node* n = (Node*)malloc(sizeof(Node));
+    if (!n) return NULL; // Handle allocation failure
+    n->data = val;
+    n->next = NULL;
+    return n;
+}
+
+void free_list(Node* head) {
+    Node* curr = head;
+    while (curr != NULL) {
+        Node* next = curr->next;
+        free(curr); // Must capture next before freeing curr!
+        curr = next;
+    }
 }`,
-      cpp: `// Idiomatic C++ Conventions used throughout this reference
+      cpp: `// RAII and Unique Pointers in C++
+#include <memory>
+
+struct Node {
+    int data;
+    std::unique_ptr<Node> next;
+    Node(int val) : data(val), next(nullptr) {}
+};
+
+// Destructor cascades automatically down the chain without memory leaks!`,
+      python: `# Python Automatic Reference Counting + Generational GC
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+head = Node(10)
+head.next = Node(20)
+head = None  # Previous nodes become unreferenced and are garbage collected automatically`,
+      java: `// Java Automatic Garbage Collection
+public class Node {
+    int data;
+    Node next;
+    public Node(int data) { this.data = data; }
+
+    public static void main(String[] args) {
+        Node head = new Node(10);
+        head.next = new Node(20);
+        head = null; // Unreachable nodes are collected by the JVM Garbage Collector
+    }
+}`
+    }
+  },
+
+  'structs-classes-grouping-data': {
+    slug: 'structs-classes-grouping-data',
+    title: 'Structs & Classes: Grouping Data',
+    folder: '01-getting-started',
+    category: '01-getting-started',
+    summary: 'Creating compound data types, struct padding, memory alignment, and memory layouts.',
+    lead: 'Data structures require bundling heterogeneous payloads (integers, strings, floats) together with relational pointers. Understanding struct memory layout and byte alignment prevents silent memory bloat.',
+    sections: [
+      {
+        id: 'memory-alignment-and-padding',
+        title: 'Memory Alignment & Padding',
+        content: `CPUs read memory in word-sized chunks (typically 64 bits = 8 bytes on modern x86_64 and ARM64 processors). Accessing an 8-byte integer at an address divisible by 8 requires 1 memory fetch. Accessing it across a boundary requires 2 fetches.
+
+To optimize speed, compilers insert invisible **padding bytes**:
+\`\`\`c
+struct Inefficient {
+    char a;    // 1 byte (+ 7 bytes padding)
+    double b;  // 8 bytes
+    char c;    // 1 byte (+ 7 bytes padding)
+}; // Total: 24 bytes!
+
+struct Optimized {
+    double b;  // 8 bytes
+    char a;    // 1 byte
+    char c;    // 1 byte (+ 6 bytes padding)
+}; // Total: 16 bytes (33% memory savings!)
+\`\`\`
+Ordering struct fields from largest to smallest minimizes padding waste in node-heavy structures.`
+      }
+    ],
+    code: {
+      c: `/* Struct definition and alignment in C */
+#include <stdio.h>
+
+typedef struct Node {
+    int data;          /* 4 bytes */
+    /* 4 bytes padding on 64-bit systems */
+    struct Node* next; /* 8 bytes */
+} Node; /* sizeof(Node) == 16 bytes */`,
+      cpp: `// C++ Class definition for a Linked Node
 template <typename T>
 struct Node {
     T data;
     Node* next;
-
-    explicit Node(const T& val) : data(val), next(nullptr) {}
+    Node(T val) : data(val), next(nullptr) {}
 };`,
-      python: `"""Idiomatic Python Conventions used throughout this reference"""
-from typing import Optional, Generic, TypeVar
+      python: `# Python Class with __slots__ to eliminate dictionary overhead
+class EfficientNode:
+    __slots__ = ['data', 'next'] # Prevents __dict__ allocation per instance
+    def __init__(self, data):
+        self.data = data
+        self.next = None`,
+      java: `// Java Node Class
+public class Node<T> {
+    public T data;
+    public Node<T> next;
 
-T = TypeVar('T')
-
-class Node(Generic[T]):
-    __slots__ = ('data', 'next')
-    
-    def __init__(self, data: T, next_node: Optional['Node[T]'] = None):
-        self.data: T = data
-        self.next: Optional['Node[T]'] = next_node`,
-      java: `/** Idiomatic Java Conventions used throughout this reference */
-public class Node<E> {
-    public E data;
-    public Node<E> next;
-
-    public Node(E data) {
-        this(data, null);
-    }
-
-    public Node(E data, Node<E> next) {
+    public Node(T data) {
         this.data = data;
-        this.next = next;
+        this.next = null;
     }
 }`
-    },
-    complexity: [],
-    relatedSlugs: ['intro-to-adts', 'big-o-primer', 'singly-linked-list-structure']
+    }
   },
 
-  'big-o-primer': {
-    slug: 'big-o-primer',
-    title: 'Complexity Notation — A Big-O Primer',
-    category: 'Getting Started',
-    summary: 'A rigorous overview of asymptotic notations (O, Ω, Θ), amortized time complexity, and auxiliary space bounds as applied to linear data structures.',
-    lead: 'Asymptotic analysis models the rate of growth of execution time and auxiliary space with respect to input size $n$. For list structures, we analyze worst-case, average-case, best-case, and amortized bounds.',
+  'pointers-references-and-address': {
+    slug: 'pointers-references-and-address',
+    title: 'Pointers, References, and Addresses',
+    folder: '01-getting-started',
+    category: '01-getting-started',
+    summary: 'Demystifying memory addresses, pointer dereferencing, arrow operators, and object references.',
+    lead: 'A pointer is nothing more than a 64-bit integer whose numerical value is the physical byte offset in virtual RAM where another piece of data begins. Mastering pointers is the key to building non-linear data structures.',
     sections: [
       {
-        id: 'formal-definitions',
-        title: 'Asymptotic Notations: Big-O, Big-Omega, Big-Theta',
-        content: `Given an input size $n$:
-- **Big-O ($O$)**: Upper bound. $f(n) = O(g(n))$ if there exist positive constants $c$ and $n_0$ such that $0 \\le f(n) \\le c \\cdot g(n)$ for all $n \\ge n_0$.
-- **Big-Omega ($\\Omega$)**: Lower bound. $f(n) = \\Omega(g(n))$ if $f(n) \\ge c \\cdot g(n)$ for all $n \\ge n_0$.
-- **Big-Theta ($\\Theta$)**: Tight asymptotic bound. $f(n) = \\Theta(g(n))$ if $f(n) = O(g(n))$ and $f(n) = \\Omega(g(n))$.`
+        id: 'pointer-anatomy',
+        title: 'Pointer Anatomy & Dereferencing',
+        content: `When a variable \`x = 42\` is stored at address \`0x7ffeefbff568\`, a pointer \`p\` holding that value simply points to that memory location:
+- \`&x\`: The "address-of" operator. Retrieves the memory address.
+- \`*p\`: The "dereference" operator. Reads or writes the value located at address \`p\`.
+- \`p->field\`: Shorthand for \`(*p).field\` in C/C++.`
       },
       {
-        id: 'amortized-analysis',
-        title: 'Amortized Analysis (Dynamic Array Resizing)',
-        content: `A dynamic array (\`std::vector\`, Python \`list\`, Java \`ArrayList\`) doubles its capacity when full. A single insertion that triggers resizing incurs $O(n)$ data copy cost. However, because $n$ elements can be appended before the next reallocation, the aggregate cost of $n$ appends is:
-$$\\sum_{i=0}^{\\log_2 n} 2^i = 2n - 1 = O(n)$$
-Dividing by $n$ operations yields an **amortized time complexity of $O(1)$** per insertion.`
-      },
-      {
-        id: 'memory-overhead',
-        title: 'Memory Overhead & Space Complexity',
-        content: `Space complexity distinguishes between:
-- **Primary Data Storage**: Memory allocated directly to the stored items.
-- **Auxiliary Overhead**: Pointer fields in nodes (e.g. 8 bytes per pointer on 64-bit architectures), dynamic array unused spare capacity, and memory allocator alignment padding.`
+        id: 'pointer-vs-reference-across-languages',
+        title: 'Pointers vs References Across Languages',
+        content: `| Language | Mechanism | Pointer Arithmetic? | Null Safety? |
+| :--- | :--- | :--- | :--- |
+| **C** | Raw Pointer (\`int*\`) | Yes (\`p + 1\`) | No (Manual check required) |
+| **C++** | Raw / Smart Pointers & References | Yes on raw; No on refs | Optional via smart pointers |
+| **Java** | Object References | No | \`NullPointerException\` if unchecked |
+| **Python** | Object References (name bindings) | No | \`None\` check required |`
       }
     ],
     code: {
-      c: `/* Demonstration of Dynamic Array Geometric Growth in C */
+      c: `/* Pointer mechanics in C */
 #include <stdio.h>
-#include <stdlib.h>
 
-typedef struct {
-    int* data;
-    size_t size;
-    size_t capacity;
-} DynamicArray;
-
-void push_back(DynamicArray* arr, int value) {
-    if (arr->size == arr->capacity) {
-        size_t new_cap = (arr->capacity == 0) ? 2 : arr->capacity * 2;
-        int* new_data = (int*)realloc(arr->data, new_cap * sizeof(int));
-        if (!new_data) return;
-        arr->data = new_data;
-        arr->capacity = new_cap;
-    }
-    arr->data[arr->size++] = value;
+void swap(int* a, int* b) {
+    int temp = *a; // Read value at address 'a'
+    *a = *b;       // Write value of 'b' into address 'a'
+    *b = temp;      // Write temp into address 'b'
 }`,
-      cpp: `// C++ Demonstrating Amortized Push Back
-#include <vector>
-#include <iostream>
-
-void demonstrateCapacity() {
-    std::vector<int> v;
-    for (int i = 0; i < 10; ++i) {
-        v.push_back(i);
-        // Capacity grows geometrically (typically 1.5x or 2x)
-        std::cout << "size: " << v.size() 
-                  << ", capacity: " << v.capacity() << "\\n";
-    }
+      cpp: `// C++ References vs Pointers
+void swapByRef(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
 }`,
-      python: `"""Python List Geometric Growth Visualization"""
-import sys
+      python: `# In Python, variables are named references bound to objects
+def modify_list(lst):
+    lst.append(100) # Modifies underlying object in place
 
-def inspect_list_growth():
-    lst = []
-    prev_size = sys.getsizeof(lst)
-    for i in range(20):
-        lst.append(i)
-        current_size = sys.getsizeof(lst)
-        if current_size != prev_size:
-            print(f"Len: {len(lst):2d} | Bytes: {current_size} (reallocated)")
-            prev_size = current_size`,
-      java: `/** Java ArrayList Dynamic Expansion Demonstration */
-package dsa.reference.complexity;
-
-import java.util.ArrayList;
-
-public class AmortizedDemo {
-    public static void main(String[] args) {
-        ArrayList<Integer> list = new ArrayList<>();
-        // Default initial capacity is 10; grows by (oldCapacity * 1.5)
-        for (int i = 0; i < 20; i++) {
-            list.add(i);
-        }
+nums = [1, 2, 3]
+modify_list(nums)
+# nums is now [1, 2, 3, 100]`,
+      java: `// Java passes references by value
+public class PointerRefDemo {
+    public static void changeNodeValue(Node node, int newVal) {
+        node.data = newVal; // Mutates heap object through reference
     }
 }`
-    },
-    complexity: [
-      { operation: 'Dynamic Array Append (Amortized)', best: 'O(1)', avg: 'O(1)', worst: 'O(n) [Reallocation]', space: 'O(1)' },
-      { operation: 'Linked List Head Insert', best: 'O(1)', avg: 'O(1)', worst: 'O(1)', space: 'O(1)' },
-      { operation: 'Linked List Traversal', best: 'O(1)', avg: 'O(n)', worst: 'O(n)', space: 'O(1)' },
+    }
+  },
+
+  'why-we-measure-cost-time-complexity': {
+    slug: 'why-we-measure-cost-time-complexity',
+    title: 'Why We Measure Cost: Time Complexity',
+    folder: '01-getting-started',
+    category: '01-getting-started',
+    summary: 'Counting abstract operations rather than stopwatch seconds to achieve hardware-independent benchmarks.',
+    lead: 'Benchmarking code with wall-clock timers (\`System.currentTimeMillis()\`) fails because CPU models, background processes, and compiler optimizations vary. Asymptotic time complexity measures how operation counts scale mathematically as input size $N \\to \\infty$.',
+    sections: [
+      {
+        id: 'hardware-independent-analysis',
+        title: 'Hardware-Independent Analysis',
+        content: `Instead of counting milliseconds, asymptotic analysis counts **primitive computational steps**:
+- Variable assignments ($c_1$)
+- Arithmetic operations ($c_2$)
+- Comparison checks ($c_3$)
+- Array index offset lookups ($c_4$)
+
+If an algorithm runs $T(N) = 3N^2 + 5N + 12$ operations, as $N \\to \\infty$, the $3N^2$ quadratic term completely dominates the growth rate. Constants and lower-order terms become negligible.`
+      }
     ],
-    relatedSlugs: ['intro-to-adts', 'array-list-impl', 'complexity-cheat-sheet']
+    code: {
+      c: `/* Time complexity comparison: O(1) vs O(N) vs O(N^2) */
+int constant_time(int n) {
+    return n * (n + 1) / 2; // O(1) - exactly 3 operations regardless of n
+}
+
+int linear_time(int n) {
+    int sum = 0;
+    for (int i = 1; i <= n; ++i) { // O(N) - loop runs n times
+        sum += i;
+    }
+    return sum;
+}`,
+      cpp: `// Quadratic Time Complexity O(N^2)
+int countPairs(const std::vector<int>& arr) {
+    int count = 0;
+    int n = arr.size();
+    for (int i = 0; i < n; ++i) {
+        for (int j = i + 1; j < n; ++j) {
+            count++;
+        }
+    }
+    return count; // n*(n-1)/2 operations -> O(N^2)
+}`,
+      python: `# O(1) mathematical closed-form vs O(N) iterative summation
+def sum_constant(n: int) -> int:
+    return n * (n + 1) // 2  # O(1)
+
+def sum_linear(n: int) -> int:
+    return sum(range(1, n + 1))  # O(N)`,
+      java: `public class ComplexityDemo {
+    public static int sumConstant(int n) {
+        return n * (n + 1) / 2; // O(1)
+    }
+
+    public static int sumLinear(int n) {
+        int sum = 0;
+        for (int i = 1; i <= n; i++) sum += i; // O(N)
+        return sum;
+    }
+}`
+    }
+  },
+
+  'why-we-measure-cost-space-complexity': {
+    slug: 'why-we-measure-cost-space-complexity',
+    title: 'Why We Measure Cost: Space Complexity',
+    folder: '01-getting-started',
+    category: '01-getting-started',
+    summary: 'Evaluating auxiliary memory consumption, recursion call stack frames, and working buffers.',
+    lead: 'Space complexity quantifies the total auxiliary memory required by an algorithm as a function of the input size $N$, excluding the original input dataset itself.',
+    sections: [
+      {
+        id: 'auxiliary-space-vs-total-space',
+        title: 'Auxiliary Space vs. Total Space',
+        content: `1. **Input Space**: The memory needed to store the input data itself.
+2. **Auxiliary Space**: The extra or temporary memory allocated by the algorithm during execution (e.g., dynamic buffers, hash sets, recursion stack frames).
+
+**Example: Recursion Call Stack**:
+A recursive depth-first traversal of a linked list with $N$ elements creates $N$ simultaneous stack frames on the call stack, consuming $O(N)$ auxiliary space even without explicit heap allocations!`
+      }
+    ],
+    code: {
+      c: `/* Space Complexity: O(1) iterative vs O(N) recursive auxiliary space */
+
+/* O(1) Auxiliary Space: uses only 2 pointer variables */
+void print_iterative(const Node* head) {
+    const Node* curr = head;
+    while (curr != NULL) {
+        printf("%d ", curr->data);
+        curr = curr->next;
+    }
+}
+
+/* O(N) Auxiliary Space: N call stack frames pushed to Call Stack! */
+void print_recursive(const Node* head) {
+    if (head == NULL) return;
+    printf("%d ", head->data);
+    print_recursive(head->next); // Stack frame stays until base case returns
+}`,
+      cpp: `// In-place O(1) auxiliary space reverse vs O(N) copy
+void reverseInPlace(Node*& head) {
+    Node* prev = nullptr;
+    Node* curr = head;
+    while (curr) {
+        Node* next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    head = prev; // O(1) auxiliary space
+}`,
+      python: `# O(N) auxiliary space via list copy
+def duplicate_list(arr: list) -> list:
+    return [x for x in arr]  # O(N) extra memory allocated`,
+      java: `// O(1) auxiliary space swap
+public class SpaceDemo {
+    public static void swap(int[] arr, int i, int j) {
+        int temp = arr[i]; // O(1) auxiliary variable
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}`
+    }
+  },
+
+  'reading-big-o-like-a-sentence': {
+    slug: 'reading-big-o-like-a-sentence',
+    title: 'Reading Big-O Like a Sentence',
+    folder: '01-getting-started',
+    category: '01-getting-started',
+    summary: 'Translating mathematical asymptotic bounds ($O, \\Omega, \\Theta$) into plain English engineering intuition.',
+    lead: 'Big-O notation is not abstract algebra. It is an engineering sentence that describes how a system responds under scaling pressure.',
+    sections: [
+      {
+        id: 'the-asymptotic-dictionary',
+        title: 'The Asymptotic Engineering Dictionary',
+        content: `| Notation | Plain English Meaning | Practical Intuition |
+| :--- | :--- | :--- |
+| **$O(1)$** | "Constant time" | Execution speed is independent of dataset size. |
+| **$O(\\log N)$** | "Logarithmic time" | Input is halved at each step (e.g. Binary Search). Scaling to 1,000,000,000 takes only ~30 steps! |
+| **$O(N)$** | "Linear time" | If data doubles, execution time doubles. Every item is inspected once. |
+| **$O(N \\log N)$** | "Linearithmic time" | The theoretical lower bound for comparison-based sorting (MergeSort, QuickSort). |
+| **$O(N^2)$** | "Quadratic time" | Comparing every pair of elements. Unusable for large production systems ($N > 10^5$). |
+| **$O(2^N)$** | "Exponential time" | Exploring all subsets. Impractical without memoization or pruning. |`
+      },
+      {
+        id: 'big-o-vs-omega-vs-theta',
+        title: 'Big-O ($O$) vs Big-Omega ($\\Omega$) vs Big-Theta ($\\Theta$)',
+        content: `- **$O(g(N))$ (Upper Bound)**: "Guaranteed not to perform worse than $g(N)$ in the worst case."
+- **$\\Omega(g(N))$ (Lower Bound)**: "Takes at least $g(N)$ steps even in the best case scenario."
+- **$\\Theta(g(N))$ (Tight Bound)**: "Algorithm is bounded both from above and below by $g(N)$."`
+      }
+    ],
+    code: {
+      c: `/* Asymptotic hierarchy demonstrated in C */
+
+/* O(1) - Constant */
+int get_first(const int* arr) { return arr[0]; }
+
+/* O(log N) - Logarithmic (Binary Search) */
+int binary_search(const int* arr, int n, int target) {
+    int low = 0, high = n - 1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] < target) low = mid + 1;
+        else high = mid - 1;
+    }
+    return -1;
+}`,
+      cpp: `// C++ Logarithmic Search
+#include <vector>
+#include <algorithm>
+
+bool fastFind(const std::vector<int>& sortedVec, int val) {
+    return std::binary_search(sortedVec.begin(), sortedVec.end(), val); // O(log N)
+}`,
+      python: `# Python O(N log N) Timsort
+def sort_data(arr: list):
+    arr.sort()  # O(N log N) adaptive merge sort`,
+      java: `// Java Binary Search
+import java.util.Arrays;
+
+public class SearchDemo {
+    public static int search(int[] sortedArr, int target) {
+        return Arrays.binarySearch(sortedArr, target); // O(log N)
+    }
+}`
+    }
   }
 };

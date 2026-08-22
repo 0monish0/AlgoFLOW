@@ -8,18 +8,18 @@ export const Breadcrumb = ({ category, title }) => {
       <Link to="/" className="hover:text-primary transition-colors">
         Home
       </Link>
-      <ChevronRight size={12} className="opacity-50" />
-      <Link to="/docs/intro-to-adts" className="hover:text-primary transition-colors">
+      <ChevronRight size={12} className="text-text-muted/60" />
+      <Link to="/docs/is-there-even-a-need" className="hover:text-primary transition-colors">
         Docs
       </Link>
       {category && (
         <>
-          <ChevronRight size={12} className="opacity-50" />
-          <span className="opacity-75">{category}</span>
+          <ChevronRight size={12} className="text-text-muted/60" />
+          <span className="text-text-muted font-medium">{category}</span>
         </>
       )}
-      <ChevronRight size={12} className="opacity-50" />
-      <span className="text-primary font-medium truncate max-w-[200px] sm:max-w-none">
+      <ChevronRight size={12} className="text-text-muted/60" />
+      <span className="text-primary font-bold truncate max-w-[200px] sm:max-w-none">
         {title}
       </span>
     </nav>

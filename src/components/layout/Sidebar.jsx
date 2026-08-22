@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { navigationSections } from '../../content/navigation';
 import { useSidebarStore } from '../../store/sidebarStore';
 import { useSearchStore } from '../../store/searchStore';
-import { ChevronDown, ChevronRight, Search, X, FolderTree } from 'lucide-react';
+import { Search, X, FolderGit2, ChevronDown, ChevronRight } from 'lucide-react';
 
 export const Sidebar = ({ isMobile = false }) => {
   const { expandedSections, toggleSection, isCollapsed, setMobileOpen } = useSidebarStore();
@@ -15,25 +15,10 @@ export const Sidebar = ({ isMobile = false }) => {
     return null;
   }
 
-  const renderItem = (item, isNested = false) => {
-    if (item.isSubGroup) {
-      return (
-        <div key={item.id} className="mt-3 mb-1.5">
-          {/* Level 2 Sub-Group Header */}
-          <div className="text-3xs font-semibold uppercase tracking-widest text-text-muted/65 px-2.5 py-1 flex items-center gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-accent/50 inline-block shrink-0" />
-            <span className="truncate">{item.title}</span>
-          </div>
-          {/* Nested Level 3 Items */}
-          <div className="ml-2.5 space-y-0.5 mt-0.5">
-            {item.children.map((child) => renderItem(child, true))}
-          </div>
-        </div>
-      );
-    }
-
+  const renderLeaf = (item, depth = 1) => {
     const path = `/docs/${item.slug}`;
     const isActive = location.pathname === path;
+    const paddingLeft = depth === 2 ? 'pl-7' : 'pl-3.5';
 
     return (
       <NavLink
@@ -43,30 +28,60 @@ export const Sidebar = ({ isMobile = false }) => {
           if (isMobile) setMobileOpen(false);
         }}
         className={({ isActive }) =>
-          `group relative flex items-center px-3 py-2 rounded-md text-xs font-mono transition-colors select-none ${
+          `group relative flex items-center pr-2 py-1.5 rounded text-xs sm:text-[13px] font-mono select-none transition-all ${paddingLeft} ${
             isActive
               ? 'text-[#F5EEDD] dark:text-[#081722] font-bold z-10'
-              : 'text-text-muted hover:text-text hover:bg-accent/10'
+              : 'text-text/90 font-medium sm:font-semibold hover:text-primary hover:bg-accent/15'
           }`
         }
       >
-        {/* Animated full-box background fill */}
+        {/* Animated active background pill */}
         {isActive && (
           <motion.div
             layoutId="active-sidebar-pill"
             transition={{
               type: 'spring',
-              stiffness: 400,
-              damping: 30,
+              stiffness: 450,
+              damping: 32,
             }}
-            className="absolute inset-0 rounded-md bg-[#0B253A] dark:bg-[#F5EEDD] shadow-xs"
+            className="absolute inset-0 rounded bg-primary text-white dark:bg-[#F5EEDD] shadow-xs"
           />
         )}
 
-        <span className="relative z-10 leading-snug break-words pr-1">
-          {item.title}
-        </span>
+        <span className="relative z-10 truncate">{item.title}</span>
       </NavLink>
+    );
+  };
+
+  const renderSubGroup = (group) => {
+    const isExpanded = expandedSections[group.id] ?? true;
+
+    return (
+      <div key={group.id} className="mt-1">
+        <button
+          onClick={() => toggleSection(group.id)}
+          className="w-full flex items-center justify-between pl-3.5 pr-2 py-1.5 rounded text-xs sm:text-[13px] font-mono font-extrabold text-primary hover:bg-accent/15 transition-colors group select-none text-left"
+        >
+          <span className="truncate">{group.title}</span>
+          <span className="text-text-muted/60 ml-1">
+            {isExpanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+          </span>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.15, ease: 'easeInOut' }}
+              className="overflow-hidden space-y-0.5"
+            >
+              {group.children.map((child) => renderLeaf(child, 2))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     );
   };
 
@@ -77,11 +92,11 @@ export const Sidebar = ({ isMobile = false }) => {
       }`}
     >
       {/* Sidebar Top Header */}
-      <div className="p-3.5 border-b border-border">
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-1.5 text-2xs font-bold uppercase tracking-wider text-text-muted">
-            <FolderTree size={13} className="text-accent" />
-            <span>Topics Tree</span>
+      <div className="p-3 border-b border-border">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-1.5 text-2xs font-extrabold uppercase tracking-wider text-text-muted">
+            <FolderGit2 size={14} className="text-accent" />
+            <span>DSA Reference</span>
           </div>
           {isMobile && (
             <button
@@ -94,39 +109,35 @@ export const Sidebar = ({ isMobile = false }) => {
           )}
         </div>
 
-        {/* Refined Quick Search Button in Sidebar */}
+        {/* Quick Search Button in Sidebar */}
         <button
           onClick={openSearch}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-border/80 bg-base/30 hover:bg-base/60 hover:border-accent/50 text-text-muted text-xs transition-all shadow-2xs group"
+          className="w-full flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/80 dark:border-transparent bg-base/30 hover:bg-base/60 hover:border-accent/50 dark:hover:border-transparent text-text-muted text-xs transition-all shadow-2xs group"
         >
           <Search size={13} className="group-hover:text-primary transition-colors opacity-70 group-hover:opacity-100" />
           <span>Search topics...</span>
         </button>
       </div>
 
-      {/* Navigation Sections */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-4">
+      {/* Topics Hierarchy with Clean Indentation */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-3 font-mono text-xs">
         {navigationSections.map((section) => {
           const isExpanded = expandedSections[section.id] ?? true;
 
           return (
-            <div key={section.id} className="space-y-1">
-              {/* Level 1 Section Header */}
+            <div key={section.id} className="space-y-0.5">
+              {/* Section Header */}
               <button
                 onClick={() => toggleSection(section.id)}
-                className="w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-bold uppercase tracking-wider text-text hover:text-primary hover:bg-accent/10 transition-colors"
+                className="w-full flex items-center justify-between px-2 py-1.5 rounded text-xs sm:text-[13px] font-extrabold text-primary hover:bg-accent/15 transition-colors group select-none text-left"
               >
                 <span className="truncate">{section.title}</span>
-                <span className="text-text-muted/70">
-                  {isExpanded ? (
-                    <ChevronDown size={14} />
-                  ) : (
-                    <ChevronRight size={14} />
-                  )}
+                <span className="text-text-muted/60 ml-1">
+                  {isExpanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
                 </span>
               </button>
 
-              {/* Section Items with Animation */}
+              {/* Section Items */}
               <AnimatePresence initial={false}>
                 {isExpanded && (
                   <motion.div
@@ -134,21 +145,20 @@ export const Sidebar = ({ isMobile = false }) => {
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ duration: 0.18, ease: 'easeInOut' }}
-                    className="overflow-hidden space-y-0.5 pl-1 pt-0.5"
+                    className="overflow-hidden space-y-0.5"
                   >
-                    {section.items.map((item) => renderItem(item))}
+                    {section.items.map((item) => {
+                      if (item.isSubGroup) {
+                        return renderSubGroup(item);
+                      }
+                      return renderLeaf(item, 1);
+                    })}
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
           );
         })}
-      </div>
-
-      {/* Sidebar Footer info */}
-      <div className="p-3 border-t border-border bg-base/20 text-3xs font-mono text-text-muted flex items-center justify-between">
-        <span>AgroFlow v1.0</span>
-        <span>Static Doc Engine</span>
       </div>
     </aside>
   );

@@ -45,13 +45,13 @@ export const SearchPalette = () => {
         aria-hidden="true"
       />
 
-      <div className="relative w-full max-w-xl bg-surface dark:bg-[#0E2230] border border-border/80 rounded-2xl shadow-2xl overflow-hidden z-10 font-mono">
+      <div className="relative w-full max-w-xl bg-surface dark:bg-[#0A1E2D] rounded-2xl shadow-2xl shadow-black/60 overflow-hidden z-10 font-mono">
         <Command
           shouldFilter={true}
           className="w-full flex flex-col"
         >
           {/* Search Input Bar without browser focus outline */}
-          <div className="flex items-center px-4 py-3 border-b border-border/60 bg-base/25">
+          <div className="flex items-center px-4 py-3 border-b border-border/40 dark:border-white/5 bg-base/25">
             <Search size={16} className="text-accent mr-3 shrink-0" />
             <Command.Input
               value={search}

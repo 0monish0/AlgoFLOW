@@ -9,14 +9,14 @@
 @tailwind utilities;
 
 :root {
-  /* Light mode - Merino base (#F5EEDD), deep dark-blue (#0B253A), dark-grey text (#2C353D) */
+  /* Light mode - Signature Merino base (#F5EEDD) & ultra high-contrast deep navy text */
   --color-bg-base: #F5EEDD;
   --color-bg-surface: #FFFFFF;
-  --color-accent: #387093;
-  --color-primary: #0B253A;
-  --color-text: #2C353D;
-  --color-text-muted: #5C6770;
-  --color-border: rgba(11, 37, 58, 0.14);
+  --color-accent: #1E5C82;
+  --color-primary: #051829;
+  --color-text: #061828;
+  --color-text-muted: #14324D;
+  --color-border: rgba(6, 24, 40, 0.20);
   /* 3rd — Amber / Ochre (warm accent, for emphasis & highlights) */
   --color-amber-accent: #C97B2E;
   /* 4th — Sage / Teal-Green (cool accent, for success & secondary states) */
@@ -24,18 +24,18 @@
 }
 
 .dark {
-  /* Dark mode - Deep dark-blue base (#081722) & clean light grey text (#E5ECF0) */
-  --color-bg-base: #081722;
-  --color-bg-surface: #0E2230;
-  --color-accent: #6FA8CC;
-  --color-primary: #F5EEDD;
-  --color-text: #E5ECF0;
-  --color-text-muted: #94A6B3;
-  --color-border: rgba(229, 236, 240, 0.12);
-  /* 3rd — Amber / Ochre (lifted, slightly desaturated) */
+  /* Dark mode - Dark blue background base (#05121C), preserving frosted surface cards */
+  --color-bg-base: #05121C;
+  --color-bg-surface: #18212D;
+  --color-accent: #38BDF8;
+  --color-primary: #FFFFFF;
+  --color-text: #E2E8F0;
+  --color-text-muted: #8E9CAE;
+  --color-border: rgba(255, 255, 255, 0.09);
+  /* 3rd — Amber / Ochre (lifted) */
   --color-amber-accent: #E0A458;
-  /* 4th — Sage / Teal-Green (brightened, desaturated) */
-  --color-sage-accent: #7FAE9B;
+  /* 4th — Electric Cyan / Blue accent */
+  --color-sage-accent: #0284C7;
 }
 
 /* Base resets & typography */
@@ -153,18 +153,24 @@ pre[class*="language-"] {
   outline-offset: 2px;
 }
 
-/* Global Selection styling */
+/* Global Selection styling - guaranteed crystal clear contrast */
 ::selection {
-  background-color: rgba(56, 112, 147, 0.35);
+  background-color: #387093;
+  color: #FFFFFF !important;
 }
 
-/* Code Block Selection styling - guaranteed high visibility */
+.dark ::selection {
+  background-color: #2A688F;
+  color: #FFFFFF !important;
+}
+
+/* Code Block Selection styling */
 pre ::selection,
 code ::selection,
 pre[class*="language-"] ::selection,
 code[class*="language-"] ::selection,
 .token::selection {
-  background-color: #266B94 !important;
+  background-color: #387093 !important;
   color: #FFFFFF !important;
 }
 

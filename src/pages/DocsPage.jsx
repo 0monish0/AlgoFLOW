@@ -12,7 +12,7 @@ import { SllReverseVisualizer } from '../components/visualizers/SllReverseVisual
 import { DllVisualizer } from '../components/visualizers/DllVisualizer';
 
 export const DocsPage = () => {
-  const { slug = 'intro-to-adts' } = useParams();
+  const { slug = 'is-there-even-a-need' } = useParams();
   const topic = getTopicBySlug(slug);
 
   // Scroll to top or anchor hash on navigation
@@ -55,11 +55,11 @@ export const DocsPage = () => {
 
         {/* Header & Concept Lead Summary */}
         <div className="space-y-3 mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-primary">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-primary">
             {topic.title}
           </h1>
           {topic.lead && (
-            <p className="text-sm sm:text-base text-text-muted leading-relaxed font-normal">
+            <p className="text-sm sm:text-base text-text leading-relaxed font-normal">
               {topic.lead}
             </p>
           )}
@@ -78,7 +78,7 @@ export const DocsPage = () => {
         {/* Code Tabs Implementation */}
         {topic.code && Object.keys(topic.code).length > 0 && (
           <div className="my-6">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-accent mb-2.5">
               Implementation in C, C++, Python & Java
             </h2>
             <CodeTabs codeMap={topic.code} />
@@ -90,10 +90,10 @@ export const DocsPage = () => {
           <div className="space-y-8 my-8">
             {topic.sections.map((section) => (
               <section key={section.id} id={section.id} className="scroll-mt-20">
-                <h2 className="text-base sm:text-lg font-bold text-primary border-b border-border pb-1.5 mb-3">
+                <h2 className="text-base sm:text-lg md:text-xl font-extrabold text-primary border-b border-border pb-2 mb-3.5">
                   {section.title}
                 </h2>
-                <div className="text-xs sm:text-sm text-text leading-relaxed whitespace-pre-line">
+                <div className="text-xs sm:text-sm text-text leading-relaxed whitespace-pre-line font-normal">
                   {section.content}
                 </div>
               </section>

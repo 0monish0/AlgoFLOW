@@ -1,63 +1,71 @@
-export const navigationSections = [
-  {
-    id: 'getting-started',
-    title: 'Getting Started',
-    items: [
-      { slug: 'intro-to-adts', title: 'Introduction to ADTs' },
-      { slug: 'how-to-use', title: 'How to Use This Reference' },
-      { slug: 'big-o-primer', title: 'Complexity Notation — A Big-O Primer' },
-    ],
-  },
-  {
-    id: 'adt-list',
-    title: 'Abstract Data Type: List',
-    items: [
-      { slug: 'adt-list-contract', title: 'ADT List — Definition & Contract' },
-      { slug: 'array-list-impl', title: 'Array-Based List Implementation' },
-      { slug: 'array-list-operations', title: 'Operations (Insert, Delete, Access, Search)' },
-      { slug: 'complexity-array-list', title: 'Complexity Analysis — Array List' },
-    ],
-  },
-  {
-    id: 'linked-list',
-    title: 'Linked List',
-    items: [
-      { slug: 'linked-list-overview', title: 'Linked List — Overview' },
-      {
-        id: 'singly-linked-list-group',
-        title: 'Singly Linked List',
-        isSubGroup: true,
-        children: [
-          { slug: 'singly-linked-list-structure', title: 'Structure & Node Definition' },
-          { slug: 'singly-linked-list-insertion', title: 'Insertion (head / tail / at index)' },
-          { slug: 'singly-linked-list-deletion', title: 'Deletion (head / tail / at index)' },
-          { slug: 'singly-linked-list-traversal', title: 'Traversal' },
-          { slug: 'singly-linked-list-search', title: 'Search' },
-          { slug: 'singly-linked-list-reverse', title: 'Reverse (Iterative & Recursive)' },
-        ],
-      },
-      {
-        id: 'doubly-linked-list-group',
-        title: 'Doubly Linked List',
-        isSubGroup: true,
-        children: [
-          { slug: 'doubly-linked-list-structure', title: 'Structure & Node Definition' },
-          { slug: 'doubly-linked-list-insertion', title: 'Insertion' },
-          { slug: 'doubly-linked-list-deletion', title: 'Deletion' },
-          { slug: 'doubly-linked-list-traversal', title: 'Traversal (Forward & Backward)' },
-        ],
-      },
-      {
-        id: 'circular-linked-list-group',
-        title: 'Circular Linked List',
-        isSubGroup: true,
-        children: [
-          { slug: 'circular-linked-list', title: 'Singly & Doubly Circular Lists' },
-        ],
-      },
-      { slug: 'comparison-linked-vs-array', title: 'Linked List vs. Array List — Comparison' },
-      { slug: 'complexity-linked-list', title: 'Complexity Analysis — Linked List' },
-      { slug: 'applications-use-cases', title: 'Applications & Use Cases' },
-    ],
-  },
-];
+export const navigationTree = {
+  root: 'dsa-for-everyone/',
+  sections: [
+    {
+      id: '00-why-data-structures',
+      title: '00-why-data-structures/',
+      items: [
+        { slug: 'is-there-even-a-need', title: 'is-there-even-a-need' },
+        { slug: 'data-structures-as-decisions-not-recipes', title: 'data-structures-as-decisions-not-recipes' },
+        { slug: 'what-being-good-at-dsa-actually-means', title: 'what-being-good-at-dsa-actually-means' },
+      ],
+    },
+    {
+      id: '01-getting-started',
+      title: '01-getting-started/',
+      items: [
+        { slug: 'stack-heap-and-where-data-lives', title: 'stack-heap-and-where-data-lives' },
+        { slug: 'manual-vs-managed-memory', title: 'manual-vs-managed-memory' },
+        { slug: 'structs-classes-grouping-data', title: 'structs-classes-grouping-data' },
+        { slug: 'pointers-references-and-address', title: 'pointers-references-and-address' },
+        { slug: 'why-we-measure-cost-time-complexity', title: 'why-we-measure-cost-time-complexity' },
+        { slug: 'why-we-measure-cost-space-complexity', title: 'why-we-measure-cost-space-complexity' },
+        { slug: 'reading-big-o-like-a-sentence', title: 'reading-big-o-like-a-sentence' },
+      ],
+    },
+    {
+      id: '02-list-adt',
+      title: '02-list-adt/',
+      items: [
+        { slug: 'what-is-an-abstract-data-type', title: 'what-is-an-abstract-data-type' },
+        { slug: 'the-list-adt-defining-behavior', title: 'the-list-adt-defining-behavior' },
+        { slug: 'operations-every-list-must-support', title: 'operations-every-list-must-support' },
+        { slug: 'adt-vs-implementation', title: 'adt-vs-implementation' },
+        { slug: 'implementations-of-the-list-adt', title: 'implementations-of-the-list-adt' },
+        { slug: 'array-list-and-amortized-growth', title: 'array-list-and-amortized-growth' },
+      ],
+    },
+    {
+      id: '03-linked-list',
+      title: '03-linked-list/',
+      items: [
+        { slug: 'why-a-linked-list', title: 'why-a-linked-list' },
+        { slug: 'anatomy-of-a-node', title: 'anatomy-of-a-node' },
+        { slug: 'traversal', title: 'traversal' },
+        { slug: 'insertion-head-middle-tail', title: 'insertion-head-middle-tail' },
+        { slug: 'deletion-why-you-need-previous', title: 'deletion-why-you-need-previous' },
+        { slug: 'types-doubly-and-circular', title: 'types-doubly-and-circular' },
+        { slug: 'insertion-deletion-doubly-circular', title: 'insertion-deletion-doubly-circular' },
+        { slug: 'fast-and-slow-pointers-the-essence', title: 'fast-and-slow-pointers-the-essence' },
+        { slug: 'array-vs-linked-list-side-by-side', title: 'array-vs-linked-list-side-by-side' },
+        { slug: 'cache-locality-why-arrays-win-in-practice', title: 'cache-locality-why-arrays-win-in-practice' },
+        { slug: 'same-structure-different-skin', title: 'same-structure-different-skin' },
+        { slug: 'build-it-yourself-sandbox', title: 'build-it-yourself-sandbox' },
+        { slug: 'how-to-approach-any-problem', title: 'how-to-approach-any-problem' },
+      ],
+    },
+    {
+      id: 'problems',
+      title: 'problems/',
+      items: [
+        { slug: 'reversing-a-linked-list', title: 'reversing-a-linked-list' },
+        { slug: 'merging-two-sorted-lists', title: 'merging-two-sorted-lists' },
+        { slug: 'sorting-a-linked-list', title: 'sorting-a-linked-list' },
+        { slug: 'finding-the-middle-in-one-pass', title: 'finding-the-middle-in-one-pass' },
+        { slug: 'detecting-removing-cycles', title: 'detecting-removing-cycles' },
+      ],
+    },
+  ],
+};
+
+export const navigationSections = navigationTree.sections;
