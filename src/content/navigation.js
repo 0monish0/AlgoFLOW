@@ -1,9 +1,9 @@
 export const navigationTree = {
-  root: 'dsa-for-everyone/',
+  root: 'dsa-for-everyone',
   sections: [
     {
       id: '00-why-data-structures',
-      title: '00-why-data-structures/',
+      title: '00-why-data-structures',
       items: [
         { slug: 'is-there-even-a-need', title: 'is-there-even-a-need' },
         { slug: 'data-structures-as-decisions-not-recipes', title: 'data-structures-as-decisions-not-recipes' },
@@ -12,7 +12,7 @@ export const navigationTree = {
     },
     {
       id: '01-getting-started',
-      title: '01-getting-started/',
+      title: '01-getting-started',
       items: [
         { slug: 'stack-heap-and-where-data-lives', title: 'stack-heap-and-where-data-lives' },
         { slug: 'manual-vs-managed-memory', title: 'manual-vs-managed-memory' },
@@ -25,7 +25,7 @@ export const navigationTree = {
     },
     {
       id: '02-list-adt',
-      title: '02-list-adt/',
+      title: '02-list-adt',
       items: [
         { slug: 'what-is-an-abstract-data-type', title: 'what-is-an-abstract-data-type' },
         { slug: 'the-list-adt-defining-behavior', title: 'the-list-adt-defining-behavior' },
@@ -37,7 +37,7 @@ export const navigationTree = {
     },
     {
       id: '03-linked-list',
-      title: '03-linked-list/',
+      title: '03-linked-list',
       items: [
         { slug: 'why-a-linked-list', title: 'why-a-linked-list' },
         { slug: 'anatomy-of-a-node', title: 'anatomy-of-a-node' },
@@ -56,7 +56,7 @@ export const navigationTree = {
     },
     {
       id: 'problems',
-      title: 'problems/',
+      title: 'problems',
       items: [
         { slug: 'reversing-a-linked-list', title: 'reversing-a-linked-list' },
         { slug: 'merging-two-sorted-lists', title: 'merging-two-sorted-lists' },

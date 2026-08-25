@@ -28,7 +28,7 @@ export const DocsShell = () => {
               onClick={() => setMobileOpen(false)}
             />
             {/* Drawer Content */}
-            <div className="relative w-72 max-w-[80vw] bg-surface h-full shadow-2xl z-50 animate-in slide-in-from-left duration-200">
+            <div className="relative w-80 max-w-[85vw] bg-surface h-full shadow-2xl z-50 animate-in slide-in-from-left duration-200">
               <Sidebar isMobile={true} />
             </div>
           </div>

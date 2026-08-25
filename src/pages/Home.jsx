@@ -104,7 +104,7 @@ export const Home = () => {
                     loop
                     muted
                     playsInline
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-center"
                   >
                     <source src="/heroSection-video.mp4" type="video/mp4" />
                   </video>
@@ -156,7 +156,7 @@ export const Home = () => {
                 <div className="w-full h-full p-4 sm:p-5 rounded-[22px] bg-[#FDFCF7]/85 backdrop-blur-md dark:bg-[#18212D]/90 text-primary dark:text-[#E2E8F0] border border-white/80 dark:border-white/10 shadow-2xl shadow-primary/15 dark:shadow-black/30 flex flex-col justify-center box-border transition-all">
                   <div className="flex items-center gap-2 text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary dark:text-white font-mono leading-none">
                     <span>4.0</span>
-                    <div className="w-6 h-6 rounded-full bg-amber-accent text-white dark:bg-[#0284C7] dark:text-white flex items-center justify-center shrink-0 shadow-2xs transition-colors">
+                    <div className="w-6 h-6 rounded-full bg-amber-accent dark:bg-[#D97706] text-white flex items-center justify-center shrink-0 shadow-2xs transition-colors">
                       <Code2 size={13} />
                     </div>
                   </div>
@@ -225,14 +225,22 @@ export const Home = () => {
           </div>
         </div>
 
-        {/* Centered Primary CTA Button */}
-        <div className="mt-8 sm:mt-9 flex items-center justify-center shrink-0">
+        {/* Centered Primary CTA Buttons: Reference vs Interactive Workshop */}
+        <div className="mt-8 sm:mt-9 flex flex-wrap items-center justify-center gap-3 shrink-0">
           <Link
             to="/docs/is-there-even-a-need"
-            className="inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-primary text-[#F5EEDD] dark:bg-[#18212D] dark:text-white dark:border dark:border-white/15 dark:hover:bg-[#232D3D] font-semibold text-xs sm:text-sm hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md group"
+            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-primary text-[#F5EEDD] dark:bg-[#18212D] dark:text-white dark:border dark:border-white/15 dark:hover:bg-[#232D3D] font-semibold text-xs sm:text-sm hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md group"
           >
-            <span>Enter Documentation</span>
+            <span>Read Documentation</span>
             <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+
+          <Link
+            to="/sandbox"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-accent bg-accent/15 text-primary dark:text-[#38BDF8] font-bold text-xs sm:text-sm hover:bg-accent/25 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-sm group"
+          >
+            <span>Interactive Sandbox</span>
+            <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform text-accent" />
           </Link>
         </div>
       </main>
