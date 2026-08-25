@@ -6,6 +6,7 @@ export const ToolbarPalette = () => {
   const {
     addNode,
     addFreePointer,
+    addNullToken,
     undo,
     redo,
     resetCanvas,
@@ -35,25 +36,52 @@ export const ToolbarPalette = () => {
   }, [undo, redo]);
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-1.5 rounded-2xl bg-surface/90 backdrop-blur-md border border-border shadow-xl font-mono text-xs select-none">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 p-1.5 rounded-2xl bg-surface/95 backdrop-blur-md border border-border shadow-xl font-mono text-xs select-none">
       {/* 1. New Node Tool */}
       <button
         onClick={() => addNode(Math.floor(Math.random() * 90 + 10))}
-        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary text-base dark:bg-[#F5EEDD] dark:text-[#081722] font-bold hover:opacity-90 active:scale-95 transition-all shadow-xs"
+        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-base dark:bg-[#F5EEDD] dark:text-[#081722] font-bold hover:opacity-90 active:scale-95 transition-all shadow-xs"
         title="Spawn a new unattached node (malloc)"
       >
         <Plus size={14} />
         <span>New Node</span>
       </button>
 
-      {/* 2. New Pointer Tool */}
+      {/* 2. New Pointer Presets */}
       <button
-        onClick={() => addFreePointer()}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-surface hover:border-accent hover:bg-accent/10 text-text font-bold transition-all shadow-xs active:scale-95"
-        title="Spawn a new free pointer (e.g. head, curr, temp)"
+        onClick={() => addFreePointer('head')}
+        className="flex items-center gap-1 px-2.5 py-2 rounded-xl border border-border bg-surface hover:border-accent hover:bg-accent/10 text-text font-bold transition-all shadow-xs active:scale-95"
+        title="Spawn a head pointer"
       >
-        <Navigation size={13} className="text-accent rotate-45" />
-        <span>New Pointer</span>
+        <Navigation size={12} className="text-accent rotate-45" />
+        <span>+ Head</span>
+      </button>
+
+      <button
+        onClick={() => addFreePointer('curr')}
+        className="flex items-center gap-1 px-2.5 py-2 rounded-xl border border-border bg-surface hover:border-accent hover:bg-accent/10 text-text font-bold transition-all shadow-xs active:scale-95"
+        title="Spawn a curr pointer (use game controller to step!)"
+      >
+        <Navigation size={12} className="text-amber-accent rotate-45" />
+        <span>+ Curr</span>
+      </button>
+
+      <button
+        onClick={() => addFreePointer('ptr')}
+        className="flex items-center gap-1 px-2.5 py-2 rounded-xl border border-border bg-surface hover:border-accent hover:bg-accent/10 text-text transition-all shadow-xs active:scale-95"
+        title="Spawn a custom pointer"
+      >
+        <Plus size={13} className="text-text-muted" />
+        <span>Pointer</span>
+      </button>
+
+      {/* 3. New NULL Token Tool */}
+      <button
+        onClick={() => addNullToken()}
+        className="flex items-center gap-1 px-2.5 py-2 rounded-xl border border-dashed border-border bg-base/50 hover:border-accent hover:bg-accent/10 text-text-muted hover:text-text font-bold transition-all shadow-xs active:scale-95"
+        title="Spawn a NULL terminator token"
+      >
+        <span>+ NULL</span>
       </button>
 
       <div className="w-[1px] h-5 bg-border mx-0.5" />

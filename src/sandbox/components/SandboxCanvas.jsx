@@ -3,7 +3,9 @@ import { useSandboxStore } from '../core/useSandboxStore';
 import { SvgConnectorLayer } from './SvgConnectorLayer';
 import { NodePrimitive } from './NodePrimitive';
 import { PointerPrimitive } from './PointerPrimitive';
+import { NullToken } from './NullToken';
 import { EdgeTraversalPopup } from './EdgeTraversalPopup';
+import { PointerControllerHud } from './PointerControllerHud';
 import { ToolbarPalette } from './ToolbarPalette';
 import { AlertCircle, RefreshCw, X, Link2, MousePointerClick } from 'lucide-react';
 
@@ -11,6 +13,7 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
   const {
     nodes,
     freePointers,
+    nullTokens,
     evaluation,
     pan,
     setPan,
@@ -30,6 +33,7 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
     if (
       e.target.closest('[data-node-id]') ||
       e.target.closest('[data-pointer-id]') ||
+      e.target.closest('[data-null-id]') ||
       e.target.closest('.socket-handle') ||
       e.target.closest('button') ||
       e.target.closest('.interactive-panel')
@@ -85,7 +89,8 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
   const orphanedCount = evaluation.orphanedNodeIds.size;
   const unattachedCount = evaluation.unattachedNodeIds.size;
   const totalPointers = Object.keys(freePointers).length;
-  const isEmpty = totalNodes === 0 && totalPointers === 0;
+  const totalNulls = Object.keys(nullTokens || {}).length;
+  const isEmpty = totalNodes === 0 && totalPointers === 0 && totalNulls === 0;
 
   return (
     <div
@@ -128,7 +133,11 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
         {evaluation.violations.map((v) => (
           <div
             key={v.id}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-accent/15 border border-amber-accent/40 text-amber-accent text-xs font-mono font-bold shadow-sm backdrop-blur-md animate-in fade-in duration-150"
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-mono font-bold shadow-sm backdrop-blur-md animate-in fade-in duration-150 ${
+              v.severity === 'info'
+                ? 'bg-accent/15 border-accent/40 text-primary dark:text-[#38BDF8]'
+                : 'bg-amber-accent/15 border-amber-accent/40 text-amber-accent'
+            }`}
           >
             <AlertCircle size={14} className="shrink-0" />
             <span>{v.message}</span>
@@ -152,7 +161,7 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
           </div>
           <h2 className="text-sm font-bold text-primary mb-1">Canvas is Empty</h2>
           <p className="text-xs max-w-sm leading-relaxed text-text-muted">
-            Click <strong>+ New Node</strong> or <strong>+ New Pointer</strong> below to begin constructing your linked list from scratch.
+            Click <strong>+ New Node</strong> or <strong>+ Head</strong> below to begin constructing your linked list.
           </p>
         </div>
       )}
@@ -161,7 +170,7 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
       {connectingSource && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-primary text-base dark:bg-[#F5EEDD] dark:text-[#081722] border border-accent text-xs font-mono font-bold shadow-xl animate-in fade-in">
           <Link2 size={14} className="animate-pulse text-accent" />
-          <span>Click any target Node to connect</span>
+          <span>Click any target Node or NULL to complete connection</span>
           <button
             onClick={() => setConnectingSource(null)}
             className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-black/20 text-xs flex items-center gap-1 border border-current"
@@ -188,6 +197,11 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
           <PointerPrimitive key={pointer.id} pointer={pointer} />
         ))}
 
+        {/* NULL Tokens Layer */}
+        {Object.values(nullTokens || {}).map((nullToken) => (
+          <NullToken key={nullToken.id} nullToken={nullToken} />
+        ))}
+
         {/* Nodes Layer (SHARP CORNERS ONLY ON NODES) */}
         {Object.values(nodes).map((node) => (
           <NodePrimitive
@@ -200,6 +214,9 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
         {/* Selected Edge Traversal Popup */}
         <EdgeTraversalPopup />
       </div>
+
+      {/* Game-like Pointer Controller HUD */}
+      <PointerControllerHud />
 
       {/* Floating Bottom Toolbar Palette */}
       <ToolbarPalette />

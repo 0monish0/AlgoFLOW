@@ -1,17 +1,30 @@
 import React, { useRef, useState } from 'react';
 import { useSandboxStore } from '../core/useSandboxStore';
+import { X } from 'lucide-react';
 
 export const NullToken = ({ nullToken }) => {
-  const { updateNullPosition, connectingSocket, connectSocket } = useSandboxStore();
+  const {
+    updateNullPosition,
+    deleteNullToken,
+    connectingSource,
+    connectSocket,
+    setPointerTarget,
+  } = useSandboxStore();
+
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, tokenX: 0, tokenY: 0 });
 
   const handleMouseDown = (e) => {
+    if (e.target.closest('button')) return;
     e.stopPropagation();
 
-    // If currently in click-to-connect mode, clicking NULL connects the active socket to NULL!
-    if (connectingSocket) {
-      connectSocket(connectingSocket.sourceNodeId, connectingSocket.socketType, 'NULL');
+    // If currently in click-to-connect mode, clicking NULL completes the connection!
+    if (connectingSource) {
+      if (connectingSource.sourceType === 'socket') {
+        connectSocket(connectingSource.sourceId, connectingSource.socketType, 'NULL');
+      } else if (connectingSource.sourceType === 'pointer') {
+        setPointerTarget(connectingSource.sourceId, 'NULL');
+      }
       return;
     }
 
@@ -44,7 +57,7 @@ export const NullToken = ({ nullToken }) => {
     window.addEventListener('mouseup', handleMouseUp, { once: true });
   };
 
-  const isConnecting = Boolean(connectingSocket);
+  const isConnecting = Boolean(connectingSource);
 
   return (
     <div
@@ -53,17 +66,29 @@ export const NullToken = ({ nullToken }) => {
       style={{
         transform: `translate3d(${nullToken.position.x}px, ${nullToken.position.y}px, 0px)`,
       }}
-      className="absolute select-none font-mono cursor-grab active:cursor-grabbing z-20 will-change-transform"
-      title={isConnecting ? 'Click to connect pointer to NULL' : 'NULL Terminator (drop outgoing pointer here)'}
+      className="absolute select-none font-mono cursor-grab active:cursor-grabbing z-20 group will-change-transform"
+      title={isConnecting ? 'Click to connect to NULL' : 'NULL Terminator (drag pointer here)'}
     >
       <div
-        className={`px-3.5 py-1.5 rounded-lg border-2 border-dashed font-mono font-bold text-xs shadow-2xs transition-all ${
+        className={`relative flex items-center px-3.5 py-1.5 rounded-lg border-2 border-dashed font-mono font-bold text-xs shadow-2xs transition-all ${
           isConnecting
             ? 'border-accent bg-accent/20 text-text ring-2 ring-accent/40 cursor-pointer animate-pulse'
             : 'border-border bg-base/50 text-text-muted hover:border-accent hover:text-text'
         }`}
       >
-        NULL
+        <span>NULL</span>
+
+        {/* Delete NULL Token Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteNullToken(nullToken.id);
+          }}
+          className="opacity-0 group-hover:opacity-100 ml-1.5 p-0.5 text-text-muted hover:text-red-500 rounded transition-opacity"
+          title="Delete NULL token"
+        >
+          <X size={11} />
+        </button>
       </div>
     </div>
   );

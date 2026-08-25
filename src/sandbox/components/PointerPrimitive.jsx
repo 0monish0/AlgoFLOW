@@ -11,6 +11,8 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
     setActiveWire,
     connectingSource,
     setConnectingSource,
+    activePointerId,
+    setActivePointerId,
   } = useSandboxStore();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -18,6 +20,7 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
   const dragStartRef = useRef({ x: 0, y: 0, ptrX: 0, ptrY: 0 });
 
   const isConnectingFromSelf = connectingSource && connectingSource.sourceId === pointer.id;
+  const isControllerActive = activePointerId === pointer.id;
 
   // Drag Pointer Origin Point
   const handleMouseDown = (e) => {
@@ -25,6 +28,10 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
       return;
     }
     e.stopPropagation();
+
+    // Select this pointer for game-like stepper controller HUD
+    setActivePointerId(pointer.id);
+
     setIsDragging(true);
     const { zoom } = useSandboxStore.getState();
 
@@ -111,13 +118,25 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
       const dropCanvasX = (upEvent.clientX - canvasRect.left - currentPan.x) / currentZoom;
       const dropCanvasY = (upEvent.clientY - canvasRect.top - currentPan.y) / currentZoom;
 
-      const { nodes: allNodes } = useSandboxStore.getState();
+      const { nodes: allNodes, nullTokens: allNulls } = useSandboxStore.getState();
+
+      // Check drop near any NULL token
+      let matchedNull = false;
+      Object.values(allNulls).forEach((nullTok) => {
+        if (!nullTok.position) return;
+        const dist = Math.hypot(dropCanvasX - (nullTok.position.x + 35), dropCanvasY - (nullTok.position.y + 18));
+        if (dist < 85) {
+          setPointerTarget(pointer.id, 'NULL');
+          matchedNull = true;
+        }
+      });
+      if (matchedNull) return;
 
       // Check drop near any node
       let matchedNode = false;
       Object.values(allNodes).forEach((targetNode) => {
         if (!targetNode.position) return;
-        const dist = Math.hypot(dropCanvasX - (targetNode.position.x + 65), dropCanvasY - (targetNode.position.y + 26));
+        const dist = Math.hypot(dropCanvasX - (targetNode.position.x + 68), dropCanvasY - (targetNode.position.y + 28));
         if (dist < 95) {
           setPointerTarget(pointer.id, targetNode.id);
           matchedNode = true;
@@ -125,7 +144,6 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
       });
 
       if (!matchedNode) {
-        // Drop on empty canvas disconnects/unaims
         setPointerTarget(pointer.id, null);
       }
 
@@ -146,9 +164,9 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
         transform: `translate3d(${pointer.position.x}px, ${pointer.position.y}px, 0px)`,
       }}
       className={`absolute select-none font-mono cursor-grab active:cursor-grabbing z-30 group will-change-transform ${
-        isHighlighted ? 'ring-2 ring-accent/60' : ''
+        isHighlighted || isControllerActive ? 'ring-2 ring-accent shadow-lg' : ''
       }`}
-      title="Free Pointer (drag handle to point at any node)"
+      title="Click to open Pointer Controller, drag handle to aim"
     >
       <div className="relative flex items-center bg-surface border border-border rounded-xl shadow-md p-1 pr-1.5 gap-1.5 transition-all">
         {/* Pointer Label (Editable) */}
@@ -167,9 +185,12 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
             />
           ) : (
             <button
-              onClick={() => setIsEditing(true)}
+              onClick={() => {
+                setActivePointerId(pointer.id);
+                setIsEditing(true);
+              }}
               className="text-xs font-extrabold text-primary hover:text-accent font-mono transition-colors tracking-tight"
-              title="Click to rename pointer (e.g. head, curr, temp)"
+              title="Click to rename pointer or open Controller"
             >
               {pointer.label}
             </button>
@@ -179,7 +200,7 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
         {/* Arrowhead Draggable Handle */}
         <div
           onMouseDown={handleArrowDragStart}
-          title="Drag arrow to target node"
+          title="Drag arrow to target Node or NULL"
           className={`pointer-handle w-5 h-5 rounded-lg flex items-center justify-center cursor-crosshair transition-all ${
             isAimed
               ? 'bg-primary text-base dark:bg-[#F5EEDD] dark:text-[#081722]'

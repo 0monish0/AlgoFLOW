@@ -5,6 +5,7 @@ export const SvgConnectorLayer = () => {
   const {
     nodes,
     freePointers,
+    nullTokens,
     activeWire,
     setSelectedEdge,
   } = useSandboxStore();
@@ -30,6 +31,15 @@ export const SvgConnectorLayer = () => {
 
   const edgesToRender = [];
 
+  // Helper to find NULL token anchor
+  const getNullAnchor = (sourceX, sourceY) => {
+    const firstNull = Object.values(nullTokens || {})[0];
+    if (firstNull && firstNull.position) {
+      return { x: firstNull.position.x, y: firstNull.position.y + 16 };
+    }
+    return { x: sourceX + 80, y: sourceY };
+  };
+
   // 1. Render all Free Pointers
   Object.values(freePointers).forEach((fp) => {
     if (!fp || !fp.position) return;
@@ -37,8 +47,20 @@ export const SvgConnectorLayer = () => {
     const startX = fp.position.x + 60;
     const startY = fp.position.y + 14;
 
-    if (fp.targetId && fp.targetId !== 'NULL') {
-      if (nodes[fp.targetId] && nodes[fp.targetId].position) {
+    if (fp.targetId) {
+      if (fp.targetId === 'NULL') {
+        const nullAnchor = getNullAnchor(startX, startY);
+        edgesToRender.push({
+          id: `edge-${fp.id}`,
+          sourceId: fp.id,
+          sourceType: 'pointer',
+          targetId: 'NULL',
+          path: computeBezierPath(startX, startY, nullAnchor.x, nullAnchor.y),
+          midX: (startX + nullAnchor.x) / 2,
+          midY: (startY + nullAnchor.y) / 2,
+          isDangling: false,
+        });
+      } else if (nodes[fp.targetId] && nodes[fp.targetId].position) {
         const targetNode = nodes[fp.targetId];
         const endX = targetNode.position.x;
         const endY = targetNode.position.y + HALF_HEIGHT;
@@ -91,7 +113,11 @@ export const SvgConnectorLayer = () => {
       let targetX = sourceX + 60;
       let targetY = sourceY;
 
-      if (nodes[edge.targetId] && nodes[edge.targetId].position) {
+      if (edge.targetId === 'NULL') {
+        const nullAnchor = getNullAnchor(sourceX, sourceY);
+        targetX = nullAnchor.x;
+        targetY = nullAnchor.y;
+      } else if (nodes[edge.targetId] && nodes[edge.targetId].position) {
         const targetNode = nodes[edge.targetId];
         if (socketType === 'prev') {
           targetX = targetNode.position.x + NODE_WIDTH;
@@ -232,7 +258,6 @@ export const SvgConnectorLayer = () => {
 
         return (
           <g key={edge.id} className="pointer-events-auto cursor-pointer group" onClick={(e) => handleEdgeClick(e, edge)}>
-            {/* Wider transparent hit area for easy clicking */}
             <path
               d={edge.path}
               stroke="transparent"

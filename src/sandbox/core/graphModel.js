@@ -34,6 +34,14 @@ export const createFreePointer = (label = 'ptr', targetId = null, position = { x
   };
 };
 
+export const createNullToken = (position = { x: 680, y: 220 }) => {
+  const id = `null-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+  return {
+    id,
+    position,
+  };
+};
+
 /**
  * Initial empty canvas graph for the unified sandbox.
  */
@@ -41,5 +49,6 @@ export const getInitialGraph = () => {
   return {
     nodes: {},
     freePointers: {},
+    nullTokens: {},
   };
 };
