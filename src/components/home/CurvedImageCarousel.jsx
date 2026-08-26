@@ -23,11 +23,11 @@ export const CurvedImageCarousel = () => {
     ...GALLERY_IMAGES,
   ];
 
-  // 35% scaled-down dimensions (220px x 270px)
+  // 35% scaled-down dimensions with tight contiguous spacing
   const CARD_WIDTH = 220;
-  const CARD_GAP = 10;
-  const STRIDE = CARD_WIDTH + CARD_GAP;
-  const LOOP_LENGTH = GALLERY_IMAGES.length * STRIDE; // 5 * 230 = 1150px
+  const CARD_GAP = -50;
+  const STRIDE = CARD_WIDTH + CARD_GAP; // 170px stride
+  const LOOP_LENGTH = GALLERY_IMAGES.length * STRIDE; // 5 * 170 = 850px
 
   // Update container width on resize
   useEffect(() => {
@@ -105,18 +105,24 @@ export const CurvedImageCarousel = () => {
           // Only render cards reasonably close to the viewport
           if (absNormX > 2.0) return null;
 
-          // Panoramic Arc Curve Geometry (35% scaled):
-          const translateY = Math.pow(normX, 2) * 20;
-          const rotateZ = normX * 6.0;
-          const rotateY = -normX * 20;
-          const translateZ = 30 - Math.pow(absNormX, 2) * 50;
-          const scale = Math.max(0.85, 1.05 - Math.pow(absNormX, 1.4) * 0.16);
-          const opacity = Math.max(0.4, 1 - Math.pow(absNormX, 3) * 0.5);
+          // Inverted Amphitheater / Wraparound Curve Geometry:
+          // 1. Smaller in the middle (0.78x), larger on both sides (up to 1.20x)
+          const scale = Math.min(1.22, 0.78 + Math.pow(absNormX, 1.25) * 0.40);
+          // 2. Middle recedes back (-70px), sides come forward (+50px)
+          const translateZ = -70 + Math.pow(absNormX, 1.3) * 120;
+          // 3. Middle dips, sides rise gracefully
+          const translateY = 20 - Math.pow(normX, 2) * 20;
+          // 4. Inward amphitheater yaw rotation
+          const rotateY = normX * 22;
+          // 5. Dynamic tangential roll
+          const rotateZ = -normX * 4.5;
+          // 6. Crisp full opacity across the panorama
+          const opacity = Math.max(0.45, 1 - Math.pow(Math.max(0, absNormX - 1.2), 2) * 0.8);
 
           return (
             <div
               key={`${img.id}-${index}`}
-              className="absolute top-1/2 left-0 -mt-[135px] sm:-mt-[145px] overflow-hidden shadow-xl border-[2px] border-white dark:border-white bg-[#0A0A0A] group cursor-pointer"
+              className="absolute top-1/2 left-0 -mt-[135px] sm:-mt-[145px] overflow-hidden shadow-2xl border-[2px] border-white dark:border-white bg-[#0A0A0A] group cursor-pointer"
               style={{
                 width: `${CARD_WIDTH}px`,
                 height: '270px',
@@ -130,7 +136,7 @@ export const CurvedImageCarousel = () => {
                 `,
                 transformStyle: 'preserve-3d',
                 opacity,
-                zIndex: Math.round(100 - absNormX * 40),
+                zIndex: Math.round(50 + absNormX * 50),
                 willChange: 'transform, opacity',
                 transition: 'box-shadow 200ms ease',
               }}

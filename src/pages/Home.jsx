@@ -39,7 +39,7 @@ export const Home = () => {
             <div className="w-7 h-7 rounded-lg bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
               <Code2 size={16} />
             </div>
-            <span className="text-sm sm:text-base font-extrabold tracking-tight text-white">
+            <span className="text-sm sm:text-base font-extrabold tracking-tight text-black dark:text-white">
               Algo<span className="text-accent">Flow</span>
             </span>
           </Link>
@@ -88,13 +88,13 @@ export const Home = () => {
           </span>
         </h1>
 
-        {/* Sub-headline with High-Contrast Green Text in Dynamic-Width Capsule */}
-        <div className="inline-flex items-center justify-center gap-3.5 sm:gap-4 text-xl sm:text-3xl md:text-4xl font-sans font-bold text-text-muted mt-6 sm:mt-8 tracking-tight leading-none text-center">
+        {/* Sub-headline with High-Contrast Green Text in Snug Dynamic-Width Capsule */}
+        <div className="inline-flex items-center justify-center gap-3 sm:gap-4 text-xl sm:text-3xl md:text-4xl font-sans font-bold text-text-muted mt-6 sm:mt-8 tracking-tight leading-none text-center">
           <span className="leading-none flex items-center shrink-0">Built for</span>
           <motion.div
             layout
             transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            className="relative inline-flex items-center justify-center h-12 sm:h-14 overflow-hidden px-5 sm:px-7 bg-white rounded-tl-[26px] rounded-br-[26px] rounded-tr-[10px] rounded-bl-[10px] border-0 shadow-2xl shadow-white/10 align-middle shrink-0"
+            className="relative inline-flex items-center justify-center h-11 sm:h-13 overflow-hidden px-3.5 sm:px-4.5 bg-white rounded-tl-[24px] rounded-br-[24px] rounded-tr-[9px] rounded-bl-[9px] border-0 shadow-2xl shadow-white/10 align-middle shrink-0"
           >
             <AnimatePresence mode="wait">
               <motion.span
@@ -103,7 +103,7 @@ export const Home = () => {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -22, opacity: 0 }}
                 transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                className="text-[#15803D] font-black tracking-tight block leading-none whitespace-nowrap select-none text-xl sm:text-3xl"
+                className="text-[#15803D] font-black tracking-tight block leading-none whitespace-nowrap select-none text-xl sm:text-3xl px-0.5"
               >
                 {ROTATING_WORDS[wordIndex]}
               </motion.span>

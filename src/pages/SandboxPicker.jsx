@@ -78,7 +78,7 @@ export const SandboxPicker = () => {
             <div className="w-7 h-7 rounded-lg bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
               <Code2 size={16} />
             </div>
-            <span className="text-sm sm:text-base font-extrabold tracking-tight text-white">
+            <span className="text-sm sm:text-base font-extrabold tracking-tight text-black dark:text-white">
               Algo<span className="text-accent">Flow</span>
             </span>
           </Link>
@@ -163,11 +163,6 @@ export const SandboxPicker = () => {
           })}
         </div>
       </main>
-
-      {/* Clean Aesthetic Footer */}
-      <footer className="w-full max-w-6xl mx-auto py-5 px-4 text-center text-3xs text-text-muted font-mono border-t border-border/40">
-        State-driven graph evaluation engine • Zero pre-scripted playback
-      </footer>
     </div>
   );
 };
