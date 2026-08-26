@@ -78,8 +78,8 @@ export const Home = () => {
         </div>
       </header>
 
-      {/* Main Hero Section (Exact previous original text & rotating words) */}
-      <main className="relative flex-1 w-full max-w-6xl mx-auto flex flex-col items-center justify-center px-4 sm:px-8 pt-6 sm:pt-10 pb-4 z-20 text-center">
+      {/* Main Hero Section (Increased top spacing from navbar, auto-sizing word capsule) */}
+      <main className="relative flex-1 w-full max-w-6xl mx-auto flex flex-col items-center justify-center px-4 sm:px-8 pt-16 sm:pt-24 md:pt-28 pb-6 sm:pb-10 z-20 text-center">
         {/* Hero Headline */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-sans font-black uppercase text-primary tracking-tight leading-none text-center whitespace-nowrap">
           DATA STRUCTURES &amp;{' '}
@@ -88,13 +88,13 @@ export const Home = () => {
           </span>
         </h1>
 
-        {/* Sub-headline with High-Contrast Green Text in Capsule */}
-        <div className="inline-flex items-center justify-center gap-2 sm:gap-2.5 text-xl sm:text-3xl md:text-4xl font-sans font-bold text-text-muted mt-3 sm:mt-4 tracking-tight leading-none text-center">
+        {/* Sub-headline with High-Contrast Green Text in Dynamic-Width Capsule */}
+        <div className="inline-flex items-center justify-center gap-3.5 sm:gap-4 text-xl sm:text-3xl md:text-4xl font-sans font-bold text-text-muted mt-6 sm:mt-8 tracking-tight leading-none text-center">
           <span className="leading-none flex items-center shrink-0">Built for</span>
           <motion.div
             layout
             transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            className="relative inline-flex items-center justify-center h-9 sm:h-11 overflow-hidden px-4 bg-white rounded-tl-[22px] rounded-br-[22px] rounded-tr-[8px] rounded-bl-[8px] border-0 shadow-2xl shadow-white/10 align-middle shrink-0"
+            className="relative inline-flex items-center justify-center h-12 sm:h-14 overflow-hidden px-5 sm:px-7 bg-white rounded-tl-[26px] rounded-br-[26px] rounded-tr-[10px] rounded-bl-[10px] border-0 shadow-2xl shadow-white/10 align-middle shrink-0"
           >
             <AnimatePresence mode="wait">
               <motion.span
@@ -102,8 +102,8 @@ export const Home = () => {
                 initial={{ y: 22, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -22, opacity: 0 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="text-[#15803D] font-black tracking-tight block leading-none whitespace-nowrap select-none"
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                className="text-[#15803D] font-black tracking-tight block leading-none whitespace-nowrap select-none text-xl sm:text-3xl"
               >
                 {ROTATING_WORDS[wordIndex]}
               </motion.span>
@@ -111,11 +111,11 @@ export const Home = () => {
           </motion.div>
         </div>
 
-        {/* CTA Buttons Row */}
-        <div className="flex flex-wrap items-center justify-center gap-3.5 mt-6 sm:mt-8 font-mono z-30">
+        {/* CTA Buttons Row (Preserving +30px downward gap) */}
+        <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6 mt-[70px] sm:mt-[78px] font-mono z-30">
           <Link
             to="/sandbox"
-            className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-xl bg-accent text-black font-extrabold text-xs sm:text-sm hover:opacity-95 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-accent/25"
+            className="inline-flex items-center gap-2.5 px-7 py-3 sm:py-3.5 rounded-xl bg-accent text-black font-extrabold text-xs sm:text-sm hover:opacity-95 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-accent/25"
           >
             <span>Interactive Sandboxes</span>
             <ArrowUpRight size={16} />
@@ -123,7 +123,7 @@ export const Home = () => {
 
           <Link
             to="/docs/why-a-linked-list"
-            className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-xl bg-surface/80 hover:bg-surface text-text border border-border dark:border-white/10 text-xs sm:text-sm font-semibold hover:border-accent/40 transition-all shadow-sm"
+            className="inline-flex items-center gap-2.5 px-7 py-3 sm:py-3.5 rounded-xl bg-surface/80 hover:bg-surface text-text border border-border dark:border-white/10 text-xs sm:text-sm font-semibold hover:border-accent/40 transition-all shadow-sm"
           >
             <BookOpen size={15} className="text-accent" />
             <span>Read Documentation</span>
