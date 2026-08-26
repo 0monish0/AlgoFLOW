@@ -3,6 +3,9 @@ import { useSandboxStore } from '../core/useSandboxStore';
 import { X, ArrowRight } from 'lucide-react';
 import { NODE_RADIUS } from './NodePrimitive';
 
+export const POINTER_WIDTH = 110;
+export const POINTER_HEIGHT = 42;
+
 export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
   const {
     nodes,
@@ -73,8 +76,8 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
     e.stopPropagation();
     e.preventDefault();
 
-    const startX = pointer.position.x + 85;
-    const startY = pointer.position.y + 17;
+    const startX = pointer.position.x + POINTER_WIDTH - 12;
+    const startY = pointer.position.y + POINTER_HEIGHT / 2;
 
     const canvasEl = document.getElementById('sandbox-canvas-viewport');
     const canvasRect = canvasEl ? canvasEl.getBoundingClientRect() : { left: 0, top: 0 };
@@ -127,13 +130,13 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
 
       const { nodes: allNodes, nullTokens: allNulls } = useSandboxStore.getState();
 
-      // Check drop near any NULL token
+      // Check drop near any NULL token (generous snap threshold)
       let matchedNull = false;
       Object.values(allNulls || {}).forEach((nullTok) => {
         if (!nullTok.position) return;
-        const dist = Math.hypot(dropCanvasX - (nullTok.position.x + 35), dropCanvasY - (nullTok.position.y + 18));
-        if (dist < 65) {
-          setPointerTarget(pointer.id, 'NULL');
+        const dist = Math.hypot(dropCanvasX - (nullTok.position.x + 50), dropCanvasY - (nullTok.position.y + 22));
+        if (dist < 80) {
+          setPointerTarget(pointer.id, nullTok.id);
           matchedNull = true;
         }
       });
@@ -150,7 +153,7 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
           dropCanvasX - (targetNode.position.x + NODE_RADIUS),
           dropCanvasY - (targetNode.position.y + NODE_RADIUS)
         );
-        if (dist < 60) {
+        if (dist < 75) {
           setPointerTarget(pointer.id, targetNode.id);
           matchedNode = true;
         }
@@ -176,33 +179,31 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
       }}
       className="absolute select-none font-mono cursor-grab active:cursor-grabbing z-30 group will-change-transform"
     >
-      {/* Small Red Circular Cross Delete Button (Consistent with node delete button) */}
+      {/* Small Red Circular Cross Delete Button */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           deleteFreePointer(pointer.id);
           setActivePointerId(null);
         }}
-        className="absolute -top-1.5 -right-1.5 z-40 w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-75 transition-all duration-150 cursor-pointer"
+        className="absolute -top-2 -right-2 z-40 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-75 transition-all duration-150 cursor-pointer"
         title="Delete pointer"
       >
-        <X size={10} strokeWidth={3} />
+        <X size={12} strokeWidth={2.5} />
       </button>
 
       {/* Box Styling: Head is White BG with Black Font; Other pointers are sleek Dark Charcoal */}
       <div
-        className={`relative flex items-center justify-between px-3 py-1.5 rounded-md shadow-xl font-mono text-xs transition-all ${
+        className={`relative flex items-center justify-between px-4 py-2.5 rounded-xl shadow-xl font-mono text-sm transition-all ${
           isHead
-            ? 'bg-white text-black font-black border border-white'
-            : 'bg-[#18181B] text-white border border-white/15 hover:border-white/35'
+            ? 'bg-white text-black font-black border-2 border-white'
+            : 'bg-[#18181B] text-white border-2 border-white/20 hover:border-white/40'
         } ${
           isControllerActive
-            ? isHead
-              ? 'ring-2 ring-emerald-400'
-              : 'ring-2 ring-white border-white'
+            ? 'ring-2 ring-white border-white'
             : isConnectingFromSelf
             ? 'ring-2 ring-white border-white'
-            : ''
+            : 'hover:scale-102'
         }`}
       >
         {/* Label */}
@@ -216,7 +217,7 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
               if (e.key === 'Enter' || e.key === 'Escape') setIsEditing(false);
             }}
             autoFocus
-            className={`w-14 font-bold text-xs border-b outline-none font-mono px-1 rounded-xs ${
+            className={`w-16 font-extrabold text-sm border-b outline-none font-mono px-1 rounded ${
               isHead
                 ? 'bg-black/10 text-black border-black'
                 : 'bg-black/50 text-white border-white'
@@ -225,7 +226,7 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
         ) : (
           <button
             onClick={() => setIsEditing(true)}
-            className={`font-black tracking-tight text-xs hover:underline cursor-text font-mono mr-2 ${
+            className={`font-black tracking-tight text-sm hover:underline cursor-text font-mono mr-2.5 ${
               isHead ? 'text-black' : 'text-white'
             }`}
             title="Click to edit pointer label"
@@ -238,7 +239,7 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
         <div
           onMouseDown={handleArrowDragStart}
           title="Drag arrow to target a node or NULL"
-          className={`pointer-handle w-5 h-5 rounded-sm flex items-center justify-center cursor-crosshair hover:scale-110 transition-transform ${
+          className={`pointer-handle w-7 h-7 rounded-lg flex items-center justify-center cursor-crosshair hover:scale-115 transition-transform ${
             isConnectingFromSelf
               ? isHead
                 ? 'bg-black text-white ring-2 ring-black'
@@ -248,7 +249,7 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
               : 'bg-white/10 hover:bg-white/20 text-white'
           }`}
         >
-          <ArrowRight size={12} strokeWidth={2.5} />
+          <ArrowRight size={15} strokeWidth={2.5} />
         </div>
       </div>
     </div>

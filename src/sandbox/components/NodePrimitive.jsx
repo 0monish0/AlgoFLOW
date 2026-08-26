@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useSandboxStore } from '../core/useSandboxStore';
-import { X, AlertTriangle, ArrowUp, Trash2 } from 'lucide-react';
+import { X, AlertTriangle, ArrowUp } from 'lucide-react';
 import { CONNECTED_COLOR } from '../core/graphModel';
 
-export const NODE_RADIUS = 38;
-export const NODE_DIAMETER = 76;
+export const NODE_RADIUS = 46;
+export const NODE_DIAMETER = 92;
 
 export const NodePrimitive = ({ node, isHighlighted = false }) => {
   const {
@@ -86,9 +86,34 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
     const handleMouseMove = (moveEvent) => {
       const dx = (moveEvent.clientX - dragStartRef.current.x) / zoom;
       const dy = (moveEvent.clientY - dragStartRef.current.y) / zoom;
+      let candidateX = Math.round(dragStartRef.current.nodeX + dx);
+      let candidateY = Math.round(dragStartRef.current.nodeY + dy);
+
+      // Prevent overlapping with all other nodes (minimum center-to-center distance)
+      const MIN_DIST = 104;
+      const { nodes: allNodes } = useSandboxStore.getState();
+
+      for (let iter = 0; iter < 3; iter++) {
+        Object.values(allNodes || {}).forEach((other) => {
+          if (!other || other.id === node.id || !other.position) return;
+          const diffX = candidateX - other.position.x;
+          const diffY = candidateY - other.position.y;
+          const dist = Math.hypot(diffX, diffY);
+          if (dist < MIN_DIST) {
+            if (dist === 0) {
+              candidateX = other.position.x + MIN_DIST;
+            } else {
+              const factor = MIN_DIST / dist;
+              candidateX = other.position.x + diffX * factor;
+              candidateY = other.position.y + diffY * factor;
+            }
+          }
+        });
+      }
+
       updateNodePosition(node.id, {
-        x: Math.round(dragStartRef.current.nodeX + dx),
-        y: Math.round(dragStartRef.current.nodeY + dy),
+        x: Math.round(candidateX),
+        y: Math.round(candidateY),
       });
     };
 
@@ -175,13 +200,13 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
 
       const { nodes: allNodes, nullTokens: allNulls } = useSandboxStore.getState();
 
-      // 1. Check drop near any NULL token
+      // 1. Check drop near any NULL token (generous snap threshold)
       let matchedNull = false;
       Object.values(allNulls || {}).forEach((nullTok) => {
         if (!nullTok.position) return;
-        const dist = Math.hypot(dropCanvasX - (nullTok.position.x + 35), dropCanvasY - (nullTok.position.y + 18));
-        if (dist < 65) {
-          connectSocket(node.id, socketType, 'NULL');
+        const dist = Math.hypot(dropCanvasX - (nullTok.position.x + 50), dropCanvasY - (nullTok.position.y + 22));
+        if (dist < 80) {
+          connectSocket(node.id, socketType, nullTok.id);
           matchedNull = true;
         }
       });
@@ -195,7 +220,7 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
             dropCanvasX - (targetNode.position.x + NODE_RADIUS),
             dropCanvasY - (targetNode.position.y + NODE_RADIUS)
           );
-          if (dist < 60) {
+          if (dist < 75) {
             connectSocket(node.id, socketType, targetNode.id);
             matchedNode = true;
           }
@@ -244,8 +269,8 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
       {/* Leak status indicator badge */}
       {isLeaking && (
         <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex justify-center pointer-events-none whitespace-nowrap">
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-3xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-sm">
-            <AlertTriangle size={10} />
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 text-3xs font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-sm">
+            <AlertTriangle size={11} />
             <span>leaking</span>
           </span>
         </div>
@@ -254,15 +279,15 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
       {/* Floating Delete Button at top right */}
       <button
         onClick={handleDelete}
-        className="absolute -top-2 -right-2 z-40 w-5 h-5 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-75 transition-all duration-150 cursor-pointer"
+        className="absolute -top-2 -right-2 z-40 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-75 transition-all duration-150 cursor-pointer"
         title="Delete node"
       >
-        <X size={11} strokeWidth={3} />
+        <X size={13} strokeWidth={2.5} />
       </button>
 
-      {/* Circular Node Body (w-[76px] h-[76px]) */}
+      {/* Circular Node Body (w-[92px] h-[92px] - scaled up for effortless dragging and interaction) */}
       <div
-        className={`relative w-[76px] h-[76px] rounded-full flex flex-col items-center justify-center shadow-md transition-all duration-200 border-2 border-white/20 ${
+        className={`relative w-[92px] h-[92px] rounded-full flex flex-col items-center justify-center shadow-lg transition-all duration-200 border-2 border-white/20 ${
           isDoubly ? 'ring-2 ring-white/30 ring-offset-2 ring-offset-[#080808]' : ''
         } ${
           isTraversed || isHighlighted
@@ -271,27 +296,27 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
             ? 'ring-4 ring-white'
             : isTargetForConnecting
             ? 'ring-2 ring-white/60 hover:scale-105 cursor-pointer'
-            : ''
+            : 'hover:scale-102'
         }`}
         style={{
           backgroundColor: solidBgColor,
           boxShadow: isReachable
-            ? `0 0 22px ${CONNECTED_COLOR}66`
-            : `0 4px 14px ${solidBgColor}44`,
+            ? '0 0 16px rgba(16, 185, 129, 0.45), 0 2px 8px rgba(0, 0, 0, 0.5)'
+            : `0 0 12px ${solidBgColor}35, 0 2px 6px rgba(0, 0, 0, 0.4)`,
         }}
       >
-        {/* Top: Bold, Direct Singly / Doubly Label (No Background Box) */}
+        {/* Top: Bold, Direct Singly / Doubly Label */}
         <button
           onClick={() => setNodeType(node.id, node.nodeType === 'doubly' ? 'singly' : 'doubly')}
-          className="absolute top-2.5 left-1/2 -translate-x-1/2 text-[9px] font-mono font-black uppercase tracking-wider cursor-pointer select-none transition-transform whitespace-nowrap leading-none hover:scale-110"
+          className="absolute top-2 left-1/2 -translate-x-1/2 text-[10px] font-mono font-black uppercase tracking-wider cursor-pointer select-none transition-transform whitespace-nowrap leading-none hover:scale-110"
           style={{ color: textColor }}
           title={`Click to toggle: Currently ${isDoubly ? 'Doubly Linked' : 'Singly Linked'}`}
         >
           {isDoubly ? 'DOUBLY' : 'SINGLY'}
         </button>
 
-        {/* Node Payload Center Value (Centered with breathing room) */}
-        <div className="pt-2">
+        {/* Node Payload Center Value */}
+        <div className="pt-2.5">
           {isEditing ? (
             <input
               type="text"
@@ -302,13 +327,13 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
                 if (e.key === 'Enter' || e.key === 'Escape') setIsEditing(false);
               }}
               autoFocus
-              className="w-12 text-center bg-black/25 font-black text-sm border-b border-black outline-none font-mono py-0.5 rounded"
+              className="w-14 text-center bg-black/25 font-black text-base border-b-2 border-black outline-none font-mono py-0.5 rounded"
               style={{ color: textColor }}
             />
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="text-base sm:text-lg font-black tracking-tight hover:scale-110 transition-transform font-mono drop-shadow-sm"
+              className="text-lg sm:text-xl font-black tracking-tight hover:scale-110 transition-transform font-mono drop-shadow-sm px-1.5 py-0.5 rounded"
               style={{ color: textColor }}
               title="Click to edit value"
             >
@@ -322,11 +347,11 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
           <div
             onMouseDown={(e) => handleSocketDragStart(e, 'prev')}
             title={isPrevConnected ? 'Prev connected: Click to unlink or drag' : 'Prev socket: Drag to connect'}
-            className={`socket-handle absolute -left-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#121212] border-2 ${
-              isPrevConnected ? 'border-amber-400 bg-amber-400/20' : 'border-white'
+            className={`socket-handle absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#121212] border-2 ${
+              isPrevConnected ? 'border-amber-400 bg-amber-400/20 ring-2 ring-amber-400/40' : 'border-white'
             } flex items-center justify-center cursor-crosshair hover:scale-125 transition-transform z-30 shadow-md`}
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+            <div className="w-2 h-2 rounded-full bg-white" />
           </div>
         )}
 
@@ -335,22 +360,22 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
           <div
             onMouseDown={(e) => handleSocketDragStart(e, 'next')}
             title={isNextConnected ? 'Next connected: Click to unlink or drag' : 'Next socket: Drag to connect'}
-            className={`socket-handle absolute -right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-[#121212] border-2 ${
+            className={`socket-handle absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#121212] border-2 ${
               isNextConnected
-                ? 'border-accent bg-accent/20'
+                ? 'border-accent bg-accent/20 ring-2 ring-accent/40'
                 : isConnectingFromSelf
                 ? 'border-white ring-2 ring-white'
                 : 'border-white'
             } flex items-center justify-center cursor-crosshair hover:scale-125 transition-transform z-30 shadow-md`}
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-white" />
+            <div className="w-2 h-2 rounded-full bg-white" />
           </div>
         )}
       </div>
 
       {/* Traversal Pointer Logos Attached Directly Underneath Node */}
       {attachedPointers.length > 0 && (
-        <div className="absolute top-[80px] left-1/2 -translate-x-1/2 flex items-center gap-2 pointer-events-auto">
+        <div className="absolute top-[96px] left-1/2 -translate-x-1/2 flex items-center gap-2 pointer-events-auto">
           {attachedPointers.map((ptr) => {
             const isSelected = activePointerId === ptr.id;
             const pointerColor = isSelected ? '#FFFFFF' : CONNECTED_COLOR;
@@ -372,22 +397,22 @@ export const NodePrimitive = ({ node, isHighlighted = false }) => {
                     deleteFreePointer(ptr.id);
                     setActivePointerId(null);
                   }}
-                  className="absolute -top-1.5 -right-2 z-40 w-3.5 h-3.5 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-75 transition-all duration-150 cursor-pointer"
+                  className="absolute -top-1.5 -right-2 z-40 w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-75 transition-all duration-150 cursor-pointer"
                   title={`Delete pointer ${ptr.label}`}
                 >
-                  <X size={8} strokeWidth={3} />
+                  <X size={9} strokeWidth={3} />
                 </button>
 
                 {/* Crisp Upward-Pointing Arrow */}
                 <ArrowUp
-                  size={14}
+                  size={16}
                   strokeWidth={3}
                   className="transition-transform group-hover:-translate-y-0.5"
                   style={{ color: pointerColor }}
                 />
                 {/* Clean Pointer Label */}
                 <span
-                  className="text-[10px] font-mono font-black tracking-tight leading-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
+                  className="text-xs font-mono font-black tracking-tight leading-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] px-1 py-0.5 rounded"
                   style={{ color: pointerColor }}
                 >
                   {ptr.label}

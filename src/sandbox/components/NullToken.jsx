@@ -2,6 +2,9 @@ import React, { useRef, useState } from 'react';
 import { useSandboxStore } from '../core/useSandboxStore';
 import { X } from 'lucide-react';
 
+export const NULL_WIDTH = 100;
+export const NULL_HEIGHT = 44;
+
 export const NullToken = ({ nullToken }) => {
   const {
     updateNullPosition,
@@ -18,12 +21,12 @@ export const NullToken = ({ nullToken }) => {
     if (e.target.closest('button')) return;
     e.stopPropagation();
 
-    // If currently in click-to-connect mode, clicking NULL completes the connection!
+    // If currently in click-to-connect mode, clicking NULL completes the connection to this specific NULL token!
     if (connectingSource) {
       if (connectingSource.sourceType === 'socket') {
-        connectSocket(connectingSource.sourceId, connectingSource.socketType, 'NULL');
+        connectSocket(connectingSource.sourceId, connectingSource.socketType, nullToken.id);
       } else if (connectingSource.sourceType === 'pointer') {
-        setPointerTarget(connectingSource.sourceId, 'NULL');
+        setPointerTarget(connectingSource.sourceId, nullToken.id);
       }
       return;
     }
@@ -67,17 +70,17 @@ export const NullToken = ({ nullToken }) => {
         transform: `translate3d(${nullToken.position.x}px, ${nullToken.position.y}px, 0px)`,
       }}
       className="absolute select-none font-mono cursor-grab active:cursor-grabbing z-20 group will-change-transform"
-      title={isConnecting ? 'Click to connect to NULL' : 'NULL Terminator (drag pointer here)'}
+      title={isConnecting ? 'Click to connect to this NULL terminator' : 'NULL Terminator (drag or connect here)'}
     >
-      {/* Solid Rectangle Box for NULL Token (Matching #18181B) */}
+      {/* Solid Rectangle Box for NULL Token (Size scaled up for comfortable grabbing) */}
       <div
-        className={`relative flex items-center justify-between px-3.5 py-1.5 rounded-md bg-[#18181B] border border-dashed shadow-xl font-mono font-black text-xs text-white transition-all ${
+        className={`relative flex items-center justify-between px-5 py-2.5 rounded-xl bg-[#18181B] border-2 border-dashed shadow-xl font-mono font-black text-sm text-white transition-all ${
           isConnecting
-            ? 'border-emerald-400 ring-2 ring-emerald-400/40 cursor-pointer animate-pulse'
-            : 'border-white/20 hover:border-white/40'
+            ? 'border-emerald-400 cursor-pointer scale-105'
+            : 'border-white/25 hover:border-white/50 hover:scale-105'
         }`}
       >
-        <span>NULL</span>
+        <span className="tracking-widest">NULL</span>
 
         {/* Delete NULL Token Button */}
         <button
@@ -85,10 +88,10 @@ export const NullToken = ({ nullToken }) => {
             e.stopPropagation();
             deleteNullToken(nullToken.id);
           }}
-          className="opacity-0 group-hover:opacity-100 ml-2 p-0.5 text-text-muted hover:text-red-400 rounded-xs transition-opacity"
+          className="opacity-0 group-hover:opacity-100 ml-2.5 p-1 text-text-muted hover:text-red-400 hover:bg-red-500/10 rounded-md transition-all"
           title="Delete NULL token"
         >
-          <X size={11} />
+          <X size={13} strokeWidth={2.5} />
         </button>
       </div>
     </div>
