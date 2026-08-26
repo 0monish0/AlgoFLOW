@@ -36,11 +36,11 @@ export const TopBar = () => {
             {isCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
           </button>
 
-          <Link to="/" className="flex items-center gap-2 text-sm sm:text-base font-extrabold tracking-tight text-accent drop-shadow-[0_0_20px_rgba(112,224,0,0.4)] group">
+          <Link to="/" className="flex items-center gap-2 text-sm sm:text-base font-extrabold tracking-tight group">
             <div className="w-6 h-6 rounded-lg bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
               <Code2 size={14} />
             </div>
-            <span>AgroFlow</span>
+            <span className="text-primary font-extrabold tracking-tight">Agro<span className="text-accent">Flow</span></span>
           </Link>
         </div>
 

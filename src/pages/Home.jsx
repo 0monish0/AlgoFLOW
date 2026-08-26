@@ -35,8 +35,8 @@ export const Home = () => {
             <div className="w-7 h-7 rounded-lg bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
               <Code2 size={16} />
             </div>
-            <span className="text-sm sm:text-base font-extrabold tracking-tight text-accent drop-shadow-[0_0_20px_rgba(112,224,0,0.4)]">
-              AgroFlow
+            <span className="text-sm sm:text-base font-extrabold tracking-tight text-primary">
+              Agro<span className="text-accent">Flow</span>
             </span>
           </Link>
 

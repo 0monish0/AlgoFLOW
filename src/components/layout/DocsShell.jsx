@@ -14,8 +14,8 @@ export const DocsShell = () => {
 
       {/* Main Multi-Column Layout */}
       <div className="flex-1 flex w-full max-w-[1600px] mx-auto">
-        {/* Desktop Sidebar */}
-        <div className="hidden md:block">
+        {/* Desktop Sidebar (Fixed / Sticky to Viewport) */}
+        <div className="hidden md:block sticky top-16 h-[calc(100vh-4rem)] self-start shrink-0 z-20">
           <Sidebar />
         </div>
 
