@@ -30,7 +30,7 @@ export const Sidebar = ({ isMobile = false }) => {
         className={({ isActive }) =>
           `group relative flex items-center px-3 py-1.5 rounded-lg text-[13px] font-mono select-none transition-all ${
             isActive
-              ? 'text-[#F5EEDD] dark:text-[#081722] font-bold z-10'
+              ? 'text-white dark:text-[#080808] font-bold z-10'
               : 'text-text/80 hover:text-primary hover:bg-accent/10 font-medium'
           }`
         }
@@ -44,7 +44,7 @@ export const Sidebar = ({ isMobile = false }) => {
               stiffness: 450,
               damping: 32,
             }}
-            className="absolute inset-0 rounded-lg bg-primary text-white dark:bg-[#F5EEDD] shadow-xs"
+            className="absolute inset-0 rounded-lg bg-accent shadow-xs shadow-accent/25"
           />
         )}
 
@@ -88,9 +88,7 @@ export const Sidebar = ({ isMobile = false }) => {
 
   return (
     <aside
-      className={`h-full flex flex-col font-mono select-none bg-surface/40 border-r border-border ${
-        isMobile ? 'w-full' : 'w-80 shrink-0'
-      }`}
+      className="h-full w-full flex flex-col font-mono select-none bg-surface/40 border-r border-border"
     >
       {/* Sidebar Top Header */}
       <div className="p-3.5 border-b border-border">

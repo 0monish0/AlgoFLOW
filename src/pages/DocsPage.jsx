@@ -4,9 +4,12 @@ import { getTopicBySlug } from '../content';
 import { Breadcrumb } from '../components/docs/Breadcrumb';
 import { ComplexityTable } from '../components/docs/ComplexityTable';
 import { MarkdownRenderer } from '../components/docs/MarkdownRenderer';
+import { TopicMediaCard } from '../components/docs/TopicMediaCard';
 import { TocRail } from '../components/layout/TocRail';
+import { useSidebarStore } from '../store/sidebarStore';
 
 export const DocsPage = () => {
+  const { isCollapsed } = useSidebarStore();
   const { slug = 'is-there-even-a-need' } = useParams();
   const topic = getTopicBySlug(slug);
 
@@ -27,22 +30,33 @@ export const DocsPage = () => {
   }
 
   return (
-    <div className="flex items-start">
-      {/* Main Document Body */}
-      <article className="flex-1 min-w-0 font-mono">
+    <div className="w-full flex items-start justify-between gap-8 2xl:gap-12">
+      {/* Main Document Body (70% when collapsed, 50% / 62.5% of remaining when sidebar open) */}
+      <article
+        className={`w-full min-w-0 font-mono transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isCollapsed ? 'xl:w-[70%]' : 'xl:w-[62.5%]'
+        }`}
+      >
         {/* Breadcrumb Navigation */}
         <Breadcrumb category={topic.category} title={topic.title} />
 
         {/* Header & Concept Lead Summary */}
-        <div className="space-y-3 mb-6">
+        <div className="space-y-4 mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-primary">
             {topic.title}
           </h1>
+
+          {/* Full-Width Lead Concept Narrative */}
           {topic.lead && (
             <div className="text-sm sm:text-base text-text leading-relaxed font-normal">
               <MarkdownRenderer content={topic.lead} />
             </div>
           )}
+
+          {/* Mobile/Tablet Fallback Visual Guide (Visible only when right rail is hidden) */}
+          <div className="xl:hidden my-6">
+            <TopicMediaCard slug={topic.slug} title={topic.title} customGif={topic.gif} />
+          </div>
         </div>
 
         {/* Detailed Technical Sections */}
@@ -67,8 +81,14 @@ export const DocsPage = () => {
         )}
       </article>
 
-      {/* Right Table-Of-Contents Rail */}
-      <TocRail sections={topic.sections || []} />
+      {/* Right Table-Of-Contents Rail with Static Sticky Positioning and Media Card */}
+      <TocRail
+        sections={topic.sections || []}
+        slug={topic.slug}
+        title={topic.title}
+        customGif={topic.gif}
+        isCollapsed={isCollapsed}
+      />
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { TopicMediaCard } from '../docs/TopicMediaCard';
 
-export const TocRail = ({ sections = [] }) => {
+export const TocRail = ({ sections = [], slug, title, customGif, isCollapsed = false }) => {
   const [activeId, setActiveId] = useState('');
   const location = useLocation();
 
@@ -30,34 +31,47 @@ export const TocRail = ({ sections = [] }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [sections, location]);
 
-  if (!sections || sections.length === 0) return null;
-
   return (
-    <aside className="hidden xl:block w-56 shrink-0 font-mono select-none pl-6">
-      <div className="sticky top-20">
-        <div className="text-2xs font-extrabold uppercase tracking-wider text-primary mb-3">
-          On This Page
-        </div>
-        <nav className="space-y-1.5 border-l border-border/80 pl-3">
-          {sections.map((section) => {
-            const isActive = activeId === section.id;
+    <aside
+      className={`hidden xl:block shrink-0 font-mono select-none sticky top-16 h-[calc(100vh-4rem)] self-start overflow-y-auto pl-4 2xl:pl-8 pr-6 xl:pr-10 2xl:pr-14 py-2 z-20 transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        isCollapsed ? 'w-full xl:w-[30%]' : 'w-full xl:w-[37.5%]'
+      }`}
+    >
+      {/* On This Page TOC Section */}
+      {sections && sections.length > 0 && (
+        <div>
+          <div className="text-2xs font-extrabold uppercase tracking-wider text-primary mb-3.5">
+            On This Page
+          </div>
+          <nav className="space-y-2 border-l border-border/80 pl-3">
+            {sections.map((section) => {
+              const isActive = activeId === section.id;
 
-            return (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className={`block text-2xs transition-colors truncate ${
-                  isActive
-                    ? 'text-primary font-bold translate-x-0.5'
-                    : 'text-text-muted hover:text-primary font-medium'
-                }`}
-              >
-                {section.title}
-              </a>
-            );
-          })}
-        </nav>
+              return (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  className={`block text-2xs transition-colors truncate ${
+                    isActive
+                      ? 'text-accent font-bold translate-x-0.5'
+                      : 'text-text-muted hover:text-primary font-medium'
+                  }`}
+                >
+                  {section.title}
+                </a>
+              );
+            })}
+          </nav>
+        </div>
+      )}
+
+      {/* Increased Spacing Gap between 'On This Page' and Visual GIF Box */}
+      <div className={sections && sections.length > 0 ? 'mt-[68px]' : 'mt-0'}>
+        {slug && (
+          <TopicMediaCard slug={slug} title={title} customGif={customGif} />
+        )}
       </div>
     </aside>
   );
 };
+

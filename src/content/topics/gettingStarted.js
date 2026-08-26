@@ -82,7 +82,7 @@ public class MemoryModel {
     public void demo() {
         int stackPrimitive = 42; // on Thread Stack
         int[] heapArray = new int[100]; // array header & elements on Heap
-        String heapObj = new String("AgroFlow"); // Heap object
+        String heapObj = new String("AlgoFlow"); // Heap object
     }
 }`
     }

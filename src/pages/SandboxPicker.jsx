@@ -78,8 +78,8 @@ export const SandboxPicker = () => {
             <div className="w-7 h-7 rounded-lg bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
               <Code2 size={16} />
             </div>
-            <span className="text-sm sm:text-base font-extrabold tracking-tight text-primary">
-              Agro<span className="text-accent">Flow</span>
+            <span className="text-sm sm:text-base font-extrabold tracking-tight text-white">
+              Algo<span className="text-accent">Flow</span>
             </span>
           </Link>
 

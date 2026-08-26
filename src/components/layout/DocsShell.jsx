@@ -1,11 +1,12 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { TopBar } from './TopBar';
 import { Sidebar } from './Sidebar';
 import { useSidebarStore } from '../../store/sidebarStore';
 
 export const DocsShell = () => {
-  const { mobileOpen, setMobileOpen } = useSidebarStore();
+  const { mobileOpen, setMobileOpen, isCollapsed } = useSidebarStore();
 
   return (
     <div className="min-h-screen flex flex-col bg-base text-text">
@@ -13,11 +14,27 @@ export const DocsShell = () => {
       <TopBar />
 
       {/* Main Multi-Column Layout */}
-      <div className="flex-1 flex w-full max-w-[1600px] mx-auto">
-        {/* Desktop Sidebar (Fixed / Sticky to Viewport) */}
-        <div className="hidden md:block sticky top-16 h-[calc(100vh-4rem)] self-start shrink-0 z-20">
-          <Sidebar />
-        </div>
+      <div className="flex-1 flex w-full relative">
+        {/* Desktop Sidebar (Smooth Animated Expansion/Collapse without content deformation) */}
+        <AnimatePresence initial={false}>
+          {!isCollapsed && (
+            <motion.aside
+              key="desktop-sidebar"
+              initial={{ width: 0, opacity: 0 }}
+              animate={{
+                width: window.innerWidth >= 1280 ? '20%' : '16rem',
+                opacity: 1,
+              }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              className="hidden md:block sticky top-16 h-[calc(100vh-4rem)] self-start shrink-0 z-20 overflow-hidden"
+            >
+              <div className="w-full h-full min-w-[220px]">
+                <Sidebar />
+              </div>
+            </motion.aside>
+          )}
+        </AnimatePresence>
 
         {/* Mobile Slide-Over Drawer */}
         {mobileOpen && (
@@ -34,11 +51,9 @@ export const DocsShell = () => {
           </div>
         )}
 
-        {/* Center Content Column + Right TOC */}
-        <main className="flex-1 min-w-0 flex justify-center py-8 px-4 sm:px-8 lg:px-12">
-          <div className="w-full max-w-4xl min-w-0">
-            <Outlet />
-          </div>
+        {/* Center + Right Content Area */}
+        <main className="flex-1 min-w-0 py-8 pl-4 sm:pl-6 lg:pl-8 pr-6 sm:pr-8 lg:pr-12 2xl:pr-16">
+          <Outlet />
         </main>
       </div>
     </div>

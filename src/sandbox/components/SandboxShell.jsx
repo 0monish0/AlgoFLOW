@@ -10,6 +10,7 @@ export const SandboxShell = ({
   variants = [],
   activeVariant = 'singly',
   onVariantChange,
+  docSlug,
 }) => {
   const { mode, setMode } = useSandboxStore();
   const { theme, toggleTheme } = useThemeStore();
@@ -35,7 +36,7 @@ export const SandboxShell = ({
                 <div className="w-5 h-5 rounded-md bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
                   <Code2 size={12} />
                 </div>
-                <span>Agro<span className="text-accent">Flow</span></span>
+                <span className="text-white">Algo<span className="text-accent">Flow</span></span>
               </Link>
               <span className="text-xs font-normal text-text-muted hidden md:inline">
                 / {title}
@@ -102,8 +103,8 @@ export const SandboxShell = ({
 
             {/* Docs link */}
             <Link
-              to="/docs/linked-list"
-              className="px-3 py-1 rounded-full bg-accent hover:opacity-90 text-black font-extrabold text-xs transition-all shadow-xs"
+              to={docSlug ? `/docs/${docSlug}` : title.toLowerCase().includes('linked') ? '/docs/why-a-linked-list' : '/docs/is-there-even-a-need'}
+              className="px-3.5 py-1.5 rounded-full bg-accent hover:opacity-95 text-black font-extrabold text-xs transition-all shadow-xs shrink-0"
             >
               Docs
             </Link>

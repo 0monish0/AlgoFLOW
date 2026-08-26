@@ -291,7 +291,19 @@ export const MarkdownRenderer = ({ content }) => {
       continue;
     }
 
-    // 4. Heading: ### or ####
+    // 4. Standalone Image / GIF / Media: ![alt](url)
+    const imgMatch = line.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imgMatch) {
+      blocks.push({
+        type: 'image',
+        alt: imgMatch[1],
+        src: imgMatch[2],
+      });
+      i++;
+      continue;
+    }
+
+    // 5. Heading: ### or ####
     if (line.trim().startsWith('####')) {
       blocks.push({
         type: 'h4',
@@ -309,14 +321,14 @@ export const MarkdownRenderer = ({ content }) => {
       continue;
     }
 
-    // 5. Divider: ---
+    // 6. Divider: ---
     if (line.trim() === '---') {
       blocks.push({ type: 'hr' });
       i++;
       continue;
     }
 
-    // 6. List items: - or * or 1.
+    // 7. List items: - or * or 1.
     if (line.trim().match(/^[-*]\s+/) || line.trim().match(/^\d+\.\s+/)) {
       const listItems = [];
       const isOrdered = Boolean(line.trim().match(/^\d+\.\s+/));
@@ -332,7 +344,7 @@ export const MarkdownRenderer = ({ content }) => {
       continue;
     }
 
-    // 7. Regular paragraph
+    // 8. Regular paragraph
     if (line.trim() === '') {
       i++;
       continue;
@@ -345,6 +357,7 @@ export const MarkdownRenderer = ({ content }) => {
       !lines[i].trim().startsWith('```') &&
       !lines[i].trim().startsWith('>') &&
       !lines[i].trim().startsWith('|') &&
+      !lines[i].trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/) &&
       !lines[i].trim().startsWith('###') &&
       !lines[i].trim().startsWith('####') &&
       !lines[i].trim().match(/^[-*]\s+/) &&
@@ -429,6 +442,38 @@ export const MarkdownRenderer = ({ content }) => {
                   </tbody>
                 </table>
               </div>
+            );
+          }
+
+          case 'image': {
+            const isVideo = block.src.endsWith('.mp4') || block.src.endsWith('.webm');
+            return (
+              <figure key={index} className="my-6 flex flex-col items-center">
+                <div className="rounded-xl overflow-hidden border border-border/80 bg-surface/40 shadow-lg backdrop-blur-xs max-w-full">
+                  {isVideo ? (
+                    <video
+                      src={block.src}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="max-w-full h-auto rounded-xl max-h-[480px] object-contain"
+                    />
+                  ) : (
+                    <img
+                      src={block.src}
+                      alt={block.alt || 'Documentation diagram'}
+                      loading="lazy"
+                      className="max-w-full h-auto rounded-xl max-h-[480px] object-contain"
+                    />
+                  )}
+                </div>
+                {block.alt && (
+                  <figcaption className="mt-2 text-2xs text-text-muted/80 text-center font-mono">
+                    {block.alt}
+                  </figcaption>
+                )}
+              </figure>
             );
           }
 
