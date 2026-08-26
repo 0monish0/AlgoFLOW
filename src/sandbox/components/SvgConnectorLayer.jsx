@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSandboxStore } from '../core/useSandboxStore';
+import { NODE_DIAMETER, NODE_RADIUS } from './NodePrimitive';
+import { CONNECTED_COLOR } from '../core/graphModel';
 
 export const SvgConnectorLayer = () => {
   const {
@@ -8,133 +10,241 @@ export const SvgConnectorLayer = () => {
     nullTokens,
     activeWire,
     setSelectedEdge,
+    disconnectSocket,
+    setPointerTarget,
+    evaluation,
   } = useSandboxStore();
 
-  const NODE_WIDTH = 136;
-  const HALF_HEIGHT = 28;
+  const [hoveredEdgeId, setHoveredEdgeId] = useState(null);
 
-  // Helper to calculate smooth cubic Bézier curve between 2 points
-  const computeBezierPath = (x1, y1, x2, y2, isPrev = false, isLoop = false) => {
-    if (isLoop) {
-      const midY = Math.min(y1, y2) - 75;
-      return `M ${x1} ${y1} C ${x1 + 50} ${midY}, ${x2 - 50} ${midY}, ${x2} ${y2}`;
+  // Flawless, professional Bézier curve generator for graph nodes and pointers
+  const computeSmoothCurve = ({
+    sourceX,
+    sourceY,
+    targetNode,
+    targetNull,
+    socketType = 'next',
+    isFreePointer = false,
+  }) => {
+    // 1. Target is NULL Token
+    if (targetNull) {
+      const targetX = targetNull.position.x;
+      const targetY = targetNull.position.y + 16;
+      const dx = Math.max(35, Math.abs(targetX - sourceX) * 0.45);
+
+      return {
+        path: `M ${sourceX} ${sourceY} C ${sourceX + dx} ${sourceY}, ${targetX - dx} ${targetY}, ${targetX} ${targetY}`,
+        midX: (sourceX + targetX) / 2,
+        midY: (sourceY + targetY) / 2,
+      };
     }
 
-    if (isPrev) {
-      const midY = Math.max(y1, y2) + 45;
-      return `M ${x1} ${y1} C ${x1 - 35} ${midY}, ${x2 + 35} ${midY}, ${x2} ${y2}`;
+    // 2. Free pointer targeting live node
+    if (isFreePointer && targetNode) {
+      const cx2 = targetNode.position.x + NODE_RADIUS;
+      const cy2 = targetNode.position.y + NODE_RADIUS;
+      const endX = targetNode.position.x;
+      const endY = cy2;
+      const dx = Math.max(30, Math.abs(endX - sourceX) * 0.4);
+
+      return {
+        path: `M ${sourceX} ${sourceY} C ${sourceX + dx} ${sourceY}, ${endX - dx} ${endY}, ${endX} ${endY}`,
+        midX: (sourceX + endX) / 2,
+        midY: (sourceY + endY) / 2,
+      };
     }
 
-    const dx = Math.max(30, Math.abs(x2 - x1) * 0.45);
-    return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+    if (!targetNode) {
+      return null;
+    }
+
+    const cx2 = targetNode.position.x + NODE_RADIUS;
+    const cy2 = targetNode.position.y + NODE_RADIUS;
+
+    // 3. Self-Loop (node points to itself)
+    if (targetNode.id === targetNode.selfId) {
+      const loopRadius = 35;
+      return {
+        path: `M ${sourceX} ${sourceY} C ${sourceX + loopRadius} ${sourceY - loopRadius}, ${sourceX - loopRadius} ${sourceY - loopRadius * 1.6}, ${cx2} ${cy2 - NODE_RADIUS}`,
+        midX: sourceX + 15,
+        midY: sourceY - loopRadius * 1.2,
+      };
+    }
+
+    // 4. Standard Next Socket Flow
+    if (socketType === 'next') {
+      const dxRel = cx2 - sourceX;
+      const dyRel = cy2 - sourceY;
+
+      // Case A: Target is to the right (Normal forward flow)
+      if (dxRel >= 20) {
+        const targetX = targetNode.position.x;
+        const targetY = cy2;
+        const curveDist = Math.max(35, (targetX - sourceX) * 0.45);
+
+        return {
+          path: `M ${sourceX} ${sourceY} C ${sourceX + curveDist} ${sourceY}, ${targetX - curveDist} ${targetY}, ${targetX} ${targetY}`,
+          midX: (sourceX + targetX) / 2,
+          midY: (sourceY + targetY) / 2,
+        };
+      }
+
+      // Case B: Target is directly below or down-left (Vertical / downward cascade flow)
+      if (dyRel > 30) {
+        const targetX = cx2;
+        const targetY = targetNode.position.y;
+        const bendOffset = Math.max(30, Math.min(70, dyRel * 0.35));
+
+        return {
+          path: `M ${sourceX} ${sourceY} C ${sourceX + bendOffset} ${sourceY}, ${targetX} ${targetY - bendOffset}, ${targetX} ${targetY}`,
+          midX: (sourceX + targetX) / 2 + 15,
+          midY: (sourceY + targetY) / 2,
+        };
+      }
+
+      // Case C: Target is directly above or up-left (Vertical / upward cascade flow)
+      if (dyRel < -30) {
+        const targetX = cx2;
+        const targetY = targetNode.position.y + NODE_DIAMETER;
+        const bendOffset = Math.max(30, Math.min(70, Math.abs(dyRel) * 0.35));
+
+        return {
+          path: `M ${sourceX} ${sourceY} C ${sourceX + bendOffset} ${sourceY}, ${targetX} ${targetY + bendOffset}, ${targetX} ${targetY}`,
+          midX: (sourceX + targetX) / 2 + 15,
+          midY: (sourceY + targetY) / 2,
+        };
+      }
+
+      // Case D: Target is directly to the left (Loop backward)
+      const targetX = targetNode.position.x + NODE_DIAMETER;
+      const targetY = cy2;
+      const arcHeight = Math.min(sourceY, targetY) - 50;
+
+      return {
+        path: `M ${sourceX} ${sourceY} C ${sourceX + 45} ${arcHeight}, ${targetX - 45} ${arcHeight}, ${targetX} ${targetY}`,
+        midX: (sourceX + targetX) / 2,
+        midY: arcHeight + 10,
+      };
+    }
+
+    // 5. Doubly Linked Prev Socket Flow
+    if (socketType === 'prev') {
+      const targetX = targetNode.position.x + NODE_DIAMETER;
+      const targetY = cy2;
+      const dx = Math.max(35, Math.abs(targetX - sourceX) * 0.45);
+      const dyOffset = Math.max(sourceY, targetY) + 40;
+
+      return {
+        path: `M ${sourceX} ${sourceY} C ${sourceX - 35} ${dyOffset}, ${targetX + 35} ${dyOffset}, ${targetX} ${targetY}`,
+        midX: (sourceX + targetX) / 2,
+        midY: dyOffset - 10,
+      };
+    }
+
+    return null;
   };
 
   const edgesToRender = [];
 
-  // Helper to find NULL token anchor
-  const getNullAnchor = (sourceX, sourceY) => {
-    const firstNull = Object.values(nullTokens || {})[0];
-    if (firstNull && firstNull.position) {
-      return { x: firstNull.position.x, y: firstNull.position.y + 16 };
-    }
-    return { x: sourceX + 80, y: sourceY };
-  };
-
-  // 1. Render all Free Pointers
-  Object.values(freePointers).forEach((fp) => {
+  // 1. Render Free Pointers (Head always gets its wire; other pointers only when targeting NULL)
+  Object.values(freePointers || {}).forEach((fp) => {
     if (!fp || !fp.position) return;
 
-    const startX = fp.position.x + 60;
-    const startY = fp.position.y + 14;
+    const isHead = fp.label.toLowerCase() === 'head';
+    const isTargetingNode = Boolean(fp.targetId && nodes[fp.targetId]);
 
-    if (fp.targetId) {
-      if (fp.targetId === 'NULL') {
-        const nullAnchor = getNullAnchor(startX, startY);
+    // Other pointers targeting a live node are attached directly beneath the node
+    if (isTargetingNode && !isHead) return;
+
+    const startX = fp.position.x + 85;
+    const startY = fp.position.y + 17;
+
+    if (isTargetingNode && isHead) {
+      const targetNode = nodes[fp.targetId];
+      const curve = computeSmoothCurve({
+        sourceX: startX,
+        sourceY: startY,
+        targetNode,
+        isFreePointer: true,
+      });
+
+      if (curve) {
+        edgesToRender.push({
+          id: `edge-${fp.id}`,
+          sourceId: fp.id,
+          sourceType: 'pointer',
+          targetId: fp.targetId,
+          path: curve.path,
+          midX: curve.midX,
+          midY: curve.midY,
+          isReachable: true,
+        });
+      }
+    } else if (fp.targetId === 'NULL') {
+      const targetNull = Object.values(nullTokens || {})[0] || { position: { x: startX + 80, y: startY } };
+      const curve = computeSmoothCurve({
+        sourceX: startX,
+        sourceY: startY,
+        targetNull,
+        isFreePointer: true,
+      });
+
+      if (curve) {
         edgesToRender.push({
           id: `edge-${fp.id}`,
           sourceId: fp.id,
           sourceType: 'pointer',
           targetId: 'NULL',
-          path: computeBezierPath(startX, startY, nullAnchor.x, nullAnchor.y),
-          midX: (startX + nullAnchor.x) / 2,
-          midY: (startY + nullAnchor.y) / 2,
-          isDangling: false,
-        });
-      } else if (nodes[fp.targetId] && nodes[fp.targetId].position) {
-        const targetNode = nodes[fp.targetId];
-        const endX = targetNode.position.x;
-        const endY = targetNode.position.y + HALF_HEIGHT;
-
-        edgesToRender.push({
-          id: `edge-${fp.id}`,
-          sourceId: fp.id,
-          sourceType: 'pointer',
-          targetId: fp.targetId,
-          path: computeBezierPath(startX, startY, endX, endY),
-          midX: (startX + endX) / 2,
-          midY: (startY + endY) / 2,
-          isDangling: false,
-        });
-      } else {
-        // Dangling pointer
-        edgesToRender.push({
-          id: `edge-${fp.id}`,
-          sourceId: fp.id,
-          sourceType: 'pointer',
-          targetId: fp.targetId,
-          path: computeBezierPath(startX, startY, startX + 70, startY + 25),
-          midX: startX + 35,
-          midY: startY + 12,
-          isDangling: true,
-          targetX: startX + 70,
-          targetY: startY + 25,
+          path: curve.path,
+          midX: curve.midX,
+          midY: curve.midY,
+          isReachable: false,
         });
       }
     }
   });
 
   // 2. Render all Node Sockets (Next & Prev)
-  Object.values(nodes).forEach((node) => {
+  Object.values(nodes || {}).forEach((node) => {
     if (!node || !node.sockets || !node.position) return;
 
     Object.entries(node.sockets).forEach(([socketType, edge]) => {
       if (!edge || !edge.targetId) return;
 
-      let sourceX = node.position.x + NODE_WIDTH;
-      let sourceY = node.position.y + HALF_HEIGHT;
+      let sourceX = node.position.x + NODE_DIAMETER;
+      let sourceY = node.position.y + NODE_RADIUS;
 
       if (socketType === 'prev') {
         sourceX = node.position.x;
-        sourceY = node.position.y + HALF_HEIGHT;
+        sourceY = node.position.y + NODE_RADIUS;
       }
 
-      let isDangling = false;
-      let isLoop = false;
-      let targetX = sourceX + 60;
-      let targetY = sourceY;
+      let curve = null;
 
       if (edge.targetId === 'NULL') {
-        const nullAnchor = getNullAnchor(sourceX, sourceY);
-        targetX = nullAnchor.x;
-        targetY = nullAnchor.y;
+        const targetNull = Object.values(nullTokens || {})[0] || { position: { x: sourceX + 80, y: sourceY } };
+        curve = computeSmoothCurve({
+          sourceX,
+          sourceY,
+          targetNull,
+          socketType,
+        });
       } else if (nodes[edge.targetId] && nodes[edge.targetId].position) {
-        const targetNode = nodes[edge.targetId];
-        if (socketType === 'prev') {
-          targetX = targetNode.position.x + NODE_WIDTH;
-          targetY = targetNode.position.y + HALF_HEIGHT;
-        } else {
-          targetX = targetNode.position.x;
-          targetY = targetNode.position.y + HALF_HEIGHT;
-        }
-
-        if (targetNode.position.x <= node.position.x && socketType === 'next') {
-          isLoop = true;
-        }
+        const targetNode = { ...nodes[edge.targetId], selfId: node.id };
+        curve = computeSmoothCurve({
+          sourceX,
+          sourceY,
+          targetNode,
+          socketType,
+        });
       } else {
-        isDangling = true;
-        targetX = sourceX + 70;
-        targetY = sourceY + 25;
+        // Unlinked socket / non-existent target: DO NOT render any edge or cut button!
+        return;
       }
+
+      if (!curve) return;
+
+      const isReachable = evaluation.reachableNodeIds.has(node.id);
 
       edgesToRender.push({
         id: `edge-${node.id}-${socketType}`,
@@ -142,154 +252,142 @@ export const SvgConnectorLayer = () => {
         sourceType: 'socket',
         socketType,
         targetId: edge.targetId,
-        path: computeBezierPath(sourceX, sourceY, targetX, targetY, socketType === 'prev', isLoop),
-        midX: (sourceX + targetX) / 2,
-        midY: (sourceY + targetY) / 2,
-        isDangling,
-        targetX,
-        targetY,
+        path: curve.path,
+        midX: curve.midX,
+        midY: curve.midY,
+        isReachable,
       });
     });
   });
 
-  const handleEdgeClick = (e, edge) => {
-    e.stopPropagation();
-    setSelectedEdge({
-      sourceId: edge.sourceId,
-      sourceType: edge.sourceType,
-      socketType: edge.socketType,
-      targetId: edge.targetId,
-      x: edge.midX,
-      y: edge.midY,
-    });
+  const handleDisconnect = (edge) => {
+    if (edge.sourceType === 'socket') {
+      disconnectSocket(edge.sourceId, edge.socketType);
+    } else if (edge.sourceType === 'pointer') {
+      setPointerTarget(edge.sourceId, null);
+    }
+    setHoveredEdgeId(null);
   };
 
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible z-10">
       <defs>
-        {/* Standard Arrowhead */}
+        {/* Soft Theme Glow */}
+        <filter id="soft-glow-green" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="0" stdDeviation="2.5" floodColor={CONNECTED_COLOR} floodOpacity="0.4" />
+        </filter>
+
+        {/* Arrowhead Markers */}
         <marker
-          id="arrow-head-primary"
-          viewBox="0 0 10 10"
-          refX="8"
-          refY="5"
-          markerWidth="6"
-          markerHeight="6"
-          orient="auto-start-reverse"
+          id="arrow-green"
+          markerWidth="8"
+          markerHeight="8"
+          refX="6"
+          refY="4"
+          orient="auto"
+          markerUnits="strokeWidth"
         >
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--color-primary)" />
+          <path d="M 1 1 L 7 4 L 1 7 Z" fill={CONNECTED_COLOR} />
         </marker>
 
-        {/* Accent Arrowhead */}
         <marker
-          id="arrow-head-accent"
-          viewBox="0 0 10 10"
-          refX="8"
-          refY="5"
-          markerWidth="6"
-          markerHeight="6"
-          orient="auto-start-reverse"
+          id="arrow-white"
+          markerWidth="8"
+          markerHeight="8"
+          refX="6"
+          refY="4"
+          orient="auto"
+          markerUnits="strokeWidth"
         >
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--color-accent)" />
-        </marker>
-
-        {/* Warning Arrowhead */}
-        <marker
-          id="arrow-head-warning"
-          viewBox="0 0 10 10"
-          refX="8"
-          refY="5"
-          markerWidth="6"
-          markerHeight="6"
-          orient="auto-start-reverse"
-        >
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--color-amber-accent)" />
-        </marker>
-
-        {/* Prev Arrowhead */}
-        <marker
-          id="arrow-head-prev"
-          viewBox="0 0 10 10"
-          refX="8"
-          refY="5"
-          markerWidth="6"
-          markerHeight="6"
-          orient="auto-start-reverse"
-        >
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="var(--color-sage-accent)" />
+          <path d="M 1 1 L 7 4 L 1 7 Z" fill="#94A3B8" />
         </marker>
       </defs>
 
-      {/* Render All Established Edges */}
+      {/* 1. Static Graph Edges */}
       {edgesToRender.map((edge) => {
-        if (edge.isDangling) {
-          return (
-            <g key={edge.id} className="pointer-events-auto cursor-pointer" onClick={(e) => handleEdgeClick(e, edge)}>
-              <path
-                d={edge.path}
-                stroke="var(--color-amber-accent)"
-                strokeWidth="1.8"
-                strokeDasharray="4 4"
-                fill="none"
-                markerEnd="url(#arrow-head-warning)"
-              />
-              <text
-                x={edge.targetX + 8}
-                y={edge.targetY + 4}
-                fill="var(--color-amber-accent)"
-                fontSize="10"
-                fontFamily="JetBrains Mono"
-                fontWeight="bold"
-              >
-                [Dangling]
-              </text>
-            </g>
-          );
-        }
-
-        const strokeColor =
-          edge.socketType === 'prev'
-            ? 'var(--color-sage-accent)'
-            : 'var(--color-primary)';
-        const markerEnd =
-          edge.socketType === 'prev'
-            ? 'url(#arrow-head-prev)'
-            : 'url(#arrow-head-primary)';
+        const isReachable = edge.isReachable;
+        const strokeColor = isReachable ? CONNECTED_COLOR : '#94A3B8';
+        const markerUrl = isReachable ? 'url(#arrow-green)' : 'url(#arrow-white)';
+        const isHovered = hoveredEdgeId === edge.id;
 
         return (
-          <g key={edge.id} className="pointer-events-auto cursor-pointer group" onClick={(e) => handleEdgeClick(e, edge)}>
+          <g
+            key={edge.id}
+            className="pointer-events-auto cursor-pointer"
+            onMouseEnter={() => setHoveredEdgeId(edge.id)}
+            onMouseLeave={() => setHoveredEdgeId(null)}
+          >
+            {/* Wide transparent stroke for reliable hover and click targeting */}
             <path
               d={edge.path}
+              fill="none"
               stroke="transparent"
-              strokeWidth="14"
-              fill="none"
+              strokeWidth="36"
+              onClick={() => handleDisconnect(edge)}
             />
+
+            {/* Main Visual Edge Line */}
             <path
               d={edge.path}
-              stroke={strokeColor}
-              strokeWidth="2"
               fill="none"
-              markerEnd={markerEnd}
-              className="group-hover:stroke-accent transition-colors"
+              stroke={isHovered ? '#EF4444' : strokeColor}
+              strokeWidth={isHovered ? 3.5 : 2.5}
+              markerEnd={isHovered ? '' : markerUrl}
+              filter={isReachable && !isHovered ? 'url(#soft-glow-green)' : 'none'}
+              className="transition-colors duration-150"
             />
+
+            {/* Cut / Unlink Button Pill (Rock-solid, zero flicker) */}
+            {isHovered && (
+              <g
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDisconnect(edge);
+                }}
+                className="cursor-pointer hover:scale-115 transition-transform"
+                transform={`translate(${edge.midX}, ${edge.midY})`}
+              >
+                {/* Cut badge background pill */}
+                <rect
+                  x="-28"
+                  y="-12"
+                  width="56"
+                  height="24"
+                  rx="6"
+                  fill="#18181B"
+                  stroke="#EF4444"
+                  strokeWidth="1.5"
+                  className="drop-shadow-xl"
+                />
+                {/* Scissor / Cut Text & Icon */}
+                <text
+                  x="0"
+                  y="4"
+                  textAnchor="middle"
+                  fill="#EF4444"
+                  fontSize="11"
+                  fontWeight="900"
+                  fontFamily="monospace"
+                >
+                  ✂ Cut
+                </text>
+              </g>
+            )}
           </g>
         );
       })}
 
-      {/* Active Drawing Pointer Wire */}
+      {/* 2. Dynamic Wire During Live Drag Interaction */}
       {activeWire && (
         <path
-          d={computeBezierPath(
-            activeWire.startX,
-            activeWire.startY,
-            activeWire.cursorX,
-            activeWire.cursorY,
-            activeWire.socketType === 'prev'
-          )}
-          stroke="var(--color-accent)"
-          strokeWidth="2.5"
+          d={`M ${activeWire.startX} ${activeWire.startY} C ${activeWire.startX + Math.max(30, (activeWire.cursorX - activeWire.startX) * 0.4)} ${activeWire.startY}, ${activeWire.cursorX - Math.max(30, (activeWire.cursorX - activeWire.startX) * 0.4)} ${activeWire.cursorY}, ${activeWire.cursorX} ${activeWire.cursorY}`}
           fill="none"
-          markerEnd="url(#arrow-head-accent)"
+          stroke={CONNECTED_COLOR}
+          strokeWidth="2.5"
+          strokeDasharray="6 4"
+          markerEnd="url(#arrow-green)"
+          filter="url(#soft-glow-green)"
+          className="animate-pulse"
         />
       )}
     </svg>

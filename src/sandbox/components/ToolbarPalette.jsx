@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSandboxStore } from '../core/useSandboxStore';
-import { Plus, RotateCcw, Undo2, Redo2, Navigation } from 'lucide-react';
+import { Plus, RotateCcw, Undo2, Redo2, ArrowRight } from 'lucide-react';
 
 export const ToolbarPalette = () => {
   const {
@@ -9,7 +9,6 @@ export const ToolbarPalette = () => {
     addNullToken,
     undo,
     redo,
-    resetCanvas,
     historyStack,
     futureStack,
   } = useSandboxStore();
@@ -36,86 +35,90 @@ export const ToolbarPalette = () => {
   }, [undo, redo]);
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 p-1.5 rounded-2xl bg-surface/95 backdrop-blur-md border border-border shadow-xl font-mono text-xs select-none">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#141414]/90 backdrop-blur-md border border-white/10 shadow-2xl font-mono text-xs select-none">
       {/* 1. New Node Tool */}
       <button
         onClick={() => addNode(Math.floor(Math.random() * 90 + 10))}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-base dark:bg-[#F5EEDD] dark:text-[#081722] font-bold hover:opacity-90 active:scale-95 transition-all shadow-xs"
-        title="Spawn a new unattached node (malloc)"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-[#1C1C1E] hover:border-white/30 hover:bg-[#2C2C2E] text-white font-bold transition-all shadow-xs active:scale-95"
+        title="Spawn a new unattached circular node"
       >
-        <Plus size={14} />
+        <Plus size={13} strokeWidth={3} />
         <span>New Node</span>
       </button>
 
-      {/* 2. New Pointer Presets */}
+      {/* 2. New Head Pointer - Solid White Background with Black Font */}
       <button
         onClick={() => addFreePointer('head')}
-        className="flex items-center gap-1 px-2.5 py-2 rounded-xl border border-border bg-surface hover:border-accent hover:bg-accent/10 text-text font-bold transition-all shadow-xs active:scale-95"
-        title="Spawn a head pointer"
+        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white text-black font-extrabold hover:bg-white/90 active:scale-95 transition-all shadow-md"
+        title="Spawn a head entry pointer (white background, black font)"
       >
-        <Navigation size={12} className="text-accent rotate-45" />
-        <span>+ Head</span>
+        <ArrowRight size={12} strokeWidth={2.5} className="text-black" />
+        <span>Head</span>
       </button>
 
+      {/* 3. New Curr Pointer - Uniform Dark Theme */}
       <button
         onClick={() => addFreePointer('curr')}
-        className="flex items-center gap-1 px-2.5 py-2 rounded-xl border border-border bg-surface hover:border-accent hover:bg-accent/10 text-text font-bold transition-all shadow-xs active:scale-95"
-        title="Spawn a curr pointer (use game controller to step!)"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-[#1C1C1E] hover:border-white/30 hover:bg-[#2C2C2E] text-white font-bold transition-all shadow-xs active:scale-95"
+        title="Spawn a curr traversal pointer"
       >
-        <Navigation size={12} className="text-amber-accent rotate-45" />
-        <span>+ Curr</span>
+        <ArrowRight size={12} className="text-text-muted" />
+        <span>Curr</span>
       </button>
 
+      {/* 4. Custom Pointer - Uniform Dark Theme */}
       <button
         onClick={() => addFreePointer('ptr')}
-        className="flex items-center gap-1 px-2.5 py-2 rounded-xl border border-border bg-surface hover:border-accent hover:bg-accent/10 text-text transition-all shadow-xs active:scale-95"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-[#1C1C1E] hover:border-white/30 hover:bg-[#2C2C2E] text-white font-bold transition-all shadow-xs active:scale-95"
         title="Spawn a custom pointer"
       >
-        <Plus size={13} className="text-text-muted" />
+        <Plus size={12} className="text-text-muted" />
         <span>Pointer</span>
       </button>
 
-      {/* 3. New NULL Token Tool */}
+      {/* 5. New NULL Token Tool */}
       <button
         onClick={() => addNullToken()}
-        className="flex items-center gap-1 px-2.5 py-2 rounded-xl border border-dashed border-border bg-base/50 hover:border-accent hover:bg-accent/10 text-text-muted hover:text-text font-bold transition-all shadow-xs active:scale-95"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-dashed border-white/20 bg-[#1C1C1E] hover:border-white/40 hover:bg-[#2C2C2E] text-text-muted hover:text-white font-bold transition-all shadow-xs active:scale-95"
         title="Spawn a NULL terminator token"
       >
-        <span>+ NULL</span>
+        <span>NULL</span>
       </button>
 
-      <div className="w-[1px] h-5 bg-border mx-0.5" />
+      <div className="w-[1px] h-5 bg-white/10 mx-0.5" />
 
       {/* Undo */}
       <button
         onClick={undo}
         disabled={historyStack.length === 0}
-        className="p-2 rounded-xl border border-transparent hover:border-border text-text-muted hover:text-text hover:bg-accent/10 disabled:opacity-30 disabled:pointer-events-none transition-all"
+        className="p-1.5 rounded-full hover:bg-white/10 text-text-muted hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
         title="Undo (Cmd+Z)"
       >
-        <Undo2 size={15} />
+        <Undo2 size={14} />
       </button>
 
       {/* Redo */}
       <button
         onClick={redo}
         disabled={futureStack.length === 0}
-        className="p-2 rounded-xl border border-transparent hover:border-border text-text-muted hover:text-text hover:bg-accent/10 disabled:opacity-30 disabled:pointer-events-none transition-all"
-        title="Redo (Cmd+Shift+Z)"
+        className="p-1.5 rounded-full hover:bg-white/10 text-text-muted hover:text-white disabled:opacity-30 disabled:pointer-events-none transition-all"
+        title="Redo (Cmd+Y)"
       >
-        <Redo2 size={15} />
+        <Redo2 size={14} />
       </button>
 
-      <div className="w-[1px] h-5 bg-border mx-0.5" />
-
-      {/* Reset Canvas */}
+      {/* Reset */}
       <button
-        onClick={resetCanvas}
-        className="p-2 rounded-xl border border-transparent hover:border-border text-text-muted hover:text-text hover:bg-accent/10 transition-all flex items-center gap-1.5 px-2.5"
-        title="Clear canvas"
+        onClick={() => {
+          if (window.confirm('Reset linked list canvas?')) {
+            useSandboxStore.getState().resetCanvas();
+          }
+        }}
+        className="flex items-center gap-1 px-2.5 py-1.5 rounded-full hover:bg-red-500/10 hover:text-red-400 text-text-muted font-bold text-3xs transition-all"
+        title="Reset canvas"
       >
-        <RotateCcw size={14} />
-        <span className="hidden sm:inline text-3xs uppercase font-bold">Reset</span>
+        <RotateCcw size={12} />
+        <span>RESET</span>
       </button>
     </div>
   );

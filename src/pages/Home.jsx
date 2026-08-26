@@ -1,249 +1,363 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeStore } from '../store/themeStore';
-import { ArrowRight, Sun, Moon, Search, Code2 } from 'lucide-react';
+import { ArrowUpRight, Sun, Moon, Search, Code2, BookOpen } from 'lucide-react';
 import { useSearchStore } from '../store/searchStore';
-import { HeroCanvasAnimation } from '../components/home/HeroCanvasAnimation';
+
+const ROTATING_WORDS = ['everyone', 'you', 'me'];
 
 export const Home = () => {
   const { theme, toggleTheme } = useThemeStore();
   const { openSearch } = useSearchStore();
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="h-screen max-h-screen bg-base text-text font-mono flex flex-col justify-between overflow-hidden transition-colors px-4 sm:px-8">
-      {/* Top Header - Expanded with stretched searchbar */}
-      <header className="w-full max-w-6xl mx-auto pt-4 sm:pt-5 pb-2 flex items-center justify-between gap-4 sm:gap-8 shrink-0">
-        <Link to="/" className="text-base sm:text-lg font-extrabold tracking-tight text-primary shrink-0">
-          AgroFlow
-        </Link>
+    <div
+      className="relative min-h-screen max-h-screen h-screen bg-base text-text flex flex-col justify-between overflow-hidden select-none"
+      style={{
+        backgroundImage: `radial-gradient(var(--color-border) 1px, transparent 1px)`,
+        backgroundSize: '24px 24px',
+      }}
+    >
+      {/* Top Floating Capsule Header */}
+      <header className="w-full max-w-5xl mx-auto pt-4 sm:pt-6 pb-2 px-4 sm:px-6 shrink-0 z-30 font-mono">
+        <div className="flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-[#FFFFFF]/90 dark:bg-[#141414]/90 backdrop-blur-md border border-border dark:border-white/10 shadow-2xl shadow-black/20">
+          {/* Brand Logo & Name */}
+          <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+            <div className="w-7 h-7 rounded-lg bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Code2 size={16} />
+            </div>
+            <span className="text-sm sm:text-base font-extrabold tracking-tight text-accent drop-shadow-[0_0_20px_rgba(112,224,0,0.4)]">
+              AgroFlow
+            </span>
+          </Link>
 
-        {/* Stretched Hero Search Bar */}
-        <div className="flex-1 max-w-xl mx-2 sm:mx-6">
-          <button
-            onClick={openSearch}
-            className="w-full flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-border/80 dark:border-transparent bg-base/35 hover:bg-base/60 hover:border-accent/50 dark:hover:border-transparent text-text-muted text-xs transition-all shadow-2xs group"
-          >
-            <Search size={14} className="text-accent group-hover:text-primary transition-colors shrink-0 opacity-80 group-hover:opacity-100" />
-            <span className="truncate">Search reference or jump to topic...</span>
-          </button>
+          {/* Center: Search Button */}
+          <div className="flex-1 max-w-md mx-2 sm:mx-6">
+            <button
+              onClick={openSearch}
+              className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-transparent hover:bg-white/5 text-text-muted text-xs transition-all group"
+            >
+              <Search size={14} className="text-accent group-hover:text-primary transition-colors shrink-0" />
+              <span className="truncate">Search components, algorithms, topics...</span>
+            </button>
+          </div>
+
+          {/* Right Action Icons & CTA Button */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full hover:bg-white/10 text-text transition-colors flex items-center justify-center"
+              title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode`}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Moon size={15} className="text-accent" /> : <Sun size={15} className="text-amber-accent" />}
+            </button>
+
+            {/* Pill CTA Button (Sandbox) */}
+            <Link
+              to="/sandbox"
+              className="px-4 py-2 rounded-full bg-accent text-black font-extrabold text-xs hover:opacity-95 hover:scale-105 active:scale-95 transition-all shadow-md shadow-accent/20 shrink-0"
+            >
+              Sandbox
+            </Link>
+          </div>
         </div>
-
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="p-2.5 rounded-xl border border-border dark:border-transparent bg-surface hover:bg-accent/15 text-text transition-colors flex items-center justify-center shadow-2xs shrink-0"
-          title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode`}
-          aria-label="Toggle theme"
-        >
-          {theme === 'dark' ? <Moon size={16} className="text-accent" /> : <Sun size={16} className="text-amber-accent" />}
-        </button>
       </header>
 
-      {/* Hero Section Container */}
-      <main className="flex-1 w-full max-w-6xl mx-auto flex flex-col items-center justify-center py-2 sm:py-4">
-        {/* Centered Header Stack */}
-        <div className="text-center mb-4 sm:mb-5 max-w-3xl">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.85rem] font-extrabold tracking-tight text-primary leading-tight">
-            Data Structures &amp; Algorithms
-          </h1>
-        </div>
+      {/* Main Hero Section - Centered and Clean */}
+      <main className="relative flex-1 w-full max-w-6xl mx-auto flex flex-col items-center justify-center px-4 sm:px-8 py-2 z-20 text-center">
+        {/* Hero Headline */}
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-sans font-black uppercase text-primary tracking-tight leading-none text-center whitespace-nowrap">
+          DATA STRUCTURES &amp;{' '}
+          <span className="text-accent drop-shadow-[0_0_35px_rgba(112,224,0,0.5)]">
+            ALGORITHMS
+          </span>
+        </h1>
 
-        {/* 40% Larger Hero Visual Container with Carved-out Notches & Exact 14px Gap Channels */}
-        <div className="relative w-full max-w-5xl my-2">
-          {/* Subtle Ambient Sparkle Star on the Left */}
-          <div className="absolute -left-5 sm:-left-8 top-1/2 -translate-y-1/2 text-white/30 dark:text-sky-300/40 text-2xl select-none pointer-events-none hidden md:block">
-            ✦
-          </div>
-
-          {/* Main Visual SVG Frame */}
-          <div className="w-full relative">
-            <svg
-              viewBox="0 0 1000 500"
-              className="w-full h-auto block drop-shadow-2xl overflow-visible"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <defs>
-                <clipPath id="hero-carved-shape">
-                  <path
-                    d="M 306,0 
-                       L 978,0 
-                       Q 1000,0 1000,22 
-                       L 1000,304 
-                       Q 1000,326 978,326 
-                       L 638,326 
-                       Q 616,326 616,348 
-                       L 616,478 
-                       Q 616,500 594,500 
-                       L 22,500 
-                       Q 0,500 0,478 
-                       L 0,216 
-                       Q 0,194 22,194 
-                       L 262,194 
-                       Q 284,194 284,172 
-                       L 284,22 
-                       Q 284,0 306,0 
-                       Z"
-                  />
-                </clipPath>
-              </defs>
-
-              {/* Hero Section Looping Video Layer */}
-              <foreignObject
-                x="0"
-                y="0"
-                width="1000"
-                height="500"
-                clipPath="url(#hero-carved-shape)"
-                className="overflow-hidden"
-              >
-                <div className="w-full h-full relative overflow-hidden bg-[#F5EEDD] dark:bg-[#05121C]">
-                  {/* Looping Hero Video for both Light and Dark Modes */}
-                  <video
-                    src="/heroSection-video.mp4"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover object-center"
-                  >
-                    <source src="/heroSection-video.mp4" type="video/mp4" />
-                  </video>
-
-                  {/* Real-time Animated 60FPS Glowing Data Flow & Particle Canvas */}
-                  <HeroCanvasAnimation theme={theme} />
-                </div>
-              </foreignObject>
-
-              {/* Exact Carved Silhouette Outer Stroke */}
-              <path
-                d="M 306,0 
-                   L 978,0 
-                   Q 1000,0 1000,22 
-                   L 1000,304 
-                   Q 1000,326 978,326 
-                   L 638,326 
-                   Q 616,326 616,348 
-                   L 616,478 
-                   Q 616,500 594,500 
-                   L 22,500 
-                   Q 0,500 0,478 
-                   L 0,216 
-                   Q 0,194 22,194 
-                   L 262,194 
-                   Q 284,194 284,172 
-                   L 284,22 
-                   Q 284,0 306,0 
-                   Z"
-                fill="none"
-                stroke="var(--color-border)"
-                strokeWidth="1.5"
-              />
-
-              {/* Top-Left Card (O(1) - 3rd Solid Accent Color) */}
-              <foreignObject x="0" y="0" width="270" height="180" className="overflow-visible">
-                <div className="w-full h-full p-5 sm:p-6 rounded-br-[24px] rounded-tr-[24px] rounded-bl-[24px] rounded-tl-[24px] bg-amber-accent dark:bg-[#D97706] text-white border border-white/20 dark:border-amber-300/30 shadow-2xl flex flex-col justify-center box-border transition-colors duration-200">
-                  <div className="text-3xl sm:text-4xl font-extrabold text-white font-mono leading-none">
-                    O(1)
-                  </div>
-                  <p className="text-xs text-white/90 mt-2 leading-relaxed font-medium">
-                    Interactive pointer state machines &amp; step debugger
-                  </p>
-                </div>
-              </foreignObject>
-
-              {/* Top-Right Floating Card (4.0) */}
-              <foreignObject x="845" y="55" width="235" height="150" className="overflow-visible">
-                <div className="w-full h-full p-4 sm:p-5 rounded-[22px] bg-[#FDFCF7]/85 backdrop-blur-md dark:bg-[#18212D]/90 text-primary dark:text-[#E2E8F0] border border-white/80 dark:border-white/10 shadow-2xl shadow-primary/15 dark:shadow-black/30 flex flex-col justify-center box-border transition-all">
-                  <div className="flex items-center gap-2 text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary dark:text-white font-mono leading-none">
-                    <span>4.0</span>
-                    <div className="w-6 h-6 rounded-full bg-amber-accent dark:bg-[#D97706] text-white flex items-center justify-center shrink-0 shadow-2xs transition-colors">
-                      <Code2 size={13} />
-                    </div>
-                  </div>
-                  <p className="text-3xs sm:text-2xs text-text-muted dark:text-[#94A3B8] mt-1.5 sm:mt-2 leading-relaxed font-medium">
-                    Idiomatic C, C++, Python &amp; Java parity
-                  </p>
-                </div>
-              </foreignObject>
-
-              {/* Bottom-Left Floating Card (15+) */}
-              <foreignObject x="-95" y="290" width="235" height="150" className="overflow-visible">
-                <div className="w-full h-full p-4 sm:p-5 rounded-[22px] bg-[#FDFCF7]/85 backdrop-blur-md dark:bg-[#18212D]/90 text-primary dark:text-[#E2E8F0] border border-white/80 dark:border-white/10 shadow-2xl shadow-primary/15 dark:shadow-black/30 flex flex-col justify-center box-border transition-all">
-                  <div className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary dark:text-white font-mono leading-none">
-                    15+
-                  </div>
-                  <p className="text-3xs sm:text-2xs text-text-muted dark:text-[#94A3B8] mt-1.5 sm:mt-2 leading-relaxed font-medium">
-                    Core ADTs, operations &amp; complexity proofs
-                  </p>
-                </div>
-              </foreignObject>
-
-              {/* Bottom-Right Topic Pills Container */}
-              <foreignObject x="626" y="330" width="370" height="170" className="overflow-visible">
-                <div className="w-full h-full p-2 flex items-center justify-center box-border">
-                  <div className="grid grid-cols-2 gap-2.5 w-full max-w-[340px]">
-                    <Link
-                      to="/docs/what-is-an-abstract-data-type"
-                      className="px-3.5 py-2 rounded-full border border-primary/25 dark:border-white/10 bg-[#FDFCF7]/85 backdrop-blur-md hover:bg-[#FDFCF7] dark:bg-[#18212D]/90 dark:hover:bg-[#222C3C] text-xs sm:text-sm font-extrabold text-primary dark:text-[#E2E8F0] hover:border-primary/50 dark:hover:border-white/25 hover:text-primary dark:hover:text-white transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap text-center flex items-center justify-center tracking-tight"
-                    >
-                      Intro to ADTs
-                    </Link>
-                    <Link
-                      to="/docs/array-vs-linked-list-side-by-side"
-                      className="px-3.5 py-2 rounded-full border border-primary/25 dark:border-white/10 bg-[#FDFCF7]/85 backdrop-blur-md hover:bg-[#FDFCF7] dark:bg-[#18212D]/90 dark:hover:bg-[#222C3C] text-xs sm:text-sm font-extrabold text-primary dark:text-[#E2E8F0] hover:border-primary/50 dark:hover:border-white/25 hover:text-primary dark:hover:text-white transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap text-center flex items-center justify-center tracking-tight"
-                    >
-                      Array vs List
-                    </Link>
-                    <Link
-                      to="/docs/the-list-adt-defining-behavior"
-                      className="px-3.5 py-2 rounded-full border border-primary/25 dark:border-white/10 bg-[#FDFCF7]/85 backdrop-blur-md hover:bg-[#FDFCF7] dark:bg-[#18212D]/90 dark:hover:bg-[#222C3C] text-xs sm:text-sm font-extrabold text-primary dark:text-[#E2E8F0] hover:border-primary/50 dark:hover:border-white/25 hover:text-primary dark:hover:text-white transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap text-center flex items-center justify-center tracking-tight"
-                    >
-                      List Contract
-                    </Link>
-                    <Link
-                      to="/docs/array-list-and-amortized-growth"
-                      className="px-3.5 py-2 rounded-full border border-primary/25 dark:border-white/10 bg-[#FDFCF7]/85 backdrop-blur-md hover:bg-[#FDFCF7] dark:bg-[#18212D]/90 dark:hover:bg-[#222C3C] text-xs sm:text-sm font-extrabold text-primary dark:text-[#E2E8F0] hover:border-primary/50 dark:hover:border-white/25 hover:text-primary dark:hover:text-white transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap text-center flex items-center justify-center tracking-tight"
-                    >
-                      Array List
-                    </Link>
-                    <Link
-                      to="/docs/anatomy-of-a-node"
-                      className="px-3.5 py-2 rounded-full border border-primary/25 dark:border-white/10 bg-[#FDFCF7]/85 backdrop-blur-md hover:bg-[#FDFCF7] dark:bg-[#18212D]/90 dark:hover:bg-[#222C3C] text-xs sm:text-sm font-extrabold text-primary dark:text-[#E2E8F0] hover:border-primary/50 dark:hover:border-white/25 hover:text-primary dark:hover:text-white transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap text-center flex items-center justify-center tracking-tight"
-                    >
-                      Singly Linked
-                    </Link>
-                    <Link
-                      to="/docs/types-doubly-and-circular"
-                      className="px-3.5 py-2 rounded-full border border-primary/25 dark:border-white/10 bg-[#FDFCF7]/85 backdrop-blur-md hover:bg-[#FDFCF7] dark:bg-[#18212D]/90 dark:hover:bg-[#222C3C] text-xs sm:text-sm font-extrabold text-primary dark:text-[#E2E8F0] hover:border-primary/50 dark:hover:border-white/25 hover:text-primary dark:hover:text-white transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 whitespace-nowrap text-center flex items-center justify-center tracking-tight"
-                    >
-                      Doubly Linked
-                    </Link>
-                  </div>
-                </div>
-              </foreignObject>
-            </svg>
-          </div>
-        </div>
-
-        {/* Centered Primary CTA Buttons: Reference vs Interactive Workshop */}
-        <div className="mt-8 sm:mt-9 flex flex-wrap items-center justify-center gap-3 shrink-0">
-          <Link
-            to="/docs/is-there-even-a-need"
-            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-primary text-[#F5EEDD] dark:bg-[#18212D] dark:text-white dark:border dark:border-white/15 dark:hover:bg-[#232D3D] font-semibold text-xs sm:text-sm hover:opacity-95 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md group"
+        {/* Sub-headline with High-Contrast Green Text in White Capsule */}
+        <div className="inline-flex items-center justify-center gap-2 sm:gap-2.5 text-xl sm:text-3xl md:text-4xl font-sans font-bold text-text-muted mt-3 sm:mt-4 tracking-tight leading-none text-center">
+          <span className="leading-none flex items-center shrink-0">Built for</span>
+          <motion.div
+            layout
+            transition={{ type: "spring", stiffness: 450, damping: 32 }}
+            className="relative inline-flex items-center justify-center h-9 sm:h-11 overflow-hidden px-4 bg-white rounded-tl-[22px] rounded-br-[22px] rounded-tr-[8px] rounded-bl-[8px] border-0 shadow-2xl shadow-white/10 align-middle shrink-0"
           >
-            <span>Read Documentation</span>
-            <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={ROTATING_WORDS[wordIndex]}
+                initial={{ y: 22, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -22, opacity: 0 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="text-[#15803D] font-black tracking-tight block leading-none whitespace-nowrap select-none"
+              >
+                {ROTATING_WORDS[wordIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </motion.div>
+        </div>
+
+        {/* CTA Buttons Row */}
+        <div className="flex flex-wrap items-center justify-center gap-3.5 mt-6 sm:mt-8 font-mono z-30">
+          <Link
+            to="/sandbox"
+            className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-xl bg-accent text-black font-extrabold text-xs sm:text-sm hover:opacity-95 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-accent/25"
+          >
+            <span>Interactive Sandboxes</span>
+            <ArrowUpRight size={16} />
           </Link>
 
           <Link
-            to="/sandbox"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-accent bg-accent/15 text-primary dark:text-[#38BDF8] font-bold text-xs sm:text-sm hover:bg-accent/25 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-sm group"
+            to="/docs/why-a-linked-list"
+            className="inline-flex items-center gap-2 px-6 py-2.5 sm:py-3 rounded-xl bg-surface/80 hover:bg-surface text-text border border-border dark:border-white/10 text-xs sm:text-sm font-semibold hover:border-accent/40 transition-all shadow-sm"
           >
-            <span>Interactive Sandbox</span>
-            <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform text-accent" />
+            <BookOpen size={15} className="text-accent" />
+            <span>Read Documentation</span>
           </Link>
         </div>
       </main>
+
+      {/* Bottom Showcase Cards - 6 Minimalist Overlapping DSA Cards Lined Across the Viewport */}
+      <div className="relative w-full max-w-[105rem] mx-auto pointer-events-none z-10 hidden sm:block">
+        <div className="absolute -bottom-14 sm:-bottom-12 lg:-bottom-10 left-0 right-0 flex items-end justify-center pointer-events-auto px-2 lg:px-6">
+          
+          {/* Card 1: Far Left (-14deg) */}
+          <Link
+            to="/sandbox/linked-list"
+            className="w-64 sm:w-76 lg:w-84 h-52 sm:h-60 lg:h-68 rounded-xl overflow-hidden border border-white/20 dark:border-white/15 bg-[#111111]/95 backdrop-blur-md shadow-2xl transform -rotate-[14deg] hover:rotate-0 hover:-translate-y-12 hover:z-50 transition-all duration-300 group cursor-pointer block select-none shrink-0 -mr-20 lg:-mr-14 z-10"
+          >
+            <div className="px-4 py-2.5 bg-[#181818] border-b border-white/10 flex items-center justify-between font-mono">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-accent" />
+                <span className="text-xs font-bold text-white">singly_linked.c</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-accent bg-accent/15 px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap">
+                O(1)
+              </span>
+            </div>
+            <div className="p-4 flex flex-col justify-between h-[calc(100%-38px)]">
+              <div>
+                <div className="text-3xs font-mono text-text-muted mb-2">POINTER SEQUENCE</div>
+                <div className="flex items-center gap-1.5 font-mono text-xs overflow-hidden">
+                  <div className="px-2.5 py-1 rounded bg-[#202020] border border-accent text-accent font-bold">
+                    head: 12
+                  </div>
+                  <span className="text-accent font-bold">→</span>
+                  <div className="px-2.5 py-1 rounded bg-[#202020] border border-white/20 text-white">
+                    45
+                  </div>
+                  <span className="text-text-muted">→</span>
+                  <div className="px-2.5 py-1 rounded bg-[#202020] border border-white/20 text-white">
+                    89
+                  </div>
+                  <span className="text-text-muted">→</span>
+                  <span className="text-text-muted font-bold text-3xs">NULL</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-3xs font-mono pt-2 border-t border-white/10">
+                <span className="text-text-muted">addr: 0x7ffee4</span>
+                <span className="text-accent font-bold group-hover:translate-x-1 transition-transform">Simulate ↗</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Card 2: Mid Left (-7deg) */}
+          <Link
+            to="/sandbox/linked-list"
+            className="w-64 sm:w-76 lg:w-84 h-52 sm:h-60 lg:h-68 rounded-xl overflow-hidden border border-white/20 dark:border-white/15 bg-[#0D0D0D]/95 backdrop-blur-md shadow-2xl transform -rotate-[7deg] translate-y-2 hover:rotate-0 hover:-translate-y-12 hover:z-50 transition-all duration-300 group cursor-pointer block select-none shrink-0 -mr-16 lg:-mr-10 z-20"
+          >
+            <div className="px-4 py-2.5 bg-[#181818] border-b border-white/10 flex items-center justify-between font-mono">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-accent" />
+                <span className="text-xs font-bold text-white">doubly_linked.cpp</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-accent bg-accent/15 px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap">
+                prev ⇄ next
+              </span>
+            </div>
+            <div className="p-4 flex flex-col justify-between h-[calc(100%-38px)]">
+              <div>
+                <div className="text-3xs font-mono text-text-muted mb-2">BIDIRECTIONAL MESH</div>
+                <div className="flex items-center gap-1.5 font-mono text-xs">
+                  <span className="text-text-muted text-3xs">NULL</span>
+                  <span className="text-accent font-bold">⇄</span>
+                  <div className="px-2.5 py-1 rounded bg-[#202020] border border-accent/60 text-accent font-bold">
+                    Node[A]
+                  </div>
+                  <span className="text-accent font-bold">⇄</span>
+                  <div className="px-2.5 py-1 rounded bg-[#202020] border border-white/20 text-white">
+                    Node[B]
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-3xs font-mono pt-2 border-t border-white/10">
+                <span className="text-text-muted">Bi-directional Traversal</span>
+                <span className="text-accent font-bold group-hover:translate-x-1 transition-transform">Explore ↗</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Card 3: Center Left (-1deg, low) */}
+          <Link
+            to="/sandbox/array"
+            className="w-64 sm:w-76 lg:w-84 h-52 sm:h-60 lg:h-68 rounded-xl overflow-hidden border border-white/20 dark:border-white/15 bg-[#141414]/95 backdrop-blur-md shadow-2xl transform -rotate-[1deg] translate-y-6 hover:rotate-0 hover:-translate-y-8 hover:z-50 transition-all duration-300 group cursor-pointer block select-none shrink-0 -mr-12 lg:-mr-6 z-30"
+          >
+            <div className="px-4 py-2.5 bg-[#181818] border-b border-white/10 flex items-center justify-between font-mono">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-accent" />
+                <span className="text-xs font-bold text-white">ring_buffer.rs</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-accent bg-accent/15 px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap">
+                O(1)
+              </span>
+            </div>
+            <div className="p-4 flex flex-col justify-between h-[calc(100%-38px)]">
+              <div>
+                <div className="text-3xs font-mono text-text-muted mb-2">CONTIGUOUS MEMORY</div>
+                <div className="flex items-center gap-1 font-mono text-xs">
+                  {['10', '20', '30', '40', '50'].map((val, idx) => (
+                    <div
+                      key={idx}
+                      className={`flex-1 text-center py-1.5 rounded border text-xs ${
+                        idx === 1
+                          ? 'bg-accent/20 border-accent text-accent font-bold'
+                          : 'bg-[#202020] border-white/15 text-white'
+                      }`}
+                    >
+                      {val}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-3xs font-mono pt-2 border-t border-white/10">
+                <span className="text-text-muted">Cache-line Optimized</span>
+                <span className="text-accent font-bold group-hover:translate-x-1 transition-transform">Inspect ↗</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Card 4: Center Right (+1deg, low) */}
+          <Link
+            to="/sandbox/stack"
+            className="w-64 sm:w-76 lg:w-84 h-52 sm:h-60 lg:h-68 rounded-xl overflow-hidden border border-white/20 dark:border-white/15 bg-[#141414]/95 backdrop-blur-md shadow-2xl transform rotate-[1deg] translate-y-6 hover:rotate-0 hover:-translate-y-8 hover:z-50 transition-all duration-300 group cursor-pointer block select-none shrink-0 -ml-12 lg:-ml-6 z-30"
+          >
+            <div className="px-4 py-2.5 bg-[#181818] border-b border-white/10 flex items-center justify-between font-mono">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-accent" />
+                <span className="text-xs font-bold text-white">call_stack.py</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-accent bg-accent/15 px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap">
+                LIFO
+              </span>
+            </div>
+            <div className="p-4 flex flex-col justify-between h-[calc(100%-38px)]">
+              <div>
+                <div className="text-3xs font-mono text-text-muted mb-2">ACTIVE CALL FRAMES</div>
+                <div className="space-y-1.5 font-mono text-xs">
+                  <div className="px-2.5 py-1 rounded bg-accent/20 border border-accent text-accent font-bold text-xs truncate">
+                    [3] quick_sort(arr, 0, mid)
+                  </div>
+                  <div className="px-2.5 py-1 rounded bg-[#202020] border border-white/15 text-white text-xs truncate">
+                    [2] partition(arr, 0, len)
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-3xs font-mono pt-2 border-t border-white/10">
+                <span className="text-text-muted">Stack Depth: 3</span>
+                <span className="text-accent font-bold group-hover:translate-x-1 transition-transform">Debug ↗</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Card 5: Mid Right (+7deg) */}
+          <Link
+            to="/sandbox/tree"
+            className="w-64 sm:w-76 lg:w-84 h-52 sm:h-60 lg:h-68 rounded-xl overflow-hidden border border-white/20 dark:border-white/15 bg-[#0D0D0D]/95 backdrop-blur-md shadow-2xl transform rotate-[7deg] translate-y-2 hover:rotate-0 hover:-translate-y-12 hover:z-50 transition-all duration-300 group cursor-pointer block select-none shrink-0 -ml-16 lg:-ml-10 z-20"
+          >
+            <div className="px-4 py-2.5 bg-[#181818] border-b border-white/10 flex items-center justify-between font-mono">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-accent" />
+                <span className="text-xs font-bold text-white">bst_tree.go</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-accent bg-accent/15 px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap">
+                O(log n)
+              </span>
+            </div>
+            <div className="p-4 flex flex-col justify-between h-[calc(100%-38px)]">
+              <div>
+                <div className="text-3xs font-mono text-text-muted mb-1.5">BINARY SEARCH TREE</div>
+                <div className="flex flex-col items-center font-mono text-xs py-0.5">
+                  <div className="px-3 py-0.5 rounded bg-accent/20 border border-accent text-accent font-bold text-xs">
+                    root: 50
+                  </div>
+                  <div className="flex items-center gap-6 mt-1.5">
+                    <div className="px-2.5 py-0.5 rounded bg-[#202020] border border-white/20 text-white text-xs">
+                      L: 25
+                    </div>
+                    <div className="px-2.5 py-0.5 rounded bg-[#202020] border border-white/20 text-white text-xs">
+                      R: 75
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-3xs font-mono pt-2 border-t border-white/10">
+                <span className="text-text-muted">Invariant: L &lt; Root &lt; R</span>
+                <span className="text-accent font-bold group-hover:translate-x-1 transition-transform">Explore ↗</span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Card 6: Far Right (+14deg) */}
+          <Link
+            to="/sandbox/hash-table"
+            className="w-64 sm:w-76 lg:w-84 h-52 sm:h-60 lg:h-68 rounded-xl overflow-hidden border border-white/20 dark:border-white/15 bg-[#111111]/95 backdrop-blur-md shadow-2xl transform rotate-[14deg] hover:rotate-0 hover:-translate-y-12 hover:z-50 transition-all duration-300 group cursor-pointer block select-none shrink-0 -ml-20 lg:-mr-14 z-10"
+          >
+            <div className="px-4 py-2.5 bg-[#181818] border-b border-white/10 flex items-center justify-between font-mono">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-accent" />
+                <span className="text-xs font-bold text-white">hash_map.js</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-accent bg-accent/15 px-2 py-0.5 rounded border border-accent/30 whitespace-nowrap">
+                O(1)
+              </span>
+            </div>
+            <div className="p-4 flex flex-col justify-between h-[calc(100%-38px)]">
+              <div>
+                <div className="text-3xs font-mono text-text-muted mb-1.5">BUCKET CHAINING</div>
+                <div className="space-y-1.5 font-mono text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-text-muted w-5 text-3xs">[0]</span>
+                    <div className="px-2 py-0.5 rounded bg-[#202020] border border-accent/40 text-accent truncate flex-1 text-3xs">
+                      "alpha" → 104
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-text-muted w-5 text-3xs">[1]</span>
+                    <div className="px-2 py-0.5 rounded bg-[#202020] border border-white/15 text-white truncate flex-1 text-3xs">
+                      "beta" → "gamma"
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between text-3xs font-mono pt-2 border-t border-white/10">
+                <span className="text-text-muted">Load Factor: 0.65</span>
+                <span className="text-accent font-bold group-hover:translate-x-1 transition-transform">Simulate ↗</span>
+              </div>
+            </div>
+          </Link>
+
+        </div>
+      </div>
     </div>
   );
 };

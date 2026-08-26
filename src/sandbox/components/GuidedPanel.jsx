@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSandboxStore } from '../core/useSandboxStore';
 import { linkedListLessons } from '../lessons/linkedListLessons';
-import { CheckCircle2, ChevronRight, X, Sparkles, RotateCcw } from 'lucide-react';
+import { ChevronRight, X, Sparkles, RotateCcw } from 'lucide-react';
 
 export const GuidedPanel = ({ onHighlightChange }) => {
   const {
@@ -47,18 +47,20 @@ export const GuidedPanel = ({ onHighlightChange }) => {
   }, [currentStep, onHighlightChange]);
 
   return (
-    <aside className="interactive-panel absolute top-4 right-4 bottom-4 w-84 max-w-[90vw] bg-surface border-2 border-border shadow-2xl flex flex-col font-mono text-xs z-30 overflow-hidden select-none animate-in slide-in-from-right duration-150">
+    <aside className="interactive-panel absolute top-20 right-6 sm:right-8 z-40 w-84 max-w-[92vw] bg-[#141414]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex flex-col font-mono text-xs select-none overflow-hidden animate-in fade-in zoom-in-95 duration-150 p-4 space-y-4">
       {/* Panel Header */}
-      <div className="p-3 border-b-2 border-border flex items-center justify-between bg-base/50">
+      <div className="flex items-center justify-between pb-2.5 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <Sparkles size={14} className="text-accent" />
-          <span className="font-extrabold text-primary tracking-tight uppercase">
+          <div className="w-5 h-5 rounded-md bg-accent/20 text-accent flex items-center justify-center font-bold">
+            <Sparkles size={12} />
+          </div>
+          <span className="font-extrabold text-white tracking-tight text-xs uppercase">
             Guided Lessons
           </span>
         </div>
         <button
           onClick={() => setMode('free')}
-          className="p-1 hover:bg-red-500 hover:text-white text-text-muted transition-colors"
+          className="p-1 rounded-full hover:bg-white/10 text-text-muted hover:text-white transition-colors"
           title="Close guidance (switch to free mode)"
         >
           <X size={15} />
@@ -66,7 +68,7 @@ export const GuidedPanel = ({ onHighlightChange }) => {
       </div>
 
       {/* Lesson Selector */}
-      <div className="p-3 border-b border-border bg-base/20 space-y-1.5">
+      <div className="space-y-1.5">
         <div className="text-3xs uppercase tracking-wider text-text-muted font-bold">
           Choose Lesson
         </div>
@@ -76,86 +78,76 @@ export const GuidedPanel = ({ onHighlightChange }) => {
             setSelectedLessonId(e.target.value);
             setLesson(e.target.value, 0);
           }}
-          className="w-full px-2.5 py-1.5 bg-surface border-2 border-border text-xs font-mono text-text outline-none focus:border-accent"
+          className="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 text-xs font-mono text-white outline-none focus:border-accent cursor-pointer"
         >
           {linkedListLessons.map((l) => (
-            <option key={l.id} value={l.id}>
+            <option key={l.id} value={l.id} className="bg-[#18181B] text-white">
               {l.title}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Current Step Body */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Step Progress Blocks */}
-        <div className="flex items-center gap-1">
+      {/* Step Progress Blocks */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-1.5">
           {activeLesson.steps.map((_, idx) => (
             <div
               key={idx}
-              className={`h-2 flex-1 border transition-all ${
+              className={`h-1.5 flex-1 rounded-full transition-all ${
                 idx < currentStepIndex
-                  ? 'bg-sage-accent border-sage-accent'
+                  ? 'bg-accent'
                   : idx === currentStepIndex
-                  ? 'bg-accent border-accent animate-pulse'
-                  : 'bg-base border-border'
+                  ? 'bg-accent shadow-[0_0_8px_rgba(16,185,129,0.6)] animate-pulse'
+                  : 'bg-white/10'
               }`}
             />
           ))}
         </div>
 
-        <div className="flex items-center justify-between text-2xs text-text-muted font-bold">
+        <div className="flex items-center justify-between text-3xs text-text-muted font-bold">
           <span>STEP {currentStepIndex + 1} OF {activeLesson.steps.length}</span>
-          <span>{activeLesson.title}</span>
-        </div>
-
-        {/* Instruction Card */}
-        <div className="p-3.5 border-2 border-accent/60 bg-accent/10 space-y-2">
-          <div className="text-2xs font-bold uppercase tracking-wider text-accent">
-            Instruction
-          </div>
-          <p className="text-xs text-text leading-relaxed font-medium">
-            {currentStep.instruction}
-          </p>
-        </div>
-
-        <div className="text-2xs text-text-muted leading-normal">
-          The canvas updates continuously. Manipulate the nodes and pointers directly to satisfy the step conditions.
+          <span className="truncate max-w-[160px]">{activeLesson.title}</span>
         </div>
       </div>
 
+      {/* Instruction Card */}
+      <div className="p-3.5 rounded-xl border border-accent/30 bg-accent/10 space-y-1.5">
+        <div className="text-3xs font-bold uppercase tracking-wider text-accent">
+          Instruction
+        </div>
+        <p className="text-xs text-white leading-relaxed font-medium">
+          {currentStep.instruction}
+        </p>
+      </div>
+
+      <div className="text-3xs text-text-muted leading-normal">
+        The canvas updates continuously. Manipulate the nodes and pointers directly to satisfy the step conditions.
+      </div>
+
       {/* Panel Bottom Controls */}
-      <div className="p-3 border-t-2 border-border bg-base/30 flex items-center justify-between gap-2">
+      <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
         <button
           onClick={() => {
             resetCanvas();
             setStepIndex(0);
           }}
-          className="px-2.5 py-1.5 border border-border hover:bg-black/5 dark:hover:bg-white/5 text-text-muted hover:text-text transition-colors flex items-center gap-1 text-2xs font-bold"
+          className="px-3 py-1.5 rounded-full border border-white/10 bg-black/40 hover:bg-black/60 text-text-muted hover:text-white transition-colors flex items-center gap-1 text-2xs font-bold"
           title="Restart lesson"
         >
           <RotateCcw size={12} />
           <span>Restart</span>
         </button>
 
-        <div className="flex items-center gap-2">
-          {!isLastStep && (
-            <button
-              onClick={() => setStepIndex(currentStepIndex + 1)}
-              className="px-3 py-1.5 border-2 border-border hover:border-accent hover:bg-accent/10 text-xs font-bold text-text transition-colors flex items-center gap-1"
-            >
-              <span>Skip</span>
-              <ChevronRight size={13} />
-            </button>
-          )}
-
-          {isLastStep && (
-            <div className="flex items-center gap-1.5 text-sage-accent font-bold text-xs px-2 py-1 bg-sage-accent/15 border-2 border-sage-accent/40">
-              <CheckCircle2 size={14} />
-              <span>Completed!</span>
-            </div>
-          )}
-        </div>
+        {!isLastStep && (
+          <button
+            onClick={() => setStepIndex(currentStepIndex + 1)}
+            className="px-3.5 py-1.5 rounded-full bg-accent hover:opacity-90 text-black font-extrabold text-xs transition-all shadow-md flex items-center gap-1 active:scale-95"
+          >
+            <span>Skip</span>
+            <ChevronRight size={13} strokeWidth={3} />
+          </button>
+        )}
       </div>
     </aside>
   );

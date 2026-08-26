@@ -69,11 +69,12 @@ export const NullToken = ({ nullToken }) => {
       className="absolute select-none font-mono cursor-grab active:cursor-grabbing z-20 group will-change-transform"
       title={isConnecting ? 'Click to connect to NULL' : 'NULL Terminator (drag pointer here)'}
     >
+      {/* Solid Rectangle Box for NULL Token (Matching #18181B) */}
       <div
-        className={`relative flex items-center px-3.5 py-1.5 rounded-lg border-2 border-dashed font-mono font-bold text-xs shadow-2xs transition-all ${
+        className={`relative flex items-center justify-between px-3.5 py-1.5 rounded-md bg-[#18181B] border border-dashed shadow-xl font-mono font-black text-xs text-white transition-all ${
           isConnecting
-            ? 'border-accent bg-accent/20 text-text ring-2 ring-accent/40 cursor-pointer animate-pulse'
-            : 'border-border bg-base/50 text-text-muted hover:border-accent hover:text-text'
+            ? 'border-emerald-400 ring-2 ring-emerald-400/40 cursor-pointer animate-pulse'
+            : 'border-white/20 hover:border-white/40'
         }`}
       >
         <span>NULL</span>
@@ -84,7 +85,7 @@ export const NullToken = ({ nullToken }) => {
             e.stopPropagation();
             deleteNullToken(nullToken.id);
           }}
-          className="opacity-0 group-hover:opacity-100 ml-1.5 p-0.5 text-text-muted hover:text-red-500 rounded transition-opacity"
+          className="opacity-0 group-hover:opacity-100 ml-2 p-0.5 text-text-muted hover:text-red-400 rounded-xs transition-opacity"
           title="Delete NULL token"
         >
           <X size={11} />

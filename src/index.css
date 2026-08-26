@@ -1,3 +1,9 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/inter/800.css";
+@import "@fontsource/inter/900.css";
 @import "@fontsource/jetbrains-mono/300.css";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
@@ -9,33 +15,31 @@
 @tailwind utilities;
 
 :root {
-  /* Light mode - Signature Merino base (#F5EEDD) & ultra high-contrast deep navy text */
-  --color-bg-base: #F5EEDD;
+  /* Light mode - Clean Crisp Modern UI with Green Accent */
+  --color-bg-base: #FAFAFA;
   --color-bg-surface: #FFFFFF;
-  --color-accent: #1E5C82;
-  --color-primary: #051829;
-  --color-text: #061828;
-  --color-text-muted: #14324D;
-  --color-border: rgba(6, 24, 40, 0.20);
-  /* 3rd — Amber / Ochre (warm accent, for emphasis & highlights) */
-  --color-amber-accent: #C97B2E;
-  /* 4th — Sage / Teal-Green (cool accent, for success & secondary states) */
-  --color-sage-accent: #4C7A6B;
+  --color-accent: #059669;
+  --color-primary: #0A0A0A;
+  --color-text: #171717;
+  --color-text-muted: #525252;
+  --color-border: rgba(0, 0, 0, 0.12);
+  --color-amber-accent: #D97706;
+  --color-sage-accent: #10B981;
+  --color-emerald-accent: #059669;
 }
 
 .dark {
-  /* Dark mode - Dark blue background base (#05121C), preserving frosted surface cards */
-  --color-bg-base: #05121C;
-  --color-bg-surface: #18212D;
-  --color-accent: #38BDF8;
+  /* Dark mode - Pitch Black (#080808) & Modern Emerald Green (#10B981) */
+  --color-bg-base: #080808;
+  --color-bg-surface: #141414;
+  --color-accent: #10B981;
   --color-primary: #FFFFFF;
-  --color-text: #E2E8F0;
-  --color-text-muted: #8E9CAE;
-  --color-border: rgba(255, 255, 255, 0.09);
-  /* 3rd — Amber / Ochre (lifted) */
-  --color-amber-accent: #E0A458;
-  /* 4th — Electric Cyan / Blue accent */
-  --color-sage-accent: #0284C7;
+  --color-text: #F3F4F6;
+  --color-text-muted: #9CA3AF;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-amber-accent: #F59E0B;
+  --color-sage-accent: #10B981;
+  --color-emerald-accent: #10B981;
 }
 
 /* Base resets & typography */

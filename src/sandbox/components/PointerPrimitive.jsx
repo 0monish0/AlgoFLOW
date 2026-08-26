@@ -1,9 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { useSandboxStore } from '../core/useSandboxStore';
-import { X, Navigation } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
+import { NODE_RADIUS } from './NodePrimitive';
 
 export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
   const {
+    nodes,
     updatePointerPosition,
     updatePointerLabel,
     setPointerTarget,
@@ -19,8 +21,15 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0, ptrX: 0, ptrY: 0 });
 
+  const isHead = pointer.label.toLowerCase() === 'head';
   const isConnectingFromSelf = connectingSource && connectingSource.sourceId === pointer.id;
   const isControllerActive = activePointerId === pointer.id;
+
+  // If pointer is targeting a live node and is NOT head, it is rendered attached under the node
+  const isTargetingLiveNode = Boolean(pointer.targetId && nodes[pointer.targetId]);
+  if (isTargetingLiveNode && !isHead) {
+    return null;
+  }
 
   // Drag Pointer Origin Point
   const handleMouseDown = (e) => {
@@ -29,9 +38,7 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
     }
     e.stopPropagation();
 
-    // Select this pointer for game-like stepper controller HUD
     setActivePointerId(pointer.id);
-
     setIsDragging(true);
     const { zoom } = useSandboxStore.getState();
 
@@ -66,8 +73,8 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
     e.stopPropagation();
     e.preventDefault();
 
-    const startX = pointer.position.x + 60;
-    const startY = pointer.position.y + 14;
+    const startX = pointer.position.x + 85;
+    const startY = pointer.position.y + 17;
 
     const canvasEl = document.getElementById('sandbox-canvas-viewport');
     const canvasRect = canvasEl ? canvasEl.getBoundingClientRect() : { left: 0, top: 0 };
@@ -122,22 +129,28 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
 
       // Check drop near any NULL token
       let matchedNull = false;
-      Object.values(allNulls).forEach((nullTok) => {
+      Object.values(allNulls || {}).forEach((nullTok) => {
         if (!nullTok.position) return;
         const dist = Math.hypot(dropCanvasX - (nullTok.position.x + 35), dropCanvasY - (nullTok.position.y + 18));
-        if (dist < 85) {
+        if (dist < 65) {
           setPointerTarget(pointer.id, 'NULL');
           matchedNull = true;
         }
       });
-      if (matchedNull) return;
+      if (matchedNull) {
+        setActiveWire(null);
+        return;
+      }
 
-      // Check drop near any node
+      // Check drop near any circular node
       let matchedNode = false;
-      Object.values(allNodes).forEach((targetNode) => {
+      Object.values(allNodes || {}).forEach((targetNode) => {
         if (!targetNode.position) return;
-        const dist = Math.hypot(dropCanvasX - (targetNode.position.x + 68), dropCanvasY - (targetNode.position.y + 28));
-        if (dist < 95) {
+        const dist = Math.hypot(
+          dropCanvasX - (targetNode.position.x + NODE_RADIUS),
+          dropCanvasY - (targetNode.position.y + NODE_RADIUS)
+        );
+        if (dist < 60) {
           setPointerTarget(pointer.id, targetNode.id);
           matchedNode = true;
         }
@@ -154,8 +167,6 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
     window.addEventListener('mouseup', handlePointerUp, { once: true });
   };
 
-  const isAimed = Boolean(pointer.targetId);
-
   return (
     <div
       data-pointer-id={pointer.id}
@@ -163,64 +174,82 @@ export const PointerPrimitive = ({ pointer, isHighlighted = false }) => {
       style={{
         transform: `translate3d(${pointer.position.x}px, ${pointer.position.y}px, 0px)`,
       }}
-      className={`absolute select-none font-mono cursor-grab active:cursor-grabbing z-30 group will-change-transform ${
-        isHighlighted || isControllerActive ? 'ring-2 ring-accent shadow-lg' : ''
-      }`}
-      title="Click to open Pointer Controller, drag handle to aim"
+      className="absolute select-none font-mono cursor-grab active:cursor-grabbing z-30 group will-change-transform"
     >
-      <div className="relative flex items-center bg-surface border border-border rounded-xl shadow-md p-1 pr-1.5 gap-1.5 transition-all">
-        {/* Pointer Label (Editable) */}
-        <div className="pl-1.5">
-          {isEditing ? (
-            <input
-              type="text"
-              value={pointer.label}
-              onChange={(e) => updatePointerLabel(pointer.id, e.target.value)}
-              onBlur={() => setIsEditing(false)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === 'Escape') setIsEditing(false);
-              }}
-              autoFocus
-              className="w-16 px-1 py-0.5 text-xs font-bold font-mono bg-base text-primary border border-accent outline-none rounded"
-            />
-          ) : (
-            <button
-              onClick={() => {
-                setActivePointerId(pointer.id);
-                setIsEditing(true);
-              }}
-              className="text-xs font-extrabold text-primary hover:text-accent font-mono transition-colors tracking-tight"
-              title="Click to rename pointer or open Controller"
-            >
-              {pointer.label}
-            </button>
-          )}
-        </div>
+      {/* Small Red Circular Cross Delete Button (Consistent with node delete button) */}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          deleteFreePointer(pointer.id);
+          setActivePointerId(null);
+        }}
+        className="absolute -top-1.5 -right-1.5 z-40 w-4 h-4 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-75 transition-all duration-150 cursor-pointer"
+        title="Delete pointer"
+      >
+        <X size={10} strokeWidth={3} />
+      </button>
 
-        {/* Arrowhead Draggable Handle */}
+      {/* Box Styling: Head is White BG with Black Font; Other pointers are sleek Dark Charcoal */}
+      <div
+        className={`relative flex items-center justify-between px-3 py-1.5 rounded-md shadow-xl font-mono text-xs transition-all ${
+          isHead
+            ? 'bg-white text-black font-black border border-white'
+            : 'bg-[#18181B] text-white border border-white/15 hover:border-white/35'
+        } ${
+          isControllerActive
+            ? isHead
+              ? 'ring-2 ring-emerald-400'
+              : 'ring-2 ring-white border-white'
+            : isConnectingFromSelf
+            ? 'ring-2 ring-white border-white'
+            : ''
+        }`}
+      >
+        {/* Label */}
+        {isEditing ? (
+          <input
+            type="text"
+            value={pointer.label}
+            onChange={(e) => updatePointerLabel(pointer.id, e.target.value)}
+            onBlur={() => setIsEditing(false)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === 'Escape') setIsEditing(false);
+            }}
+            autoFocus
+            className={`w-14 font-bold text-xs border-b outline-none font-mono px-1 rounded-xs ${
+              isHead
+                ? 'bg-black/10 text-black border-black'
+                : 'bg-black/50 text-white border-white'
+            }`}
+          />
+        ) : (
+          <button
+            onClick={() => setIsEditing(true)}
+            className={`font-black tracking-tight text-xs hover:underline cursor-text font-mono mr-2 ${
+              isHead ? 'text-black' : 'text-white'
+            }`}
+            title="Click to edit pointer label"
+          >
+            {pointer.label}
+          </button>
+        )}
+
+        {/* Drag Handle Arrow */}
         <div
           onMouseDown={handleArrowDragStart}
-          title="Drag arrow to target Node or NULL"
-          className={`pointer-handle w-5 h-5 rounded-lg flex items-center justify-center cursor-crosshair transition-all ${
-            isAimed
-              ? 'bg-primary text-base dark:bg-[#F5EEDD] dark:text-[#081722]'
-              : 'bg-base border border-dashed border-border text-text-muted hover:border-accent hover:text-text'
+          title="Drag arrow to target a node or NULL"
+          className={`pointer-handle w-5 h-5 rounded-sm flex items-center justify-center cursor-crosshair hover:scale-110 transition-transform ${
+            isConnectingFromSelf
+              ? isHead
+                ? 'bg-black text-white ring-2 ring-black'
+                : 'bg-white text-black ring-2 ring-white'
+              : isHead
+              ? 'bg-black/10 hover:bg-black/20 text-black'
+              : 'bg-white/10 hover:bg-white/20 text-white'
           }`}
         >
-          <Navigation size={11} className="rotate-45" />
+          <ArrowRight size={12} strokeWidth={2.5} />
         </div>
-
-        {/* Delete Pointer Button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            deleteFreePointer(pointer.id);
-          }}
-          className="opacity-0 group-hover:opacity-100 p-0.5 text-text-muted hover:text-red-500 rounded transition-opacity"
-          title="Delete pointer"
-        >
-          <X size={12} />
-        </button>
       </div>
     </div>
   );

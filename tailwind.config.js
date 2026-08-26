@@ -8,6 +8,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
+        sans: ['"Inter"', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'IBM Plex Mono', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       colors: {
@@ -16,6 +17,8 @@ export default {
         accent: 'var(--color-accent)',
         'amber-accent': 'var(--color-amber-accent)',
         'sage-accent': 'var(--color-sage-accent)',
+        'emerald-accent': 'var(--color-emerald-accent)',
+        'forest-accent': 'var(--color-emerald-accent)',
         amber: {
           DEFAULT: 'var(--color-amber-accent)',
           accent: 'var(--color-amber-accent)',
@@ -23,6 +26,10 @@ export default {
         sage: {
           DEFAULT: 'var(--color-sage-accent)',
           accent: 'var(--color-sage-accent)',
+        },
+        emerald: {
+          DEFAULT: 'var(--color-emerald-accent)',
+          accent: 'var(--color-emerald-accent)',
         },
         primary: 'var(--color-primary)',
         text: 'var(--color-text)',
