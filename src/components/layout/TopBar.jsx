@@ -40,7 +40,7 @@ export const TopBar = () => {
             <div className="w-6 h-6 rounded-lg bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
               <Code2 size={14} />
             </div>
-            <span>AgroFlow</span>
+            <span>AlgoFLOW</span>
           </Link>
         </div>
 

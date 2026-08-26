@@ -4,6 +4,28 @@ import { evaluateGraph } from './evaluator';
 
 const MAX_HISTORY = 30;
 
+// Helper to calculate canvas coordinates for the center of the current screen viewport
+const getViewportCenter = (pan, zoom) => {
+  let vpWidth = 1000;
+  let vpHeight = 700;
+  if (typeof document !== 'undefined') {
+    const el = document.getElementById('sandbox-canvas-viewport');
+    if (el) {
+      vpWidth = el.clientWidth || 1000;
+      vpHeight = el.clientHeight || 700;
+    } else if (typeof window !== 'undefined') {
+      vpWidth = window.innerWidth;
+      vpHeight = window.innerHeight;
+    }
+  }
+  const currentPan = pan || { x: 0, y: 0 };
+  const currentZoom = zoom || 1;
+  return {
+    x: (-currentPan.x + vpWidth / 2) / currentZoom,
+    y: (-currentPan.y + vpHeight / 2) / currentZoom,
+  };
+};
+
 export const useSandboxStore = create((set, get) => {
   const initial = getInitialGraph();
   const initialEval = evaluateGraph(initial.nodes, initial.freePointers, initial.nullTokens);
@@ -39,6 +61,10 @@ export const useSandboxStore = create((set, get) => {
 
     // Connect mode (when a socket/pointer is clicked rather than dragged)
     connectingSource: null,
+
+    // Current structure type for multi-sandbox support
+    structureType: 'linked-list',
+    setStructure: (structureType) => set({ structureType }),
 
     setActivePointerId: (activePointerId) => set({ activePointerId }),
     setConnectingSource: (connectingSource) => set({ connectingSource }),
@@ -122,14 +148,18 @@ export const useSandboxStore = create((set, get) => {
 
     setActiveWire: (activeWire) => set({ activeWire }),
 
-    // Node Actions
+    // Node Actions (Spawns right in current viewport if position not specified)
     addNode: (data = 10, position, nodeType = 'singly') => {
       get().saveSnapshot();
-      const { nodes, freePointers, nullTokens } = get();
-      const nodePos = position || {
-        x: 320 + Math.random() * 80,
-        y: 220 + Math.random() * 60,
-      };
+      const { nodes, freePointers, nullTokens, pan, zoom } = get();
+      let nodePos = position;
+      if (!nodePos) {
+        const center = getViewportCenter(pan, zoom);
+        nodePos = {
+          x: Math.round(center.x - 46 + (Math.random() - 0.5) * 60),
+          y: Math.round(center.y - 46 + (Math.random() - 0.5) * 60),
+        };
+      }
       const newNode = createNode(data, nodePos, nodeType);
 
       const nextNodes = { ...nodes, [newNode.id]: newNode };
@@ -217,14 +247,18 @@ export const useSandboxStore = create((set, get) => {
       get().scheduleLeakCollection();
     },
 
-    // NULL Token Actions
+    // NULL Token Actions (Spawns right in current viewport if position not specified)
     addNullToken: (position) => {
       get().saveSnapshot();
-      const { nullTokens, nodes, freePointers } = get();
-      const tokenPos = position || {
-        x: 620 + Math.random() * 40,
-        y: 220 + Math.random() * 40,
-      };
+      const { nullTokens, nodes, freePointers, pan, zoom } = get();
+      let tokenPos = position;
+      if (!tokenPos) {
+        const center = getViewportCenter(pan, zoom);
+        tokenPos = {
+          x: Math.round(center.x + 120 + (Math.random() - 0.5) * 40),
+          y: Math.round(center.y - 22 + (Math.random() - 0.5) * 40),
+        };
+      }
       const newNull = createNullToken(tokenPos);
       const nextNulls = { ...nullTokens, [newNull.id]: newNull };
       const evalResult = evaluateGraph(nodes, freePointers, nextNulls);
@@ -251,18 +285,58 @@ export const useSandboxStore = create((set, get) => {
       const nextNulls = { ...nullTokens };
       delete nextNulls[id];
 
-      const evalResult = evaluateGraph(nodes, freePointers, nextNulls);
-      set({ nullTokens: nextNulls, evaluation: evalResult });
+      // Disconnect any sockets referencing this specific NULL token
+      const nextNodes = { ...nodes };
+      Object.keys(nextNodes).forEach((nId) => {
+        const node = nextNodes[nId];
+        if (node && node.sockets) {
+          const nextSockets = { ...node.sockets };
+          let changed = false;
+          if (nextSockets.next?.targetId === id) {
+            nextSockets.next = null;
+            changed = true;
+          }
+          if (nextSockets.prev?.targetId === id) {
+            nextSockets.prev = null;
+            changed = true;
+          }
+          if (changed) {
+            nextNodes[nId] = { ...node, sockets: nextSockets };
+          }
+        }
+      });
+
+      // Disconnect any free pointers targeting this specific NULL token
+      const nextPointers = { ...freePointers };
+      Object.keys(nextPointers).forEach((pId) => {
+        if (nextPointers[pId]?.targetId === id) {
+          nextPointers[pId] = { ...nextPointers[pId], targetId: null };
+        }
+      });
+
+      const evalResult = evaluateGraph(nextNodes, nextPointers, nextNulls);
+      set({
+        nullTokens: nextNulls,
+        nodes: nextNodes,
+        freePointers: nextPointers,
+        evaluation: evalResult,
+        selectedEdge: null,
+      });
+      get().scheduleLeakCollection();
     },
 
-    // Free Pointer Actions
+    // Free Pointer Actions (Spawns right in current viewport if position not specified)
     addFreePointer: (label = 'ptr', position, targetId = null) => {
       get().saveSnapshot();
-      const { freePointers, nodes, nullTokens } = get();
-      const ptrPos = position || {
-        x: 140 + Math.random() * 40,
-        y: 180 + Math.random() * 40,
-      };
+      const { freePointers, nodes, nullTokens, pan, zoom } = get();
+      let ptrPos = position;
+      if (!ptrPos) {
+        const center = getViewportCenter(pan, zoom);
+        ptrPos = {
+          x: Math.round(center.x - 180 + (Math.random() - 0.5) * 40),
+          y: Math.round(center.y - 21 + (Math.random() - 0.5) * 40),
+        };
+      }
       const newPtr = createFreePointer(label, targetId, ptrPos);
 
       const nextPointers = { ...freePointers, [newPtr.id]: newPtr };
@@ -338,7 +412,7 @@ export const useSandboxStore = create((set, get) => {
     stepPointerForward: (ptrId) => {
       const { freePointers, nodes, nullTokens } = get();
       const ptr = freePointers[ptrId];
-      if (!ptr || !ptr.targetId || ptr.targetId === 'NULL') return;
+      if (!ptr || !ptr.targetId || ptr.targetId === 'NULL' || String(ptr.targetId).startsWith('null-')) return;
 
       const currNode = nodes[ptr.targetId];
       if (!currNode || !currNode.sockets || !currNode.sockets.next) return;
@@ -348,9 +422,11 @@ export const useSandboxStore = create((set, get) => {
 
       get().saveSnapshot();
 
+      const isTargetNull = nextTargetId === 'NULL' || String(nextTargetId).startsWith('null-') || Boolean(nullTokens[nextTargetId]);
+
       let nextPos = { ...ptr.position };
-      if (nextTargetId === 'NULL') {
-        const nullTok = Object.values(nullTokens)[0];
+      if (isTargetNull) {
+        const nullTok = nullTokens[nextTargetId] || Object.values(nullTokens)[0];
         if (nullTok) {
           nextPos = { x: nullTok.position.x - 70, y: nullTok.position.y - 10 };
         }
@@ -374,7 +450,7 @@ export const useSandboxStore = create((set, get) => {
       set({
         freePointers: updatedPointers,
         evaluation: evalResult,
-        highlightedNodeId: nextTargetId !== 'NULL' ? nextTargetId : null,
+        highlightedNodeId: !isTargetNull ? nextTargetId : null,
       });
 
       setTimeout(() => {
@@ -386,13 +462,13 @@ export const useSandboxStore = create((set, get) => {
     stepPointerBackward: (ptrId) => {
       const { freePointers, nodes, nullTokens } = get();
       const ptr = freePointers[ptrId];
-      if (!ptr || !ptr.targetId || ptr.targetId === 'NULL') return;
+      if (!ptr || !ptr.targetId || ptr.targetId === 'NULL' || String(ptr.targetId).startsWith('null-')) return;
 
       const currNode = nodes[ptr.targetId];
       if (!currNode || currNode.nodeType !== 'doubly' || !currNode.sockets?.prev) return;
 
       const prevTargetId = currNode.sockets.prev.targetId;
-      if (!prevTargetId || prevTargetId === 'NULL') return;
+      if (!prevTargetId || prevTargetId === 'NULL' || String(prevTargetId).startsWith('null-')) return;
 
       get().saveSnapshot();
 

@@ -35,7 +35,7 @@ export const SandboxShell = ({
                 <div className="w-5 h-5 rounded-md bg-accent/20 text-accent flex items-center justify-center group-hover:scale-105 transition-transform">
                   <Code2 size={12} />
                 </div>
-                <span className="text-accent">AgroFlow</span>
+                <span className="text-accent">AlgoFLOW</span>
               </Link>
               <span className="text-xs font-normal text-text-muted hidden md:inline">
                 / {title}

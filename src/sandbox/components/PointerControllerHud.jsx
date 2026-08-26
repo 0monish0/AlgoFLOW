@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSandboxStore } from '../core/useSandboxStore';
 import { SkipForward, SkipBack, X, Navigation, Trash2 } from 'lucide-react';
+import { isNullTarget } from '../core/evaluator';
 
 const PRESET_LABELS = ['head', 'tail', 'curr', 'temp', 'prev', 'slow', 'fast'];
 
@@ -19,8 +20,8 @@ export const PointerControllerHud = () => {
   if (!activePointerId || !freePointers[activePointerId]) return null;
 
   const ptr = freePointers[activePointerId];
-  const targetNode = ptr.targetId && ptr.targetId !== 'NULL' ? nodes[ptr.targetId] : null;
-  const isNullTarget = ptr.targetId === 'NULL';
+  const isNull = isNullTarget(ptr.targetId);
+  const targetNode = ptr.targetId && !isNull ? nodes[ptr.targetId] : null;
   const isDoublyTarget = targetNode?.nodeType === 'doubly';
   const hasNext = Boolean(targetNode?.sockets?.next?.targetId);
   const hasPrev = Boolean(isDoublyTarget && targetNode?.sockets?.prev?.targetId);

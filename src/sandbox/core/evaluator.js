@@ -4,6 +4,11 @@
  * verifies bidirectional doubly link invariants, and tracks memory decay.
  */
 
+export const isNullTarget = (targetId, nullTokens = {}) => {
+  if (!targetId) return false;
+  return targetId === 'NULL' || String(targetId).startsWith('null-') || Boolean(nullTokens[targetId]);
+};
+
 export const evaluateGraph = (nodes = {}, freePointers = {}, nullTokens = {}) => {
   const reachableNodeIds = new Set();
   const orphanedNodeIds = new Set();
@@ -20,7 +25,7 @@ export const evaluateGraph = (nodes = {}, freePointers = {}, nullTokens = {}) =>
   const entryPoints = [];
   Object.values(freePointers).forEach((fp) => {
     if (fp && fp.targetId) {
-      if (fp.targetId === 'NULL') {
+      if (isNullTarget(fp.targetId, nullTokens)) {
         // Points to NULL (valid terminator)
       } else if (nodes[fp.targetId]) {
         entryPoints.push(fp.targetId);
@@ -60,7 +65,7 @@ export const evaluateGraph = (nodes = {}, freePointers = {}, nullTokens = {}) =>
       if (!node || !node.sockets) continue;
 
       // Next socket
-      if (node.sockets.next && node.sockets.next.targetId && node.sockets.next.targetId !== 'NULL') {
+      if (node.sockets.next && node.sockets.next.targetId && !isNullTarget(node.sockets.next.targetId, nullTokens)) {
         const targetId = node.sockets.next.targetId;
         if (nodes[targetId]) {
           if (!visitedInWalk.has(targetId)) {
@@ -73,7 +78,7 @@ export const evaluateGraph = (nodes = {}, freePointers = {}, nullTokens = {}) =>
       }
 
       // Prev socket (if Doubly)
-      if (node.nodeType === 'doubly' && node.sockets.prev && node.sockets.prev.targetId && node.sockets.prev.targetId !== 'NULL') {
+      if (node.nodeType === 'doubly' && node.sockets.prev && node.sockets.prev.targetId && !isNullTarget(node.sockets.prev.targetId, nullTokens)) {
         const targetId = node.sockets.prev.targetId;
         if (nodes[targetId]) {
           if (!visitedInWalk.has(targetId)) {
@@ -104,7 +109,7 @@ export const evaluateGraph = (nodes = {}, freePointers = {}, nullTokens = {}) =>
     if (!node || !node.sockets) return;
 
     // Check Next Socket
-    if (node.sockets.next && node.sockets.next.targetId && node.sockets.next.targetId !== 'NULL') {
+    if (node.sockets.next && node.sockets.next.targetId && !isNullTarget(node.sockets.next.targetId, nullTokens)) {
       const targetId = node.sockets.next.targetId;
       const targetNode = nodes[targetId];
 
@@ -130,7 +135,7 @@ export const evaluateGraph = (nodes = {}, freePointers = {}, nullTokens = {}) =>
     }
 
     // Check Prev Socket
-    if (node.nodeType === 'doubly' && node.sockets.prev && node.sockets.prev.targetId && node.sockets.prev.targetId !== 'NULL') {
+    if (node.nodeType === 'doubly' && node.sockets.prev && node.sockets.prev.targetId && !isNullTarget(node.sockets.prev.targetId, nullTokens)) {
       const targetId = node.sockets.prev.targetId;
       if (!nodes[targetId]) {
         danglingEdges.push({
