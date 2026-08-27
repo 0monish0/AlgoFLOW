@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-// Photos loaded from public/gallery/ folder (matching user's uploaded images)
+// Photos loaded from public/gallery/ folder (Transparent Backgrounds)
 const GALLERY_IMAGES = [
-  { id: 1, src: '/gallery/392cf408ba0887f854a028a252428fcb.jpg', alt: 'Abstract mathematical code and data structures' },
-  { id: 2, src: '/gallery/5a8b7e54a83d31a5dc80986959cd343c.jpg', alt: 'Algorithmic networks and neural topology' },
-  { id: 3, src: '/gallery/ccd435211b4466ac3575571f2726166b.jpg', alt: 'Computational graphics and matrix flows' },
-  { id: 4, src: '/gallery/contemporary-art.jpeg', alt: 'Contemporary digital algorithmic artwork' },
+  { id: 1, src: '/gallery/392cf408ba0887f854a028a252428fcb-nobg.png', alt: 'Abstract mathematical code and data structures' },
+  { id: 2, src: '/gallery/5a8b7e54a83d31a5dc80986959cd343c-nobg.png', alt: 'Algorithmic networks and neural topology' },
+  { id: 3, src: '/gallery/ccd435211b4466ac3575571f2726166b-nobg.png', alt: 'Computational graphics and matrix flows' },
+  { id: 4, src: '/gallery/contemporary-art-nobg.png', alt: 'Contemporary digital algorithmic artwork' },
   { id: 5, src: '/gallery/particle-ocean.gif', alt: 'Particle ocean simulation dynamics' },
 ];
 
@@ -84,7 +84,7 @@ export const CurvedImageCarousel = () => {
         perspectiveOrigin: '50% 50%',
       }}
     >
-      {/* Left & Right Soft Vignette Fade Gradients (Matching Reference) */}
+      {/* Left & Right Soft Vignette Fade Gradients */}
       <div className="absolute top-0 bottom-0 left-0 w-24 sm:w-40 lg:w-56 bg-gradient-to-r from-base via-base/80 to-transparent z-30 pointer-events-none" />
       <div className="absolute top-0 bottom-0 right-0 w-24 sm:w-40 lg:w-56 bg-gradient-to-l from-base via-base/80 to-transparent z-30 pointer-events-none" />
 
@@ -111,7 +111,7 @@ export const CurvedImageCarousel = () => {
           // Only render cards reasonably close to the viewport
           if (absNormX > 2.1) return null;
 
-          // Curved Panoramic Horizon Geometry (Exact match to reference):
+          // Curved Panoramic Horizon Geometry:
           // 1. Smaller center (0.86x), gracefully expanding sides (up to 1.18x)
           const scale = Math.min(1.20, 0.86 + Math.pow(absNormX, 1.3) * 0.32);
           // 2. Smooth cylindrical forward curve for flanks
@@ -128,7 +128,7 @@ export const CurvedImageCarousel = () => {
           return (
             <div
               key={`${img.id}-${index}`}
-              className="absolute top-1/2 left-0 -mt-[145px] sm:-mt-[160px] overflow-hidden rounded-md sm:rounded-lg shadow-2xl bg-[#111111] pointer-events-none select-none"
+              className="absolute top-1/2 left-0 -mt-[145px] sm:-mt-[160px] overflow-hidden bg-transparent pointer-events-none select-none flex items-center justify-center"
               style={{
                 width: `${CARD_WIDTH}px`,
                 height: `${CARD_HEIGHT}px`,
@@ -149,13 +149,12 @@ export const CurvedImageCarousel = () => {
               <img
                 src={img.src}
                 alt={img.alt}
-                className="w-full h-full object-cover grayscale contrast-[1.18] brightness-[0.94] pointer-events-none select-none"
+                className="w-full h-full object-contain grayscale contrast-[1.18] brightness-[0.98] mix-blend-screen pointer-events-none select-none"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
                 draggable={false}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-25 pointer-events-none" />
             </div>
           );
         })}
