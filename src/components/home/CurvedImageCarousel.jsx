@@ -153,7 +153,11 @@ export const CurvedImageCarousel = () => {
               <img
                 src={img.src}
                 alt={img.alt}
-                className="w-full h-full object-contain grayscale contrast-[1.18] brightness-[0.98] mix-blend-screen pointer-events-none select-none"
+                className="w-full h-full object-contain mix-blend-screen pointer-events-none select-none"
+                style={{
+                  filter:
+                    'brightness(0) saturate(100%) invert(64%) sepia(51%) saturate(2222%) hue-rotate(114deg) brightness(98%) contrast(96%) drop-shadow(0 0 18px rgba(16,185,129,0.35))',
+                }}
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
