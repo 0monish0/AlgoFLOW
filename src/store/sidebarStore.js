@@ -6,10 +6,10 @@ export const useSidebarStore = create(
     (set) => ({
       expandedSections: {
         '00-why-data-structures': true,
-        '01-getting-started': true,
-        '02-list-adt': true,
-        '03-linked-list': true,
-        'problems': true,
+        '01-getting-started': false,
+        '02-list-adt': false,
+        '03-linked-list': false,
+        'problems': false,
       },
       isCollapsed: false,
       mobileOpen: false,
@@ -37,7 +37,7 @@ export const useSidebarStore = create(
       toggleMobileOpen: () => set((state) => ({ mobileOpen: !state.mobileOpen })),
     }),
     {
-      name: 'dsa-sidebar-state',
+      name: 'dsa-sidebar-state-v2',
       partialize: (state) => ({
         expandedSections: state.expandedSections,
         isCollapsed: state.isCollapsed,

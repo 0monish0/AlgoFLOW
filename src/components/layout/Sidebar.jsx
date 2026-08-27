@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { navigationSections } from '../../content/navigation';
@@ -7,9 +7,24 @@ import { useSearchStore } from '../../store/searchStore';
 import { Search, X, ChevronDown, ChevronRight } from 'lucide-react';
 
 export const Sidebar = ({ isMobile = false }) => {
-  const { expandedSections, toggleSection, isCollapsed, setMobileOpen } = useSidebarStore();
+  const { expandedSections, toggleSection, expandSection, isCollapsed, setMobileOpen } = useSidebarStore();
   const { openSearch } = useSearchStore();
   const location = useLocation();
+
+  // Automatically expand the section that contains the current active topic
+  useEffect(() => {
+    navigationSections.forEach((section) => {
+      const containsActive = section.items.some(
+        (item) =>
+          `/docs/${item.slug}` === location.pathname ||
+          (item.children &&
+            item.children.some((child) => `/docs/${child.slug}` === location.pathname))
+      );
+      if (containsActive) {
+        expandSection(section.id);
+      }
+    });
+  }, [location.pathname, expandSection]);
 
   if (isCollapsed && !isMobile) {
     return null;
@@ -117,7 +132,7 @@ export const Sidebar = ({ isMobile = false }) => {
       {/* Topics Hierarchy with Clean Indentation */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3 font-mono">
         {navigationSections.map((section) => {
-          const isExpanded = expandedSections[section.id] ?? true;
+          const isExpanded = Boolean(expandedSections[section.id]);
           const cleanSectionTitle = section.title.replace(/\/$/, '');
 
           return (

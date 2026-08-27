@@ -27,8 +27,8 @@ export const CurvedImageCarousel = () => {
   const CARD_WIDTH = 260;
   const CARD_HEIGHT = 290;
   const CARD_GAP = 12;
-  const STRIDE = CARD_WIDTH + CARD_GAP; // 272px stride
-  const LOOP_LENGTH = GALLERY_IMAGES.length * STRIDE; // 5 * 272 = 1360px
+  const STRIDE = CARD_WIDTH + CARD_GAP;
+  const LOOP_LENGTH = GALLERY_IMAGES.length * STRIDE; 
 
   // Update container width on resize
   useEffect(() => {
