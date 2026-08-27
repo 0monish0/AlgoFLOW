@@ -29,6 +29,33 @@ export const Home = () => {
       {/* Background Center Accent Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-accent/5 rounded-full blur-3xl pointer-events-none -z-10" />
 
+      {/* Ambient Full Round Green Particle Sphere on Left & Right Sides of Screen */}
+      <div className="fixed lg:absolute left-[-40px] sm:left-[-15px] lg:left-6 top-[38%] sm:top-[42%] -translate-y-1/2 w-[200px] sm:w-[280px] md:w-[330px] lg:w-[360px] aspect-square pointer-events-none z-10 opacity-75 mix-blend-screen select-none rounded-full overflow-hidden">
+        <img
+          src="/gallery/particle-sphere-nobg.png"
+          alt="Algorithmic particle sphere left"
+          className="w-full h-full object-contain rounded-full"
+          style={{
+            filter: 'drop-shadow(0 0 20px rgba(16,185,129,0.25))',
+          }}
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+
+      <div className="fixed lg:absolute right-[-40px] sm:right-[-15px] lg:right-6 top-[38%] sm:top-[42%] -translate-y-1/2 w-[200px] sm:w-[280px] md:w-[330px] lg:w-[360px] aspect-square pointer-events-none z-10 opacity-75 mix-blend-screen scale-x-[-1] select-none rounded-full overflow-hidden">
+        <img
+          src="/gallery/particle-sphere-nobg.png"
+          alt="Algorithmic particle sphere right"
+          className="w-full h-full object-contain rounded-full"
+          style={{
+            filter: 'drop-shadow(0 0 20px rgba(16,185,129,0.25))',
+          }}
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+
       {/* Top Floating Capsule Header (Exact previous original structure) */}
       <header className="w-full max-w-5xl mx-auto pt-4 sm:pt-6 pb-2 px-4 sm:px-6 shrink-0 z-30 font-mono">
         <div className="flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-[#FFFFFF]/90 dark:bg-[#141414]/90 backdrop-blur-md border border-border dark:border-white/10 shadow-2xl shadow-black/20">

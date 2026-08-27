@@ -10,7 +10,7 @@ const GALLERY_IMAGES = [
   { id: 6, src: '/gallery/gallery-graphic-2-nobg.png', alt: 'Computational graph systems and data flow' },
   { id: 7, src: '/gallery/gallery-graphic-3-nobg.png', alt: 'Neural data connections and lattice visualization' },
   { id: 8, src: '/gallery/gallery-graphic-4-nobg.png', alt: 'Algorithmic interface and hierarchy mapping' },
-  { id: 9, src: '/gallery/particle-ocean.gif', alt: 'Particle ocean simulation dynamics' },
+  { id: 9, src: '/gallery/particle-wave-nobg.png', alt: 'Particle wave simulation dynamics' },
 ];
 
 export const CurvedImageCarousel = () => {
@@ -156,7 +156,8 @@ export const CurvedImageCarousel = () => {
                 className="w-full h-full object-contain mix-blend-screen pointer-events-none select-none"
                 style={{
                   filter:
-                    'brightness(0) saturate(100%) invert(64%) sepia(51%) saturate(2222%) hue-rotate(114deg) brightness(98%) contrast(96%) drop-shadow(0 0 18px rgba(16,185,129,0.35))',
+                    'brightness(0) saturate(100%) invert(58%) sepia(35%) saturate(1400%) hue-rotate(114deg) brightness(92%) contrast(88%) drop-shadow(0 0 12px rgba(16,185,129,0.22))',
+                  opacity: 0.88,
                 }}
                 loading="eager"
                 fetchPriority="high"
