@@ -52,7 +52,7 @@ export const DocsShell = () => {
         )}
 
         {/* Center + Right Content Area */}
-        <main className="flex-1 min-w-0 py-8 pl-4 sm:pl-6 lg:pl-8 pr-6 sm:pr-8 lg:pr-12 2xl:pr-16">
+        <main className="flex-1 min-w-0 py-8 pl-4 sm:pl-6 lg:pl-8 pr-3 sm:pr-4 lg:pr-6 2xl:pr-8">
           <Outlet />
         </main>
       </div>
