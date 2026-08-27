@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { navigationSections } from '../../content/navigation';
 import { useSidebarStore } from '../../store/sidebarStore';
 import { useSearchStore } from '../../store/searchStore';
-import { Search, X, FolderGit2, ChevronDown, ChevronRight } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronRight } from 'lucide-react';
 
 export const Sidebar = ({ isMobile = false }) => {
   const { expandedSections, toggleSection, isCollapsed, setMobileOpen } = useSidebarStore();
@@ -92,12 +92,8 @@ export const Sidebar = ({ isMobile = false }) => {
     >
       {/* Sidebar Top Header */}
       <div className="p-3.5 border-b border-border">
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-text-muted">
-            <FolderGit2 size={14} className="text-accent" />
-            <span>DSA Reference</span>
-          </div>
-          {isMobile && (
+        {isMobile && (
+          <div className="flex items-center justify-end mb-2">
             <button
               onClick={() => setMobileOpen(false)}
               className="p-1 rounded hover:bg-accent/15 text-text-muted hover:text-text"
@@ -105,8 +101,8 @@ export const Sidebar = ({ isMobile = false }) => {
             >
               <X size={16} />
             </button>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Quick Search Button in Sidebar */}
         <button
