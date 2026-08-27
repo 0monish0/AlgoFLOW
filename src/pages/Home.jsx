@@ -29,6 +29,33 @@ export const Home = () => {
       {/* Background Center Accent Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-accent/5 rounded-full blur-3xl pointer-events-none -z-10" />
 
+      {/* Ambient Green Visual Animation on Left & Right Sides of Screen */}
+      <div className="fixed lg:absolute left-[-50px] sm:left-[-20px] lg:left-4 top-[40%] sm:top-[44%] -translate-y-1/2 w-[220px] sm:w-[300px] md:w-[360px] lg:w-[400px] aspect-square pointer-events-none z-10 opacity-80 mix-blend-screen select-none">
+        <img
+          src="/gallery/_.gif"
+          alt="Algorithmic flow visual left"
+          className="w-full h-full object-contain"
+          style={{
+            filter: 'brightness(0) saturate(100%) invert(64%) sepia(51%) saturate(2222%) hue-rotate(114deg) brightness(98%) contrast(92%) drop-shadow(0 0 25px rgba(16,185,129,0.35))',
+          }}
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+
+      <div className="fixed lg:absolute right-[-50px] sm:right-[-20px] lg:right-4 top-[40%] sm:top-[44%] -translate-y-1/2 w-[220px] sm:w-[300px] md:w-[360px] lg:w-[400px] aspect-square pointer-events-none z-10 opacity-80 mix-blend-screen scale-x-[-1] select-none">
+        <img
+          src="/gallery/_.gif"
+          alt="Algorithmic flow visual right"
+          className="w-full h-full object-contain"
+          style={{
+            filter: 'brightness(0) saturate(100%) invert(64%) sepia(51%) saturate(2222%) hue-rotate(114deg) brightness(98%) contrast(92%) drop-shadow(0 0 25px rgba(16,185,129,0.35))',
+          }}
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+
       {/* Top Floating Capsule Header (Exact previous original structure) */}
       <header className="w-full max-w-5xl mx-auto pt-4 sm:pt-6 pb-2 px-4 sm:px-6 shrink-0 z-30 font-mono">
         <div className="flex items-center justify-between gap-3 sm:gap-6 px-4 sm:px-6 py-2.5 rounded-full bg-[#FFFFFF]/90 dark:bg-[#141414]/90 backdrop-blur-md border border-border dark:border-white/10 shadow-2xl shadow-black/20">
