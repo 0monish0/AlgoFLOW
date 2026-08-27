@@ -56,7 +56,6 @@ const SANDBOX_STRUCTURES = [
 ];
 
 export const SandboxPicker = () => {
-  const { theme, toggleTheme } = useThemeStore();
   const { openSearch } = useSearchStore();
 
   return (
