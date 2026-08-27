@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, Search, Code2, BookOpen } from 'lucide-react';
 import { useSearchStore } from '../store/searchStore';
-import { CurvedImageCarousel } from '../components/home/CurvedImageCarousel';
+import { AsciiForestBackground } from '../components/ui/AsciiForestBackground';
 
 const ROTATING_WORDS = ['everyone', 'you', 'me'];
 
@@ -20,16 +20,15 @@ export const Home = () => {
 
   return (
     <div
-      className="relative min-h-screen bg-base text-text flex flex-col justify-between overflow-x-hidden select-none font-mono"
+      className="relative min-h-screen bg-base text-text flex flex-col justify-between overflow-x-hidden select-none font-mono z-0"
       style={{
         backgroundImage: `radial-gradient(var(--color-border) 1px, transparent 1px)`,
         backgroundSize: '24px 24px',
       }}
     >
+      <AsciiForestBackground />
       {/* Background Center Accent Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-accent/5 rounded-full blur-3xl pointer-events-none -z-10" />
-
-
 
       {/* Top Floating Capsule Header (Exact previous original structure) */}
       <header className="w-full max-w-5xl mx-auto pt-4 sm:pt-6 pb-2 px-4 sm:px-6 shrink-0 z-30 font-mono">
@@ -69,22 +68,22 @@ export const Home = () => {
       </header>
 
       {/* Main Hero Section (Increased top spacing from navbar, auto-sizing word capsule) */}
-      <main className="relative flex-1 w-full max-w-6xl mx-auto flex flex-col items-center justify-center px-4 sm:px-8 pt-16 sm:pt-24 md:pt-28 pb-6 sm:pb-10 z-20 text-center">
+      <main className="relative flex-1 w-full max-w-6xl mx-auto flex flex-col items-center justify-center px-4 sm:px-8 pt-16 sm:pt-24 md:pt-28 pb-16 sm:pb-24 z-20 text-center">
         {/* Hero Headline */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-sans font-black uppercase text-primary tracking-tight leading-none text-center whitespace-nowrap">
-          DATA STRUCTURES &amp;{' '}
-          <span className="text-accent drop-shadow-[0_0_35px_rgba(112,224,0,0.5)]">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-sans font-black uppercase text-white tracking-tight leading-none text-center whitespace-nowrap z-20">
+          DATA STRUCTURES &{' '}
+          <span className="text-accent drop-shadow-[0_0_25px_rgba(16,185,129,0.5)]">
             ALGORITHMS
           </span>
         </h1>
 
         {/* Sub-headline with High-Contrast Green Text in Snug Dynamic-Width Capsule */}
-        <div className="inline-flex items-center justify-center gap-3 sm:gap-4 text-xl sm:text-3xl md:text-4xl font-sans font-bold text-text-muted mt-6 sm:mt-8 tracking-tight leading-none text-center">
+        <div className="inline-flex items-center justify-center gap-3 sm:gap-4 text-xl sm:text-3xl md:text-4xl font-sans font-bold text-gray-300 mt-6 sm:mt-8 tracking-tight leading-none text-center z-20">
           <span className="leading-none flex items-center shrink-0">Built for</span>
           <motion.div
             layout
             transition={{ type: "spring", stiffness: 450, damping: 32 }}
-            className="relative inline-flex items-center justify-center h-11 sm:h-13 overflow-hidden px-3.5 sm:px-4.5 bg-white rounded-tl-[24px] rounded-br-[24px] rounded-tr-[9px] rounded-bl-[9px] border-0 shadow-2xl shadow-white/10 align-middle shrink-0"
+            className="relative inline-flex items-center justify-center h-11 sm:h-14 overflow-hidden px-5 sm:px-6 bg-white rounded-full border-0 align-middle shrink-0"
           >
             <AnimatePresence mode="wait">
               <motion.span
@@ -93,7 +92,7 @@ export const Home = () => {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -22, opacity: 0 }}
                 transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                className="text-[#15803D] font-black tracking-tight block leading-none whitespace-nowrap select-none text-xl sm:text-3xl px-0.5"
+                className="text-accent font-black tracking-tight block leading-none whitespace-nowrap select-none text-xl sm:text-3xl px-0.5"
               >
                 {ROTATING_WORDS[wordIndex]}
               </motion.span>
@@ -101,30 +100,25 @@ export const Home = () => {
           </motion.div>
         </div>
 
-        {/* CTA Buttons Row (Preserving +30px downward gap) */}
-        <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6 mt-[70px] sm:mt-[78px] font-mono z-30">
+        {/* CTA Buttons Row */}
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5 mt-[60px] sm:mt-[70px] font-mono z-30">
           <Link
             to="/sandbox"
-            className="inline-flex items-center gap-2.5 px-7 py-3 sm:py-3.5 rounded-xl bg-accent text-black font-extrabold text-xs sm:text-sm hover:opacity-95 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-accent/25"
+            className="inline-flex items-center gap-2.5 px-6 py-3 sm:py-3.5 rounded-lg bg-accent text-black font-bold text-xs sm:text-sm hover:opacity-95 transition-all"
           >
             <span>Interactive Sandboxes</span>
-            <ArrowUpRight size={16} />
+            <ArrowUpRight size={16} strokeWidth={2.5} />
           </Link>
 
           <Link
-            to="/docs/why-a-linked-list"
-            className="inline-flex items-center gap-2.5 px-7 py-3 sm:py-3.5 rounded-xl bg-surface/80 hover:bg-surface text-text border border-border dark:border-white/10 text-xs sm:text-sm font-semibold hover:border-accent/40 transition-all shadow-sm"
+            to="/docs/is-there-even-a-need"
+            className="inline-flex items-center gap-2.5 px-6 py-3 sm:py-3.5 rounded-lg bg-transparent hover:bg-white/5 text-gray-300 border border-white/10 text-xs sm:text-sm font-semibold transition-all"
           >
-            <BookOpen size={15} className="text-accent" />
+            <BookOpen size={16} className="text-accent" />
             <span>Read Documentation</span>
           </Link>
         </div>
       </main>
-
-      {/* Curved Sideways Moving Image Carousel (Reading from public/gallery/) */}
-      <section className="w-full relative z-10">
-        <CurvedImageCarousel />
-      </section>
     </div>
   );
 };

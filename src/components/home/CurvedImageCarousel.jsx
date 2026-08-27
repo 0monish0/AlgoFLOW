@@ -10,7 +10,8 @@ const GALLERY_IMAGES = [
   { id: 6, src: '/gallery/gallery-graphic-2-nobg.png', alt: 'Computational graph systems and data flow' },
   { id: 7, src: '/gallery/gallery-graphic-3-nobg.png', alt: 'Neural data connections and lattice visualization' },
   { id: 8, src: '/gallery/gallery-graphic-4-nobg.png', alt: 'Algorithmic interface and hierarchy mapping' },
-  { id: 9, src: '/gallery/particle-wave-nobg.png', alt: 'Particle wave simulation dynamics' },
+  { id: 9, src: '/gallery/particle-sphere-nobg.png', alt: 'Algorithmic particle sphere visualization' },
+  { id: 10, src: '/gallery/particle-wave-nobg.png', alt: 'Particle wave simulation dynamics' },
 ];
 
 export const CurvedImageCarousel = () => {
@@ -84,7 +85,7 @@ export const CurvedImageCarousel = () => {
       ref={containerRef}
       className="relative w-full overflow-hidden select-none pt-8 sm:pt-14 pb-8 sm:pb-12 pointer-events-none"
       style={{
-        perspective: '1100px',
+        perspective: '850px',
         perspectiveOrigin: '50% 50%',
       }}
     >
@@ -113,21 +114,32 @@ export const CurvedImageCarousel = () => {
           const absNormX = Math.abs(normX);
 
           // Only render cards reasonably close to the viewport
-          if (absNormX > 2.1) return null;
+          if (absNormX > 2.2) return null;
 
-          // Curved Panoramic Horizon Geometry:
-          // 1. Smaller center (0.86x), gracefully expanding sides (up to 1.18x)
-          const scale = Math.min(1.20, 0.86 + Math.pow(absNormX, 1.3) * 0.32);
-          // 2. Smooth cylindrical forward curve for flanks
-          const translateZ = (1 - Math.cos(normX * 0.75)) * 90;
-          // 3. Top upward arch and bottom smile curve
-          const translateY = Math.pow(normX, 2) * -12;
-          // 4. Inward panoramic cylinder yaw
-          const rotateY = normX * 20;
-          // 5. Subtle tangential tilt
-          const rotateZ = -normX * 3.0;
-          // 6. Natural fade near extreme edges
-          const opacity = Math.max(0.35, 1 - Math.pow(Math.max(0, absNormX - 1.25), 2) * 1.2);
+          // Panoramic Amphitheater Curve (Upward-tilted side rotation & moderate yaw):
+          // 1. Center is compact (0.86x), gracefully expanding on sides (up to 1.35x)
+          const scale = Math.min(1.35, 0.86 + Math.pow(absNormX, 1.3) * 0.28);
+
+          // 2. Smooth cylindrical forward depth curve
+          const translateZ = (1 - Math.cos(normX * 0.75)) * 95;
+
+          // 3. Upward arch translation at the sides
+          const translateY = -Math.pow(absNormX, 1.7) * 24;
+
+          // 4. Moderate, natural 3D yaw rotation
+          const rotateY = normX * 26;
+
+          // 5. Upward 3D pitch rotation at the sides (tilts the face upward)
+          const rotateX = -Math.abs(normX) * 8.5;
+
+          // 6. Tangential horizon roll
+          const rotateZ = -normX * 3.5;
+
+          // 7. Natural fade at outer perimeter
+          const opacity = Math.max(0.35, 1 - Math.pow(Math.max(0, absNormX - 1.28), 2) * 1.3);
+
+          // 8. Dynamic Z-index
+          const zIndex = Math.round(50 + absNormX * 40);
 
           return (
             <div
@@ -140,13 +152,14 @@ export const CurvedImageCarousel = () => {
                   translateX(${itemX}px)
                   translateY(${translateY}px)
                   translateZ(${translateZ}px)
+                  rotateX(${rotateX}deg)
                   rotateY(${rotateY}deg)
                   rotateZ(${rotateZ}deg)
                   scale(${scale})
                 `,
                 transformStyle: 'preserve-3d',
                 opacity,
-                zIndex: Math.round(50 + absNormX * 40),
+                zIndex,
                 willChange: 'transform, opacity',
               }}
             >
@@ -156,7 +169,7 @@ export const CurvedImageCarousel = () => {
                 className="w-full h-full object-contain mix-blend-screen pointer-events-none select-none"
                 style={{
                   filter:
-                    'brightness(0) saturate(100%) invert(58%) sepia(35%) saturate(1400%) hue-rotate(114deg) brightness(92%) contrast(88%) drop-shadow(0 0 12px rgba(16,185,129,0.22))',
+                    'grayscale(100%) sepia(55%) hue-rotate(95deg) saturate(260%) brightness(0.94) contrast(0.90) drop-shadow(0 0 16px rgba(16,185,129,0.22))',
                   opacity: 0.88,
                 }}
                 loading="eager"

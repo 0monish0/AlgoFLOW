@@ -103,7 +103,7 @@ export const Sidebar = ({ isMobile = false }) => {
 
   return (
     <aside
-      className="h-full w-full flex flex-col font-mono select-none bg-surface/40 border-r border-border"
+      className="h-full w-full flex flex-col font-mono select-none bg-base/20 border-r border-border"
     >
       {/* Sidebar Top Header */}
       <div className="p-3.5 border-b border-border">

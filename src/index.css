@@ -41,8 +41,18 @@ body {
   min-height: 100vh;
   line-height: 1.65;
   background-color: var(--color-bg-base);
+  background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-attachment: fixed;
   color: var(--color-text);
   transition: background-color 150ms ease, color 150ms ease;
+}
+
+.bg-base {
+  background-color: var(--color-bg-base);
+  background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-attachment: fixed;
 }
 
 /* Hide visible scrollbars globally while maintaining full scroll capability */
@@ -166,5 +176,46 @@ code[class*="language-"] ::selection,
 .token::selection {
   background-color: #387093 !important;
   color: #FFFFFF !important;
+}
+
+/* Animations for ASCII Forest Background */
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110vh) rotate(360deg) translateX(20px);
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.ascii-leaf {
+  animation: fall linear infinite;
+}
+
+.ascii-vine {
+  transform-origin: top center;
+  animation: sway 4s ease-in-out infinite;
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 0.15; transform: scale(0.9); }
+  50%       { opacity: 0.55; transform: scale(1.15); }
 }
 
