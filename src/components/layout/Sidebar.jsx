@@ -7,11 +7,11 @@ import { useSearchStore } from '../../store/searchStore';
 import { Search, X, ChevronDown, ChevronRight } from 'lucide-react';
 
 export const Sidebar = ({ isMobile = false }) => {
-  const { expandedSections, toggleSection, expandSection, isCollapsed, setMobileOpen } = useSidebarStore();
+  const { expandedSections, toggleSection, setActiveSectionOnly, isCollapsed, setMobileOpen } = useSidebarStore();
   const { openSearch } = useSearchStore();
   const location = useLocation();
 
-  // Automatically expand the section that contains the current active topic
+  // Automatically expand only the section that contains the current active topic
   useEffect(() => {
     navigationSections.forEach((section) => {
       const containsActive = section.items.some(
@@ -21,10 +21,10 @@ export const Sidebar = ({ isMobile = false }) => {
             item.children.some((child) => `/docs/${child.slug}` === location.pathname))
       );
       if (containsActive) {
-        expandSection(section.id);
+        setActiveSectionOnly(section.id);
       }
     });
-  }, [location.pathname, expandSection]);
+  }, [location.pathname, setActiveSectionOnly]);
 
   if (isCollapsed && !isMobile) {
     return null;
