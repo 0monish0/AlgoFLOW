@@ -2,17 +2,16 @@ import React, { useRef, useState, useEffect } from 'react';
 
 // Photos loaded from public/gallery/ folder (matching user's uploaded images)
 const GALLERY_IMAGES = [
-  { id: 1, src: '/gallery/pexels-giuseppe-didio-64079575-8168570.jpg', alt: 'Abstract algorithmic art' },
-  { id: 2, src: '/gallery/pexels-googledeepmind-17484970.jpg', alt: 'DeepMind neural and computational structures' },
-  { id: 3, src: '/gallery/pexels-googledeepmind-25626431.jpg', alt: 'Geometric data and network geometry' },
-  { id: 4, src: '/gallery/pexels-markusspiske-965345.jpg', alt: 'Matrix code and data architecture' },
-  { id: 5, src: '/gallery/pexels-peaky-31343288.jpg', alt: 'Modern technology and computational design' },
+  { id: 1, src: '/gallery/392cf408ba0887f854a028a252428fcb.jpg', alt: 'Abstract mathematical code and data structures' },
+  { id: 2, src: '/gallery/5a8b7e54a83d31a5dc80986959cd343c.jpg', alt: 'Algorithmic networks and neural topology' },
+  { id: 3, src: '/gallery/ccd435211b4466ac3575571f2726166b.jpg', alt: 'Computational graphics and matrix flows' },
+  { id: 4, src: '/gallery/contemporary-art.jpeg', alt: 'Contemporary digital algorithmic artwork' },
+  { id: 5, src: '/gallery/particle-ocean.gif', alt: 'Particle ocean simulation dynamics' },
 ];
 
 export const CurvedImageCarousel = () => {
   const containerRef = useRef(null);
   const [offset, setOffset] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
   const [containerWidth, setContainerWidth] = useState(1200);
 
   // Repeat items for seamless continuous looping
@@ -51,8 +50,8 @@ export const CurvedImageCarousel = () => {
       const delta = currentTime - lastTime;
       lastTime = currentTime;
 
-      // Continuous horizontal travel speed (smooth 38px/sec, slows on hover)
-      const speed = isHovered ? 12 : 38;
+      // Constant horizontal travel speed (smooth 34px/sec)
+      const speed = 34;
       setOffset((prev) => {
         const next = prev + (speed * delta) / 1000;
         return next >= LOOP_LENGTH ? next - LOOP_LENGTH : next;
@@ -63,7 +62,7 @@ export const CurvedImageCarousel = () => {
 
     animationFrameId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isHovered, LOOP_LENGTH]);
+  }, [LOOP_LENGTH]);
 
   const centerX = containerWidth / 2;
   const radius = Math.max(480, containerWidth * 0.44);
@@ -79,9 +78,7 @@ export const CurvedImageCarousel = () => {
   return (
     <div
       ref={containerRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="relative w-full overflow-hidden select-none pt-8 sm:pt-14 pb-8 sm:pb-12"
+      className="relative w-full overflow-hidden select-none pt-8 sm:pt-14 pb-8 sm:pb-12 pointer-events-none"
       style={{
         perspective: '1100px',
         perspectiveOrigin: '50% 50%',
@@ -131,7 +128,7 @@ export const CurvedImageCarousel = () => {
           return (
             <div
               key={`${img.id}-${index}`}
-              className="absolute top-1/2 left-0 -mt-[145px] sm:-mt-[160px] overflow-hidden rounded-md sm:rounded-lg shadow-2xl bg-[#111111] group cursor-pointer"
+              className="absolute top-1/2 left-0 -mt-[145px] sm:-mt-[160px] overflow-hidden rounded-md sm:rounded-lg shadow-2xl bg-[#111111] pointer-events-none select-none"
               style={{
                 width: `${CARD_WIDTH}px`,
                 height: `${CARD_HEIGHT}px`,
@@ -147,19 +144,18 @@ export const CurvedImageCarousel = () => {
                 opacity,
                 zIndex: Math.round(50 + absNormX * 40),
                 willChange: 'transform, opacity',
-                transition: 'box-shadow 300ms ease',
               }}
             >
               <img
                 src={img.src}
                 alt={img.alt}
-                className="w-full h-full object-cover grayscale contrast-[1.12] brightness-[0.92] group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-500 pointer-events-none"
+                className="w-full h-full object-cover grayscale contrast-[1.18] brightness-[0.94] pointer-events-none select-none"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
                 draggable={false}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-25 group-hover:opacity-0 transition-opacity pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-25 pointer-events-none" />
             </div>
           );
         })}
