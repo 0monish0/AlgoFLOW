@@ -452,127 +452,104 @@ This is why the next several pages don't just show you how to build a linked lis
     title: 'What Being Good at DSA Actually Means',
     folder: '00-why-data-structures',
     category: '00-why-data-structures',
-    summary: 'Moving beyond rote LeetCode memorization to mastering invariants, pointer discipline, state machine visualization, and boundary handling.',
-    lead: `Mastery in Data Structures and Algorithms is not about memorizing 300 problem solutions. It is about recognizing structural invariants, reasoning with mathematical clarity, maintaining flawless pointer discipline, and visualizing state transitions.`,
+    summary: 'The phrasebook vs. grammar analogy: why real DSA mastery is about transferable mental models and reasoning through unfamiliar shapes.',
+    lead: `Imagine two people learning a new language before a trip abroad. One of them memorizes a phrasebook — fixed sentences for fixed situations. *"Where is the bathroom."* *"How much does this cost."* *"I would like a table for two."* Say exactly those situations come up, and they'll sound fluent for about four seconds.
+
+Now the waiter asks a follow-up question that isn't in the phrasebook. Silence. The phrasebook only covers what it covers — it has no way to handle anything slightly off-script, because nothing was ever actually learned, only cached.
+
+The second person learned the grammar instead — how the language actually assembles meaning, how verbs conjugate, how sentences are built from parts. They know far fewer complete "sentences" by heart. But they can construct a brand new one on the spot for a situation the phrasebook never anticipated, because they understand the underlying system generating sentences, not just a set of memorized outputs.`,
     sections: [
       {
-        id: 'the-four-pillars-of-mastery',
-        title: 'The Four Pillars of DSA Mastery',
-        content: `True DSA competence rests upon four foundational pillars:
-1. **Loop Invariants & State**: Formulating invariants that remain true before, during, and after every iteration.
-2. **Pointer Arithmetic & Ownership**: Understanding exactly who owns memory, what address is being dereferenced, and preventing memory leaks or dangling pointers.
-3. **Edge Case Elimination**: Handling null pointers, single-element lists, empty inputs, duplicate keys, and boundary overflows without cluttering code with fifty special-case \`if\` statements.
-4. **Asymptotic & Constant-Factor Reasoning**: Accurately distinguishing between theoretical \`O(n)\` and wall-clock execution time influenced by branch prediction and memory bus saturation.`
-      },
-      {
-        id: 'the-engineering-mindset',
-        title: 'The Engineering Mindset: Invariants over Hacks',
-        content: `When implementing a linked list reversal, a beginner tries to guess pointer reassignments until test cases pass. 
+        id: 'the-split-in-learning-dsa',
+        title: 'The Split in Learning DSA',
+        content: `A lot of students prepare for interviews and exams by memorizing solutions to specific, named problems — *"this is how you reverse a linked list,"* *"this is how you detect a cycle"* — as fixed, standalone recipes. It works, right up until the question is a slight variation of something they've memorized, and the phrasebook has nothing for it.
 
-A master defines a clean invariant:
-- \`prev\` points to the reversed prefix.
-- \`curr\` points to the remaining unprocessed suffix.
-- In each step: capture \`next = curr.next\`, reverse \`curr.next = prev\`, advance \`prev = curr\`, advance \`curr = next\`.
-- Termination condition is obvious: when \`curr == None\`, \`prev\` is the new head.
-
-### Reversal Algorithm
+Here's what that looks like concretely. Someone memorizes reversing a linked list as an exact sequence of steps:
 
 \`\`\`pseudocode
 To reverse a linked list:
-    1. Set Prev to None
-    2. Set Curr to Head
-    3. Loop while Curr is not None:
-        a. NextTemp = Curr.next     // 1. Preserve forward link
-        b. Curr.next = Prev          // 2. Reverse pointer
-        c. Prev = Curr               // 3. Advance Prev
-        d. Curr = NextTemp           // 4. Advance Curr
-    4. Return Prev                   // Prev is the new head
+    1. Point Prev to None
+    2. Point Current to Head
+    3. Loop while Current is not None:
+        a. Point NextNode to Current.next
+        b. Point Current.next to Prev
+        c. Move Prev to Current
+        d. Move Current to NextNode               // O(n)
+    4. Return Prev as new Head
 \`\`\`
 
 \`\`\`c
-// C: Pointer Discipline in Reversing a Singly Linked List
-#include <stdlib.h>
-
-typedef struct Node {
-    int data;
-    struct Node* next;
-} Node;
-
-Node* reverse_list(Node* head) {
-    Node* prev = NULL;
-    Node* curr = head;
-    
-    while (curr != NULL) {
-        Node* next_temp = curr->next; // 1. Preserve forward link
-        curr->next = prev;            // 2. Reverse pointer
-        prev = curr;                  // 3. Advance prev
-        curr = next_temp;              // 4. Advance curr
-    }
-    
-    return prev; // prev is the new head
+// C LOGIC:
+Node* prev = NULL;
+Node* current = head;
+while (current != NULL) {
+    Node* next_node = current->next;
+    current->next = prev;
+    prev = current;
+    current = next_node;
 }
+return prev;
 \`\`\`
 \`\`\`cpp
-// C++: Clean Pointer Discipline in Reversal
-template <typename T>
-struct Node {
-    T data;
-    Node* next;
-    Node(T val) : data(val), next(nullptr) {}
-};
-
-template <typename T>
-Node<T>* reverseList(Node<T>* head) {
-    Node<T>* prev = nullptr;
-    Node<T>* curr = head;
-    while (curr != nullptr) {
-        Node<T>* nextTemp = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = nextTemp;
-    }
-    return prev;
+// C++ LOGIC:
+Node* prev = nullptr;
+Node* current = head;
+while (current != nullptr) {
+    Node* next_node = current->next;
+    current->next = prev;
+    prev = current;
+    current = next_node;
 }
+return prev;
 \`\`\`
 \`\`\`python
-# Python: Clean Invariant in Reversal
-class ListNode:
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
-
-def reverse_list(head: ListNode | None) -> ListNode | None:
-    prev = None
-    curr = head
-    while curr is not None:
-        next_temp = curr.next
-        curr.next = prev
-        prev = curr
-        curr = next_temp
-    return prev
+# Python LOGIC:
+prev = None
+current = head
+while current is not None:
+    next_node = current.next
+    current.next = prev
+    prev = current
+    current = next_node
+return prev
 \`\`\`
 \`\`\`java
-// Java: Clean Pointer Discipline in Reversal
-public class ListReversal {
-    static class ListNode {
-        int val;
-        ListNode next;
-        ListNode(int val) { this.val = val; }
-    }
-
-    public static ListNode reverseList(ListNode head) {
-        ListNode prev = null;
-        ListNode curr = head;
-        while (curr != null) {
-            ListNode nextTemp = curr.next;
-            curr.next = prev;
-            prev = curr;
-            curr = nextTemp;
-        }
-        return prev;
-    }
+// Java LOGIC:
+Node prev = null;
+Node current = head;
+while (current != null) {
+    Node nextNode = current.next;
+    current.next = prev;
+    prev = current;
+    current = nextNode;
 }
-\`\`\``
+return prev;
+\`\`\`
+
+Now change the question slightly: **reverse only every other node, leaving the rest in place.** Someone who memorized the steps above, without understanding why each line does what it does, genuinely struggles here — the shape doesn't match their cached solution.
+
+Someone who understands the underlying mechanism — *"I'm walking the list once, and at each node I'm redirecting where next points, using a temporary variable so I don't lose my place"* — can adapt that same reasoning to the new constraint, because they understood the grammar, not just one sentence built from it.`
+      },
+      {
+        id: 'what-good-at-dsa-tracks',
+        title: 'What "Good at DSA" Tracks',
+        content: `It isn't how many named problems you've seen before. It's whether you can look at an unfamiliar problem and reason about it using a small set of transferable ideas:
+
+- **What's the actual shape of this problem** — searching, ordering, grouping, tracking relationships?
+- **Which structure's strengths line up** with what this problem repeatedly needs to do?
+- **What's the cost of my approach** as the input grows, and is there a cheaper one?
+- **Can I trace through my own logic on a tiny example by hand** and watch it actually work, step by step?
+
+That last one matters more than it sounds. Being able to mentally (or on paper) walk through your own code on a small case — a 3-node list, a 4-element array — and predict exactly what happens at each step is a stronger signal of real understanding than being able to recite a memorized solution fluently.`
+      },
+      {
+        id: 'the-honest-implication',
+        title: 'The Honest Implication',
+        content: `Grinding through a large volume of problems isn't wasted effort — but it only pays off if each one is **building your grammar**, not just adding one more phrase to your phrasebook.
+
+After solving something, the useful question isn't *"did I get it right"* — it's **"what's the general idea here that would still apply if this problem changed shape a little?"**
+
+Ask that consistently, and the "phrasebook vs. grammar" gap closes on its own, one problem at a time.`
       }
     ]
   }
