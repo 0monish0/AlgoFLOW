@@ -1,91 +1,90 @@
-import React, { useState, useEffect } from 'react';
-import { Film, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
 
-export const TopicMediaCard = ({ slug, title, customGif }) => {
-  const gifPath = customGif || `/gifs/${slug}.gif`;
-  const [hasImage, setHasImage] = useState(false);
-  const [imageError, setImageError] = useState(false);
+// Explicit mapping of verified media assets in /public/gifs/
+export const TOPIC_MEDIA_MAP = {
+  'anatomy-of-a-node': [
+    { label: 'Anatomy', src: '/gifs/anatomy-of-a-node.png', alt: 'Anatomy of a Node' },
+  ],
+  'traversal': [
+    { label: 'Traversal', src: '/gifs/traversaL.gif', alt: 'Linked List Traversal' },
+  ],
+  'insertion-head-middle-tail': [
+    { label: 'Beginning', src: '/gifs/insertion_begining.gif', alt: 'Insertion at Beginning' },
+    { label: 'Middle', src: '/gifs/insertion_middle.gif', alt: 'Insertion in Middle' },
+    { label: 'End', src: '/gifs/insertion_end.gif', alt: 'Insertion at End' },
+  ],
+  'deletion-why-you-need-previous': [
+    { label: 'Deletion', src: '/gifs/deletion-why-you-need-previous.gif', alt: 'Deletion - Why You Need Previous' },
+  ],
+  'types-doubly-and-circular': [
+    { label: 'Doubly & Circular', src: '/gifs/insertion-deletion-doubly-circular.gif', alt: 'Doubly and Circular Linked Lists' },
+  ],
+  'insertion-deletion-doubly-circular': [
+    { label: 'Doubly & Circular', src: '/gifs/insertion-deletion-doubly-circular.gif', alt: 'Doubly and Circular Linked Lists' },
+  ],
+  'fast-and-slow-pointers-the-essence': [
+    { label: 'Fast & Slow', src: '/gifs/fast-and-slow-pointers-the-essence.gif', alt: 'Fast and Slow Pointers' },
+  ],
+  'implementations-of-the-list-adt': [
+    { label: 'List ADT Implementations', src: '/gifs/implementations-of-the-list-adt.gif', alt: 'Implementations of the List ADT' },
+  ],
+};
 
-  useEffect(() => {
-    setImageError(false);
-    setHasImage(false);
+export const TopicMediaCard = ({ slug, title, customGif, media }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
 
-    // Preload to test if the GIF file exists in /public/gifs/
-    const img = new Image();
-    img.src = gifPath;
-    img.onload = () => {
-      setHasImage(true);
-      setImageError(false);
-    };
-    img.onerror = () => {
-      setHasImage(false);
-      setImageError(true);
-    };
-  }, [gifPath]);
+  // Determine media items list
+  let mediaList = [];
+  if (Array.isArray(media) && media.length > 0) {
+    mediaList = media.map((item) =>
+      typeof item === 'string' ? { label: 'Visual', src: item, alt: title } : item
+    );
+  } else if (customGif) {
+    mediaList = [{ label: 'Visual', src: customGif, alt: title }];
+  } else if (slug && TOPIC_MEDIA_MAP[slug]) {
+    mediaList = TOPIC_MEDIA_MAP[slug];
+  }
+
+  // If no media is assigned for this topic, render nothing (no placeholders, no boxes)
+  if (!mediaList || mediaList.length === 0) {
+    return null;
+  }
+
+  const safeIndex = activeIndex < mediaList.length ? activeIndex : 0;
+  const currentItem = mediaList[safeIndex];
 
   return (
-    <div className="w-full rounded-2xl overflow-hidden border border-border/80 dark:border-white/10 bg-surface/60 dark:bg-[#0E131B]/90 backdrop-blur-md shadow-xl transition-all duration-300 group">
-      {/* Top Media Capsule Header */}
-      <div className="flex items-center justify-between px-3.5 py-2 border-b border-border/60 dark:border-white/5 bg-base/40 text-2xs select-none">
-        <div className="flex items-center gap-1.5 font-bold text-accent uppercase tracking-wider text-3xs">
-          <Film size={12} className="animate-pulse" />
-          <span>Visual Guide</span>
+    <div className="w-full select-none flex flex-col gap-2.5">
+      {/* Multi-GIF Tab Switcher (Only shown if page has more than 1 GIF) */}
+      {mediaList.length > 1 && (
+        <div className="flex items-center gap-1.5 p-1 rounded-lg bg-surface/90 dark:bg-[#141414]/90 border border-border/60 dark:border-white/10 w-fit shadow-xs">
+          {mediaList.map((item, idx) => (
+            <button
+              key={item.label || idx}
+              onClick={() => setActiveIndex(idx)}
+              className={`px-3 py-1 rounded-md text-3xs font-mono font-bold transition-all ${
+                safeIndex === idx
+                  ? 'bg-accent text-black shadow-xs scale-102'
+                  : 'text-text-muted hover:text-primary hover:bg-white/5'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-        <span className="text-text-muted/70 font-mono text-3xs truncate max-w-[150px]">
-          {slug}.gif
-        </span>
-      </div>
+      )}
 
-      {/* Main Media Container */}
-      <div className="relative aspect-16/10 w-full overflow-hidden bg-black/40 flex items-center justify-center p-3">
-        {hasImage && !imageError ? (
-          <img
-            src={gifPath}
-            alt={`${title} visual guide`}
-            className="w-full h-full object-contain rounded-lg shadow-md"
-            loading="lazy"
-          />
-        ) : (
-          /* Sleek Animated Placeholder */
-          <div className="relative w-full h-full rounded-xl border border-dashed border-accent/40 dark:border-accent/30 bg-accent/5 dark:bg-accent/5 flex flex-col items-center justify-center p-4 text-center overflow-hidden">
-            {/* Ambient Background Grid & Glow */}
-            <div
-              className="absolute inset-0 opacity-15 pointer-events-none"
-              style={{
-                backgroundImage: `radial-gradient(var(--color-accent) 1px, transparent 1px)`,
-                backgroundSize: '16px 16px',
-              }}
-            />
-
-            {/* Pulsing Center Icon */}
-            <div className="relative z-10 w-12 h-12 rounded-xl bg-accent/20 border border-accent/30 text-accent flex items-center justify-center mb-2.5 shadow-lg shadow-accent/10 group-hover:scale-105 transition-transform duration-300">
-              <Sparkles size={20} className="text-accent animate-pulse" />
-            </div>
-
-            {/* Title & Instructions */}
-            <div className="relative z-10 space-y-1 max-w-[260px]">
-              <div className="text-xs font-bold text-primary dark:text-[#F3F4F6] tracking-tight">
-                Animation Placeholder
-              </div>
-              <p className="text-3xs text-text-muted leading-tight font-normal">
-                Place your GIF or animation at:
-              </p>
-              <div className="inline-block px-2 py-0.5 rounded-md bg-black/40 border border-white/10 text-accent font-mono text-3xs select-all">
-                public/gifs/{slug}.gif
-              </div>
-            </div>
-
-            {/* Supported Formats Pill */}
-            <div className="absolute bottom-2 right-2 flex items-center gap-1 text-4xs text-text-muted/60 font-mono select-none">
-              <span>GIF</span>
-              <span>•</span>
-              <span>WEBP</span>
-              <span>•</span>
-              <span>MP4</span>
-            </div>
-          </div>
-        )}
+      {/* Pure borderless, boxless GIF/PNG Media Image */}
+      <div className="w-full overflow-hidden rounded-xl">
+        <img
+          key={currentItem.src}
+          src={currentItem.src}
+          alt={currentItem.alt || title || 'Topic visual'}
+          className="w-full h-auto object-contain rounded-xl shadow-lg"
+          loading="lazy"
+        />
       </div>
     </div>
   );
 };
+

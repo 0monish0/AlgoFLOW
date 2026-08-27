@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { TopicMediaCard } from '../docs/TopicMediaCard';
+import { TopicMediaCard, TOPIC_MEDIA_MAP } from '../docs/TopicMediaCard';
 
-export const TocRail = ({ sections = [], slug, title, customGif, isCollapsed = false }) => {
+export const TocRail = ({ sections = [], slug, title, customGif, media, isCollapsed = false }) => {
   const [activeId, setActiveId] = useState('');
   const location = useLocation();
+
+  const hasMedia = Boolean(
+    (media && media.length > 0) ||
+    customGif ||
+    (slug && TOPIC_MEDIA_MAP[slug])
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,13 +71,14 @@ export const TocRail = ({ sections = [], slug, title, customGif, isCollapsed = f
         </div>
       )}
 
-      {/* Increased Spacing Gap between 'On This Page' and Visual GIF Box */}
-      <div className={sections && sections.length > 0 ? 'mt-[68px]' : 'mt-0'}>
-        {slug && (
-          <TopicMediaCard slug={slug} title={title} customGif={customGif} />
-        )}
-      </div>
+      {/* Visual Media Section (Only rendered if media exists for this topic) */}
+      {hasMedia && (
+        <div className={sections && sections.length > 0 ? 'mt-[68px]' : 'mt-0'}>
+          <TopicMediaCard slug={slug} title={title} customGif={customGif} media={media} />
+        </div>
+      )}
     </aside>
   );
 };
+
 

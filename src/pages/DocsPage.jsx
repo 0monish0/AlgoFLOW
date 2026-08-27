@@ -87,6 +87,7 @@ export const DocsPage = () => {
         slug={topic.slug}
         title={topic.title}
         customGif={topic.gif}
+        media={topic.media}
         isCollapsed={isCollapsed}
       />
     </div>
