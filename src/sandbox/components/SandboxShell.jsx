@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSandboxStore } from '../core/useSandboxStore';
-import { useThemeStore } from '../../store/themeStore';
-import { ArrowLeft, Sun, Moon, Sparkles, Sliders, Code2 } from 'lucide-react';
+import { ArrowLeft, Sparkles, Sliders, Code2 } from 'lucide-react';
 
 export const SandboxShell = ({
   children,
@@ -13,7 +12,6 @@ export const SandboxShell = ({
   docSlug,
 }) => {
   const { mode, setMode } = useSandboxStore();
-  const { theme, toggleTheme } = useThemeStore();
 
   return (
     <div className="relative w-screen h-screen bg-[#080808] text-text font-mono overflow-hidden select-none">
@@ -90,16 +88,6 @@ export const SandboxShell = ({
                 <span>Lessons</span>
               </button>
             </div>
-
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="p-1.5 rounded-full hover:bg-white/10 text-text transition-colors flex items-center justify-center"
-              title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode`}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? <Moon size={14} className="text-accent" /> : <Sun size={14} className="text-amber-accent" />}
-            </button>
 
             {/* Docs link */}
             <Link

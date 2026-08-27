@@ -1,13 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useThemeStore } from '../../store/themeStore';
 import { useLanguageStore, LANGUAGES } from '../../store/languageStore';
 import { useSidebarStore } from '../../store/sidebarStore';
 import { useSearchStore } from '../../store/searchStore';
-import { Sun, Moon, Search, Menu, PanelLeftClose, PanelLeft, Code2 } from 'lucide-react';
+import { Search, Menu, PanelLeftClose, PanelLeft, Code2 } from 'lucide-react';
 
 export const TopBar = () => {
-  const { theme, toggleTheme } = useThemeStore();
   const { preferredLanguage, setPreferredLanguage } = useLanguageStore();
   const { isCollapsed, toggleCollapse, toggleMobileOpen } = useSidebarStore();
   const { openSearch } = useSearchStore();
@@ -73,16 +71,6 @@ export const TopBar = () => {
               </button>
             ))}
           </div>
-
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="p-1.5 rounded-full hover:bg-white/10 text-text transition-colors flex items-center justify-center"
-            title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode`}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Moon size={14} className="text-accent" /> : <Sun size={14} className="text-amber-accent" />}
-          </button>
 
           {/* Pill CTA to Sandbox */}
           <Link

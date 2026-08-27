@@ -14,22 +14,9 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Light mode - Clean Crisp Modern UI with Green Accent */
-  --color-bg-base: #FAFAFA;
-  --color-bg-surface: #FFFFFF;
-  --color-accent: #059669;
-  --color-primary: #0A0A0A;
-  --color-text: #171717;
-  --color-text-muted: #525252;
-  --color-border: rgba(0, 0, 0, 0.12);
-  --color-amber-accent: #D97706;
-  --color-sage-accent: #10B981;
-  --color-emerald-accent: #059669;
-}
-
+:root,
 .dark {
-  /* Dark mode - Pitch Black (#080808) & Modern Emerald Green (#10B981) */
+  /* Permanent Dark Theme - Pitch Black (#080808) & Modern Emerald Green (#10B981) */
   --color-bg-base: #080808;
   --color-bg-surface: #141414;
   --color-accent: #10B981;

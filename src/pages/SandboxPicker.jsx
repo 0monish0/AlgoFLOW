@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useThemeStore } from '../store/themeStore';
 import { useSearchStore } from '../store/searchStore';
 import {
   ArrowRight,
@@ -9,8 +8,6 @@ import {
   Table2,
   Network,
   Database,
-  Sun,
-  Moon,
   Search,
   Code2,
 } from 'lucide-react';
@@ -94,18 +91,8 @@ export const SandboxPicker = () => {
             </button>
           </div>
 
-          {/* Right Action Icons & CTA Button */}
+          {/* Right Action CTA Button */}
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full hover:bg-white/10 text-text transition-colors flex items-center justify-center"
-              title={`Current theme: ${theme === 'dark' ? 'Dark' : 'Light'} mode`}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? <Moon size={15} className="text-accent" /> : <Sun size={15} className="text-amber-accent" />}
-            </button>
-
             {/* Pill Docs Button */}
             <Link
               to="/docs/why-a-linked-list"
