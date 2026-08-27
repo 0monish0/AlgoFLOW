@@ -6,7 +6,11 @@ const GALLERY_IMAGES = [
   { id: 2, src: '/gallery/5a8b7e54a83d31a5dc80986959cd343c-nobg.png', alt: 'Algorithmic networks and neural topology' },
   { id: 3, src: '/gallery/ccd435211b4466ac3575571f2726166b-nobg.png', alt: 'Computational graphics and matrix flows' },
   { id: 4, src: '/gallery/contemporary-art-nobg.png', alt: 'Contemporary digital algorithmic artwork' },
-  { id: 5, src: '/gallery/particle-ocean.gif', alt: 'Particle ocean simulation dynamics' },
+  { id: 5, src: '/gallery/gallery-graphic-1-nobg.png', alt: 'Algorithmic geometry and code topology' },
+  { id: 6, src: '/gallery/gallery-graphic-2-nobg.png', alt: 'Computational graph systems and data flow' },
+  { id: 7, src: '/gallery/gallery-graphic-3-nobg.png', alt: 'Neural data connections and lattice visualization' },
+  { id: 8, src: '/gallery/gallery-graphic-4-nobg.png', alt: 'Algorithmic interface and hierarchy mapping' },
+  { id: 9, src: '/gallery/particle-ocean.gif', alt: 'Particle ocean simulation dynamics' },
 ];
 
 export const CurvedImageCarousel = () => {
