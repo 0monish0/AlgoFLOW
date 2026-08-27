@@ -40,7 +40,7 @@ export const TocRail = ({ sections = [], slug, title, customGif, media, isCollap
   return (
     <aside
       className={`hidden xl:block shrink-0 font-mono select-none sticky top-16 h-[calc(100vh-4rem)] self-start overflow-y-auto pl-4 2xl:pl-8 pr-6 xl:pr-10 2xl:pr-14 py-2 z-20 transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        isCollapsed ? 'w-full xl:w-[30%]' : 'w-full xl:w-[37.5%]'
+        isCollapsed ? 'w-full xl:w-[38%] 2xl:w-[40%]' : 'w-full xl:w-[44%] 2xl:w-[46%]'
       }`}
     >
       {/* On This Page TOC Section */}
