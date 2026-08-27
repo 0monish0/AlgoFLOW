@@ -30,11 +30,11 @@ export const DocsPage = () => {
   }
 
   return (
-    <div className="w-full flex items-start justify-between gap-6 2xl:gap-8">
-      {/* Main Document Body */}
+    <div className="w-full flex items-start justify-between gap-8 2xl:gap-12">
+      {/* Main Document Body (Restored Full Spacious Width) */}
       <article
         className={`w-full min-w-0 font-mono transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-          isCollapsed ? 'xl:w-[65%]' : 'xl:w-[58%]'
+          isCollapsed ? 'xl:w-[70%]' : 'xl:w-[65%]'
         }`}
       >
         {/* Breadcrumb Navigation */}
