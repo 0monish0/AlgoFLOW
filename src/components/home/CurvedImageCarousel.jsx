@@ -67,6 +67,14 @@ export const CurvedImageCarousel = () => {
   const centerX = containerWidth / 2;
   const radius = containerWidth * 0.46;
 
+  // Preload all gallery images immediately on mount so they are cached in memory
+  useEffect(() => {
+    GALLERY_IMAGES.forEach((img) => {
+      const preloadImg = new Image();
+      preloadImg.src = img.src;
+    });
+  }, []);
+
   return (
     <div
       ref={containerRef}
@@ -145,7 +153,9 @@ export const CurvedImageCarousel = () => {
                 src={img.src}
                 alt={img.alt}
                 className="w-full h-full object-cover grayscale contrast-[1.18] brightness-[0.94] group-hover:grayscale-0 group-hover:brightness-100 transition-all duration-500 pointer-events-none"
-                loading="lazy"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 draggable={false}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-35 group-hover:opacity-5 transition-opacity pointer-events-none" />
