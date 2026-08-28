@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, Search, Code2, BookOpen } from 'lucide-react';
 import { useSearchStore } from '../store/searchStore';
-import { AsciiForestBackground } from '../components/ui/AsciiForestBackground';
+import { SortingRace } from '../components/ui/SortingRace';
 
 const ROTATING_WORDS = ['everyone', 'you', 'me'];
 
@@ -14,19 +14,15 @@ export const Home = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setWordIndex((prev) => (prev + 1) % ROTATING_WORDS.length);
-    }, 4000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div
-      className="relative min-h-screen bg-base text-text flex flex-col justify-between overflow-x-hidden select-none font-mono z-0"
-      style={{
-        backgroundImage: `radial-gradient(var(--color-border) 1px, transparent 1px)`,
-        backgroundSize: '24px 24px',
-      }}
+      className="relative min-h-screen bg-[#0a0a0a] text-text flex flex-col justify-between overflow-x-hidden select-none font-mono z-0"
     >
-      <AsciiForestBackground />
+      <SortingRace />
       {/* Background Center Accent Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-accent/5 rounded-full blur-3xl pointer-events-none -z-10" />
 
@@ -71,10 +67,7 @@ export const Home = () => {
       <main className="relative flex-1 w-full max-w-6xl mx-auto flex flex-col items-center justify-center px-4 sm:px-8 pt-16 sm:pt-24 md:pt-28 pb-16 sm:pb-24 z-20 text-center">
         {/* Hero Headline */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.2rem] font-sans font-black uppercase text-white tracking-tight leading-none text-center whitespace-nowrap z-20">
-          DATA STRUCTURES &{' '}
-          <span className="text-accent drop-shadow-[0_0_25px_rgba(16,185,129,0.5)]">
-            ALGORITHMS
-          </span>
+          DATA STRUCTURES <span className="text-accent drop-shadow-[0_0_25px_rgba(16,185,129,0.5)]">&</span> ALGORITHMS
         </h1>
 
         {/* Sub-headline with High-Contrast Green Text in Snug Dynamic-Width Capsule */}
