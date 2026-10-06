@@ -7,12 +7,7 @@ import { NotFound } from './pages/NotFound';
 import { SearchPalette } from './components/search/SearchPalette';
 import { useThemeStore } from './store/themeStore';
 
-import { SandboxPicker } from './pages/SandboxPicker';
-import { LinkedListSandbox } from './sandbox/structures/LinkedListSandbox';
-import { StackSandbox } from './sandbox/structures/StackSandbox';
-import { ArraySandbox } from './sandbox/structures/ArraySandbox';
-import { TreeSandbox } from './sandbox/structures/TreeSandbox';
-import { HashTableSandbox } from './sandbox/structures/HashTableSandbox';
+import { UniversalSandbox } from './sandbox/universal/UniversalSandbox';
 
 export const App = () => {
   const { theme } = useThemeStore();
@@ -37,13 +32,13 @@ export const App = () => {
           <Route path=":slug" element={<DocsPage />} />
         </Route>
 
-        {/* Full-Page Interactive Sandbox Route Group */}
-        <Route path="/sandbox" element={<SandboxPicker />} />
-        <Route path="/sandbox/linked-list" element={<LinkedListSandbox />} />
-        <Route path="/sandbox/stack" element={<StackSandbox />} />
-        <Route path="/sandbox/array" element={<ArraySandbox />} />
-        <Route path="/sandbox/tree" element={<TreeSandbox />} />
-        <Route path="/sandbox/hash-table" element={<HashTableSandbox />} />
+        {/* Universal Interactive Sandbox Route */}
+        <Route path="/sandbox" element={<UniversalSandbox />} />
+        <Route path="/sandbox/linked-list" element={<Navigate to="/sandbox?ds=linked-list" replace />} />
+        <Route path="/sandbox/stack" element={<Navigate to="/sandbox?ds=stack" replace />} />
+        <Route path="/sandbox/array" element={<Navigate to="/sandbox?ds=array" replace />} />
+        <Route path="/sandbox/tree" element={<Navigate to="/sandbox?ds=tree" replace />} />
+        <Route path="/sandbox/hash-table" element={<Navigate to="/sandbox?ds=array" replace />} />
 
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />

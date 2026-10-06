@@ -106,8 +106,8 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
         backgroundSize: '24px 24px',
       }}
     >
-      {/* Top Left Engineering HUD: Telemetry & Violations (Shifted well below navbar) */}
-      <div className="absolute top-20 left-6 sm:left-8 z-30 flex flex-col gap-2 max-w-md pointer-events-none">
+      {/* Top Left Engineering HUD: Telemetry & Violations */}
+      <div className="absolute top-4 left-6 sm:left-8 z-10 flex flex-col gap-2 max-w-md pointer-events-none">
         {/* Telemetry Bar */}
         {totalNodes > 0 && (
           <div className="flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-[#141414]/90 backdrop-blur-md border border-white/10 text-xs font-mono font-bold text-white shadow-lg pointer-events-auto">
@@ -166,9 +166,9 @@ export const SandboxCanvas = ({ highlightedNodeId }) => {
         </div>
       )}
 
-      {/* Active Connecting Mode Toast - Floating Capsule below Navbar */}
+      {/* Active Connecting Mode Toast */}
       {connectingSource && (
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4 py-2 rounded-full bg-[#18181B]/95 backdrop-blur-xl border border-accent/40 text-xs font-mono font-bold text-white shadow-2xl animate-in fade-in zoom-in-95 pointer-events-auto">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2 rounded-full bg-[#18181B]/95 backdrop-blur-xl border border-accent/40 text-xs font-mono font-bold text-white shadow-2xl animate-in fade-in zoom-in-95 pointer-events-auto">
           <Link2 size={14} className="animate-pulse text-accent shrink-0" />
           <span>Click any target Node or NULL to complete connection</span>
           <button

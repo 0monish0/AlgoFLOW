@@ -35,7 +35,7 @@ export const ToolbarPalette = () => {
   }, [undo, redo]);
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#141414]/90 backdrop-blur-md border border-white/10 shadow-2xl font-mono text-xs select-none">
+    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#141414]/90 backdrop-blur-md border border-white/10 shadow-2xl font-mono text-xs select-none">
       {/* 1. New Node Tool */}
       <button
         onClick={() => addNode(Math.floor(Math.random() * 90 + 10))}
